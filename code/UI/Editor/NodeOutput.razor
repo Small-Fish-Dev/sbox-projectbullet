@@ -1,0 +1,41 @@
+﻿@using ProjectBullet.Weapons
+@using Sandbox;
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Editor
+
+<style>
+	NodeOutput {
+		aspect-ratio: 1;
+		width: 100%;
+		border-radius: 50%;
+		border: #ececec 3px solid;
+		background-color: #3C6CB4;
+	
+		&:hover {
+			background-color: #000000;
+		}
+
+		&.has-target {
+			background-color: #ffffff;
+		}
+
+		&.making-link {
+			background-color: #ffffff;
+		}
+	}
+</style>
+
+<root class="@RootClasses"></root>
+
+@code
+{
+	public Node Node { get; set; }
+	public PartOutputDescription OutputDescription { get; set; }
+	public NodeInput Target { get; set; }
+
+	public bool MakingLink { get; set; } = false;
+
+	public bool HasTarget => Target != null;
+
+	public string RootClasses => $"{(HasTarget ? "has-target" : "")} {(MakingLink ? "making-link" : "")}";
+}

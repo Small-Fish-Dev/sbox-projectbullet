@@ -1,0 +1,98 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using System.Text.Json
+@using ProjectBullet.Weapons
+@using Sandbox;
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Editor
+
+<style>
+    MainView {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        
+        background-color: rgba(210, 210, 210, 0.3);
+        backdrop-filter: blur(10px);
+        flex-direction: row;
+        justify-content: flex-end;
+
+        pointer-events: all;
+
+        NodeGraph {
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            width: 380px;
+            height: 100%;
+            background-color: #ececec;
+            flex-direction: column;
+            justify-content: flex-start;
+
+            z-index: 30;
+
+            .node-list {
+                width: 100%;
+                height: 72%;
+                background-color: #d3d3d3;
+                flex-direction: column;
+                align-items: center;
+                overflow: scroll;
+            }
+
+            .button {
+
+            }
+        }
+        
+    }
+</style>
+
+<root>
+    <div class="controls">
+        <div class="node-list">
+            @foreach (var item in @UnusedPartItems) {
+                <NodePlaceholder @onclick=@AddToNodeGraph @PartInventoryItem=@item/>
+            }  
+        </div>
+        <button @onclick=@Save>Save Changes</button>
+    </div>
+    <NodeGraph @ref=NodeGraph Weapon=@Weapon></NodeGraph>
+</root>
+
+@code {
+    public Weapon Weapon { get; set; }
+
+    public List<PartInventoryItem> AvailableItems = new ();
+    
+    public Inventory LocalInventory => Local.Pawn.Components.Get<Inventory>();
+    public ProjectBullet.Players.Player LocalPlayer => Local.Pawn as ProjectBullet.Players.Player;
+
+    public MainView() {
+        Weapon = LocalPlayer.Weapons.First();
+        AvailableItems = LocalInventory.UnusedPartItems.ToList();
+    }
+
+    public NodeGraph NodeGraph { get; set; }
+
+    public IEnumerable<PartInventoryItem> UnusedPartItems => Local.Pawn.Components.Get<Inventory>().UnusedPartItems;
+
+    public void Save()
+    {
+        Log.Info("saving");
+
+        Node startNode = NodeGraph.StartNode;
+
+        SerializedWeaponGraph.PartNode partNode = new SerializedWeaponGraph.PartNode(startNode);
+        Log.Info(JsonSerializer.Serialize(partNode));
+    }
+
+    public void AddToNodeGraph(PanelEvent e)
+    {
+        NodePlaceholder placeholder = (NodePlaceholder) e.This;
+        placeholder.PartInventoryItem.UsedBy = Weapon;
+    }
+
+}

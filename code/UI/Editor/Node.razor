@@ -1,0 +1,77 @@
+﻿@using ProjectBullet.Weapons
+@using Sandbox;
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Editor
+@attribute [StyleSheet("/UI/Editor/Node.scss")]
+
+<root class="node">
+    <div class="header">
+        <div class="title-container">
+            <div class="title" style="text-align: left">@PartDescription.DisplayName</div>
+        </div>
+        <div class="title-container energy">
+            <div class="title" style="text-align: center">⚡@PartDescription.EnergyUsage</div>
+        </div>
+    </div>
+    <div class="content">
+        <div style="right: 25px; width: 50px" class="handle-container">
+            @if (!PartDescription.OutputOnly)
+            {
+                <NodeInput Node="@this"/>
+            }
+        </div>
+
+        <div style="left: 15px;" class="handle-container">
+            @foreach (var outputDescription in PartDescription.Outputs)
+            {
+                <div class="output">
+                    <div class="center-text-container">
+                        @outputDescription.DisplayName
+                    </div>
+                    <div style="width: 3px"/>
+                    <NodeOutput style="width: 30px" Node="@this" OutputDescription=@outputDescription></NodeOutput>
+                </div>
+            }
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public PartInventoryItem PartInventoryItem { get; set; }
+    public PartDescription PartDescription { get; set; }
+
+    public IEnumerable<Panel> Outputs => Descendants.Where(v => v is NodeOutput);
+
+    private bool _mouseDown = false;
+    private Vector2 _lastMousePos = Vector2.Zero;
+
+    protected override void OnMouseMove(MousePanelEvent e)
+    {
+        if (!_mouseDown)
+        {
+            return;
+        }
+
+        var parent = e.This.Parent;
+
+        var deltaX = parent.MousePosition.x - _lastMousePos.x;
+        var deltaY = parent.MousePosition.y - _lastMousePos.y;
+
+        Log.Info($"deltaX {deltaX}, deltaY {deltaY}");
+        Log.Info($"prev top: {e.This.Box.Rect.top}, new top: {(e.This.Box.Rect.Top + deltaY * e.This.ScaleFromScreen)}, scale: {e.This.ScaleFromScreen}");
+        e.This.Style.Left = new Length()
+        {
+            Unit = LengthUnit.Pixels,
+                Value = (e.This.Box.Rect.Left + deltaX) * e.This.ScaleFromScreen
+        };
+
+        e.This.Style.Top = new Length()
+        {
+            Unit = LengthUnit.Pixels,
+                Value = (e.This.Box.Rect.Top + deltaY) * e.This.ScaleFromScreen
+        };
+
+        _lastMousePos = parent.MousePosition;
+    }
+}

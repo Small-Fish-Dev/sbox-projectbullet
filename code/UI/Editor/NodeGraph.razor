@@ -1,0 +1,251 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using ProjectBullet.Weapons
+@using Sandbox;
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Editor
+
+@code {
+    public PartDescription StartPartDescription { get; set; } = WeaponStorage.GetPartDescription<StartPart>();
+}
+
+<root>
+    <Node @ref=StartNode PartDescription=@StartPartDescription/>
+    @foreach (var weapon in Weapon.UsedPartItems)
+    {
+        <Node PartInventoryItem=@weapon PartDescription=@weapon.PartDescription/>    
+    }
+</root>
+
+@code {
+    public Node StartNode { get; set; }
+    public Weapon Weapon { get; set; }
+
+    public IEnumerable<Panel> Nodes => AncestorsAndSelf.Where(v => v is Node);
+        
+    private const float LineStartSize = 25.0f;
+    private const float LineEndSize = 30.0f;
+
+    public NodeOutput ActiveOutput { get; set; }
+    public Node HeldNode { get; set; }
+    public Vector2 HoldPoint { get; set; }
+    public bool ConnectionImpossible { get; set; } = false;
+
+    private static bool CheckHover(Panel @this, Panel target) => target.Box.Rect.IsInside(@this.MousePosition);
+
+    private void DrawNodeLine(Vector2 start, Vector2 end) => GraphicsX.Line(Color.White, ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end);
+    private void DrawPlaceholderNodeLine(Vector2 start, Vector2 end) { 
+        GraphicsX.Line(ConnectionImpossible ? Color.Red : Color.White, ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end);
+    }
+
+    private void SetNodeTarget(NodeOutput handle, NodeInput target)
+    {
+        handle.Target = target;
+        target.Previous = handle;
+    }
+
+    private void ClearNodeTarget(NodeOutput handle)
+    {
+        if (handle.HasTarget)
+        {
+            handle.Target.Previous = null;
+            ((Panel)handle.Target).StateHasChanged();
+        }
+
+        handle.Target = null;
+        ((Panel)handle).StateHasChanged();
+    }
+
+    protected override void OnMouseDown(MousePanelEvent e)
+    {
+        base.OnMouseDown(e);
+
+        ConnectionImpossible = false;
+
+        if (e.Button == "mouseright")
+        {
+            {
+                // Clear output action
+                if (e.Target is NodeOutput output)
+                {
+                    ClearNodeTarget(output);
+                    return;
+                }
+
+                if (e.Target is NodeInput input)
+                {
+                    if (input.HasPrevious)
+                    {
+                        ClearNodeTarget(input.Previous);
+                    }
+                    return;
+                }
+            }
+
+            var node = e.Target.AncestorsAndSelf.SingleOrDefault(v => v is Node);
+            if (node != null && HeldNode == null && node != StartNode)
+            {
+                foreach (var child in ((Panel)node).Descendants)
+                {
+                    if (child is NodeOutput output)
+                    {
+                        Log.Info(child);
+                        ClearNodeTarget(output);
+                    }
+                    
+                    if (child is NodeInput input)
+                    {
+                        Log.Info(child);
+                        if (input.HasPrevious)
+                        {
+                            ClearNodeTarget(input.Previous);
+                        }
+                    }
+                }
+                node.Delete();
+            }
+        }
+
+        if (e.Button == "mouseleft" && ActiveOutput == null)
+        {
+            if (e.Target is NodeOutput output && !output.HasTarget)
+            {
+                ActiveOutput = output;
+                ActiveOutput.MakingLink = true;
+                return;
+            }          
+
+            if (e.Target is NodeInput)
+            {
+                return;
+            }
+
+            var node = e.Target.AncestorsAndSelf.SingleOrDefault(v => v is Node);
+            if (node != null && HeldNode == null)
+            {
+                HeldNode = (Node)node;
+                HoldPoint = MousePosition - node.Box.Rect.TopLeft;
+            }
+        }
+    }
+
+    protected override void OnMouseUp(MousePanelEvent e)
+    {
+        base.OnMouseUp(e);
+
+        ConnectionImpossible = false;
+
+        HeldNode = null;
+        HoldPoint = Vector2.Zero;
+
+        if (ActiveOutput == null)
+        {
+            return;
+        }
+
+        ActiveOutput.MakingLink = false;
+
+        foreach (var child in e.This.Descendants)
+        {
+            if (child is not NodeInput input)
+            {
+                continue;
+            }
+
+            if (input.BeingHovered && !input.BeingIncorrectlyHovered)
+            {
+                SetNodeTarget(ActiveOutput, input);
+            }
+
+            input.BeingHovered = false;
+            input.BeingIncorrectlyHovered = false;
+        }
+
+        ActiveOutput = null;
+    }
+
+    protected override void OnMouseMove(MousePanelEvent e)
+    {
+        base.OnMouseMove(e);
+
+        if (HeldNode != null)
+        {
+            var panel = ((Panel)HeldNode);
+            panel.Style.Position = PositionMode.Absolute;
+            panel.Style.Left = Length.Pixels(
+                (((MousePosition.x - HoldPoint.x) - this.Box.Rect.Left) * panel.ScaleFromScreen)
+            );
+            panel.Style.Top = Length.Pixels(
+                (((MousePosition.y - HoldPoint.y) - this.Box.Rect.Top) * panel.ScaleFromScreen)
+            );
+        }
+
+        if (ActiveOutput == null)
+        {
+            return;
+        }
+
+        bool hoveringAny = false;
+
+        foreach (var child in e.This.Descendants)
+        {
+            if (child is not NodeInput input)
+            {
+                continue;
+            }
+
+            if (CheckHover(e.This, child))
+            {
+                input.BeingHovered = true;
+                hoveringAny = true;
+
+                if (ActiveOutput.Node == input.Node)
+                {
+                    ConnectionImpossible = true;
+                    input.BeingIncorrectlyHovered = true;
+                }
+
+                child.StateHasChanged();
+            }
+            else
+            {
+                if (input.BeingHovered)
+                {
+                    input.BeingHovered = false;
+                    input.BeingIncorrectlyHovered = false;
+                    child.StateHasChanged();
+                }
+            }
+        }
+
+        if (!hoveringAny)
+        {
+            ConnectionImpossible = false;
+        }
+    }
+
+    public override void DrawBackground(ref RenderState state)
+    {
+        foreach (var child in (this as Panel).Descendants)
+        {
+            if (child is not NodeOutput output)
+            {
+                continue;
+            }
+
+            if (!output.HasTarget)
+            {
+                continue;
+            }
+
+            DrawNodeLine(((Panel)output).Box.ClipRect.Center,((Panel)output.Target).Box.Rect.Center);
+        }
+
+        if (ActiveOutput == null)
+        {
+            return;
+        }
+
+        DrawPlaceholderNodeLine(((Panel)ActiveOutput).Box.Rect.Center, MousePosition + this.Box.Rect.TopLeft);
+    }
+}
