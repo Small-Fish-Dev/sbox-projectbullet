@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ProjectBullet.Items;
 using ProjectBullet.Players.Strafe;
 using ProjectBullet.Weapons;
 using Sandbox;
@@ -24,7 +25,7 @@ public abstract partial class Player : AnimatedEntity
 		set => Components.Add( value );
 	}
 
-	[Net] public List<Weapon> Weapons { get; set; } = new();
+	[Net] public IList<Weapon> Weapons { get; set; } = new List<Weapon>();
 
 	public override void Spawn()
 	{
@@ -33,12 +34,6 @@ public abstract partial class Player : AnimatedEntity
 		Tags.Add( "player" );
 
 		Inventory = new Inventory();
-		
-		foreach (var partDescription in WeaponStorage.PartDescriptions)
-		{
-			if (partDescription.TypeDescription.Name != "StartPart")
-				Inventory.PartItems.Add( new PartInventoryItem(partDescription) );
-		}
 
 		base.Spawn();
 	}

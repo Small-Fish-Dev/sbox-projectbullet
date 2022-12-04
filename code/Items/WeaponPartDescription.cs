@@ -12,6 +12,8 @@ public class KnownWeaponPartAttribute : Attribute
 	public string DisplayDescription = "No description provided.";
 	public float EnergyUsage;
 	public bool OutputOnly;
+
+	public KnownWeaponPartAttribute( string displayName ) => DisplayName = displayName;
 }
 
 public class WeaponPartDescription
@@ -56,4 +58,6 @@ public class WeaponPartDescription
 			_outputs.Add( new PartOutputDescription( property, knownOutputAttribute ) );
 		}
 	}
+
+	public WeaponPart Create() => TypeDescription.Create<WeaponPart>();
 }

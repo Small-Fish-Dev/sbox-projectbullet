@@ -1,46 +1,5 @@
-﻿@using System
-@using ProjectBullet.Weapons
-@using Sandbox;
-@using Sandbox.UI;
+﻿@using Sandbox.UI;
 @namespace ProjectBullet.UI.Editor
+@attribute [StyleSheet("/UI/Editor/NodeInput.scss")]
 
-<style>
-	NodeInput {
-		aspect-ratio: 1;
-		width: 100%;
-		border-radius: 50%;
-		border: #ececec 3px solid;
-		background-color: #3C6CB4;
-	
-		&.has-previous {
-			background-color: #ffffff;
-		}
-
-		&.being-hovered:not(.has-previous) {
-			border: #ececec 6px solid;
-			background-color: #ffffff;
-		}
-
-		&.being-incorrectly-hovered:not(.has-previous) {
-			border: #ececec 6px solid;
-			background-color: #ff0000;
-		}
-	}
-</style>
-
-<root class="@RootClasses"></root>
-
-@code
-{
-	public Node Node { get; set; }
-
-	// todo: what should this be named?
-	public NodeOutput Previous { get; set; }
-
-	public bool BeingHovered { get; set; } = false;
-	public bool BeingIncorrectlyHovered { get; set; } = false;
-
-	public bool HasPrevious => Previous != null;
-
-	public string RootClasses => $"{(HasPrevious ? "has-previous" : "")} {(BeingHovered ? "being-hovered" : "")} {(BeingIncorrectlyHovered ? "being-incorrectly-hovered" : "")}";
-}
+<root class=""></root>

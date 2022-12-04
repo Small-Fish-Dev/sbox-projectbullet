@@ -1,47 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ProjectBullet.Weapons;
 using Sandbox;
 
 namespace ProjectBullet.Items;
 
-public enum ShopItemType
-{
-	WeaponPart = 0,
-}
-
-public partial class ShopItem : BaseNetworkable
-{
-	/// <summary>
-	/// String used to identify respective PurchasableItemDescription.
-	/// </summary>
-	[Net, Change( "HandleNewDescriptionIdent" )]
-	public string DescriptionIdent { get; private set; }
-
-	private PurchasableItemDescription _description;
-
-	public string DisplayName { get; private set; }
-	public int Price => _description.Price;
-
-	public ShopItem( PurchasableItemDescription description )
-	{
-		DescriptionIdent = description.DescriptionIdent;
-		HandleNewDescriptionIdent();
-	}
-
-	public ShopItem() => HandleNewDescriptionIdent();
-
-	private void HandleNewDescriptionIdent()
-	{
-		_description =
-			StaticStorage.PurchasableItemDescriptions.SingleOrDefault( v => v.DescriptionIdent == DescriptionIdent );
-	}
-}
-
 public partial class ShopController : Entity
 {
-	[Net] public List<ShopItem> Stock { get; set; } = new();
+	public override void Spawn()
+	{
+		base.Spawn();
+		Transmit = TransmitType.Always;
+	}
+
+	[Net] public IList<ShopItem> Stock { get; set; } = new List<ShopItem>();
 
 	public void AddAllPurchasableItems()
 	{
@@ -49,5 +21,54 @@ public partial class ShopController : Entity
 		{
 			Stock.Add( new ShopItem( purchasableItemDescription ) );
 		}
+	}
+
+	[ConCmd.Admin( "pb_debug_setmoney" )]
+	public static void SetMoneyCCmd( int money )
+	{
+		var inventory = ConsoleSystem.Caller.Pawn?.Components.Get<Inventory>();
+		if ( inventory == null )
+		{
+			Log.Info( $"{ConsoleSystem.Caller.Name} has no inventory" );
+			return;
+		}
+
+		inventory.Money = money;
+		Log.Info( $"Set money for {ConsoleSystem.Caller.Name} to {money}" );
+	}
+
+	[ConCmd.Server( "pb_internal_buy" )]
+	public static void BuyItemCCmd( string purchasableItemIdent )
+	{
+		var shop = All.OfType<ShopController>().Single();
+		var stockedItem = shop.Stock.SingleOrDefault( v => v.PurchasableItemIdent == purchasableItemIdent );
+
+		if ( stockedItem == null )
+		{
+			Log.Info( $"{ConsoleSystem.Caller.Name} tried to buy unknown / unstocked item {purchasableItemIdent}" );
+			return;
+		}
+
+		var inventory = ConsoleSystem.Caller.Pawn?.Components.Get<Inventory>();
+		if ( inventory == null )
+		{
+			Log.Info( $"{ConsoleSystem.Caller.Name} tried to buy an item without an inventory" );
+			return;
+		}
+
+		if ( inventory.Money < stockedItem.Price )
+		{
+			Log.Info(
+				$"{ConsoleSystem.Caller.Name} tried to buy item {purchasableItemIdent} but didn't have the funds" );
+			return;
+		}
+
+		inventory.Money -= stockedItem.Price;
+		var instance = stockedItem.Description.CreateInventoryItemInstance( Guid.NewGuid() );
+		if ( instance is Entity entity )
+		{
+			entity.Owner = ConsoleSystem.Caller.Pawn;
+		}
+		inventory.Add( instance );
 	}
 }

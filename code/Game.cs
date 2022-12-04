@@ -1,11 +1,12 @@
 ﻿using Sandbox;
 using System;
 using System.Linq;
-using ProjectBullet.UI;
-using ProjectBullet.UI.Editor;
+using ProjectBullet.Items;
 using Sandbox.UI;
-using Player = ProjectBullet.Players.Player;
 using ProjectBullet.Players.Classes;
+using ProjectBullet.UI.Editor;
+using ProjectBullet.UI.Shop;
+using ProjectBullet.Weapons;
 
 namespace ProjectBullet;
 
@@ -14,21 +15,95 @@ public class TestClass
 	public string Hello { get; set; }
 }
 
+[KnownWeaponPart("Shop Part One")]
+[Purchasable(300)]
+public class ShopPartOne : Items.WeaponPart
+{
+	public override void Execute( Entity target, Vector3 point, Weapon weapon )
+	{
+		throw new NotImplementedException();
+	}
+}
+
+[KnownWeaponPart("Shop Part Two")]
+[Purchasable(700)]
+public class ShopPartTwo : Items.WeaponPart
+{
+	public override void Execute( Entity target, Vector3 point, Weapon weapon )
+	{
+		throw new NotImplementedException();
+	}
+}
+
+[KnownWeaponPart("Shop Part Three")]
+[Purchasable(75)]
+public class ShopPartThree : Items.WeaponPart
+{
+	public override void Execute( Entity target, Vector3 point, Weapon weapon )
+	{
+		throw new NotImplementedException();
+	}
+}
+
 public partial class Entrypoint : Sandbox.Game
 {
+	[Net] public ShopController Shop { get; set; }
+
+	private Window _shopWindow = null;
+	private Window _editorWindow = null;
+	
 	public Entrypoint()
 	{
 		if ( Host.IsClient )
 		{
 			Local.Hud = new RootPanel();
-			Local.Hud.AddChild( new PlayerHud() );
 		}
 	}
 
-	[ConCmd.Client( "pb_test" )]
-	public static void Test()
+	public override void Spawn()
 	{
-		Local.Hud.AddChild<MainView>();
+		base.Spawn();
+		
+		Shop = new ShopController();
+		Shop.AddAllPurchasableItems();
+	}
+
+	[ConCmd.Client("pb_shop")]
+	public static void ToggleShop()
+	{
+		var entrypoint = Game.Current as Entrypoint;
+		if ( entrypoint._shopWindow == null )
+		{
+			entrypoint._shopWindow = new Window( new ShopView() );
+			entrypoint._shopWindow.Title = "Shop";
+			entrypoint._shopWindow.Width = 1200;
+			entrypoint._shopWindow.Height = 840;
+			Local.Hud.AddChild( entrypoint._shopWindow );
+		}
+		else
+		{
+			entrypoint._shopWindow.Delete(  );
+			entrypoint._shopWindow = null;
+		}
+	}
+	
+	[ConCmd.Client("pb_editor")]
+	public static void ToggleEditor()
+	{
+		var entrypoint = Game.Current as Entrypoint;
+		if ( entrypoint._editorWindow == null )
+		{
+			entrypoint._editorWindow = new Window( new EditorView() );
+			entrypoint._editorWindow.Title = "Editor";
+			entrypoint._editorWindow.Width = 1400;
+			entrypoint._editorWindow.Height = 900;
+			Local.Hud.AddChild( entrypoint._editorWindow );
+		}
+		else
+		{
+			entrypoint._editorWindow.Delete(  );
+			entrypoint._editorWindow = null;
+		}
 	}
 
 	/// <summary>

@@ -1,0 +1,23 @@
+﻿@using ProjectBullet.Items
+@using Sandbox;
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Shop
+@attribute [StyleSheet("/UI/Shop/ShopView.scss")]
+
+<root>
+    <div class="item-list">
+        @foreach (var item in (Game.Current as Entrypoint).Shop.Stock)
+        {
+            @if (item == null)
+            {
+                continue;
+            }
+
+            <div class="item" @onclick=@(() => ShopController.BuyItemCCmd(item.PurchasableItemIdent))>
+                <div style="font-size: 40px">@item.DisplayName</div>
+                <div style="font-size: 30px">@item.Price</div>
+            </div>
+        }
+    </div>
+    <div class="item-details"></div>
+</root>

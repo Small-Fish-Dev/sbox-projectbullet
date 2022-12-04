@@ -49,7 +49,7 @@ public static class StaticStorage
 		PurchasableItemDescriptionsCache.Clear();
 	}
 
-	private static void Init()
+	public static void Init()
 	{
 		if ( WeaponPartDescriptionsCache.Count == 0 )
 		{
@@ -71,6 +71,7 @@ public static class StaticStorage
 		{
 			foreach ( var pairing in TypeLibrary.GetTypesWithAttribute<PurchasableAttribute>() )
 			{
+				Log.Info( pairing.Type.TargetType );
 				PurchasableItemDescriptionsCache.Add(
 					new PurchasableItemDescription( pairing.Type, pairing.Attribute ) );
 			}

@@ -1,0 +1,19 @@
+﻿NodeOutput {
+    aspect-ratio: 1;
+    width: 100%;
+    border-radius: 50%;
+    border: #ececec 3px solid;
+    background-color: #3C6CB4;
+
+    &:hover {
+        background-color: #000000;
+    }
+
+    &.has-target {
+        background-color: #ffffff;
+    }
+
+    &.making-link {
+        background-color: #ffffff;
+    }
+}

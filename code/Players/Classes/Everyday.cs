@@ -18,8 +18,7 @@ public partial class Everyday : Player
 	public override void Spawn()
 	{
 		base.Spawn();
-		Primary = new();
-		Primary.Owner = this;
+		Primary = new PrimaryFire() { Owner = this };
 		Weapons.Add( Primary );
 	}
 }

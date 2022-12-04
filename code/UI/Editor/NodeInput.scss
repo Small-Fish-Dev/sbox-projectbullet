@@ -1,0 +1,21 @@
+﻿NodeInput {
+    aspect-ratio: 1;
+    width: 100%;
+    border-radius: 50%;
+    border: #ececec 3px solid;
+    background-color: #3C6CB4;
+
+    &.has-connection {
+        background-color: #ffffff;
+    }
+
+    &.being-hovered:not(.has-connection) {
+        border: #ececec 6px solid;
+        background-color: #ffffff;
+    }
+
+    &.being-incorrectly-hovered:not(.has-connection) {
+        border: #ececec 6px solid;
+        background-color: #ff0000;
+    }
+}
