@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ProjectBullet.Items;
 using ProjectBullet.Weapons;
 using Sandbox.UI;
@@ -8,55 +7,90 @@ namespace ProjectBullet.UI.Editor;
 
 public partial class NodeGraph : Panel
 {
+	private bool _waitingForInit;
+
 	/// <summary>
 	/// Current weapon being visualised
 	/// </summary>
 	public Weapon Weapon { get; set; }
 
-	private bool _waitingForInit;
+	public GraphableWeaponPart GraphableStartNode { get; set; } = new();
 
-	public GraphableWeaponPart GraphableStartNode => Weapon.ClientGraphableStartPart;
-	public List<GraphableWeaponPart> DisplayedParts { get; set; } = new();
+	/// <summary>
+	/// List of <see cref="WeaponPart"/>s in the player's inventory but not on the weapon
+	/// </summary>
+	public List<WeaponPart> InactiveParts { get; set; } = new();
+
+	/// <summary>
+	/// List of <see cref="GraphableWeaponPart"/>s in the player's inventory and on the provided weapon
+	/// </summary>
+	public List<GraphableWeaponPart> ActiveGraphableParts { get; set; } = new();
 
 	public NodeGraph( Weapon weapon ) => SwitchWeapon( weapon );
-
 	public NodeGraph() => _waitingForInit = true;
 
 	public override void Tick()
 	{
 		base.Tick();
 
-		if ( _waitingForInit && Weapon == null )
+		if ( _waitingForInit && Weapon != null )
 		{
 			SwitchWeapon( Weapon );
 			_waitingForInit = false;
 		}
 	}
 
-	public void RemovePart( GraphableWeaponPart part )
+	/// <summary>
+	/// Make part active
+	/// </summary>
+	/// <param name="part">WeaponPart</param>
+	public void MovePartIntoActive( WeaponPart part )
 	{
-		part.Element.Delete();
+		if ( !InactiveParts.Contains( part ) )
+		{
+			Log.Error( "Part not contained in InactiveParts" );
+			return;
+		}
 
-		Log.Info( part.Input );
-		Log.Info( part.Input.ConnectedTo );
+		// Add to active
+		ActiveGraphableParts.Add( new GraphableWeaponPart( part ) );
+
+		// Remove from inactive
+		InactiveParts.Remove( part );
+
+		// Redraw elements
+		StateHasChanged();
+	}
+
+	/// <summary>
+	/// Make part inactive
+	/// </summary>
+	/// <param name="part">GraphableWeaponPart</param>
+	public void MovePartIntoInactive( GraphableWeaponPart part )
+	{
+		if ( !ActiveGraphableParts.Contains( part ) )
+		{
+			Log.Error( "Part not contained in ActiveGraphableParts" );
+			return;
+		}
+
+		// Add to inactive
+		InactiveParts.Add( part.WeaponPart );
+
+		// Clean up part inputs
 		part.Input.ConnectedTo = null;
-
 		foreach ( var graphableOutput in part.Outputs )
 		{
 			graphableOutput.Target = null;
 		}
 
-		DisplayedParts.Remove( part );
+		// Remove from active
+		ActiveGraphableParts.Remove( part );
 
-		Weapon.RemoveWeaponPart( Weapon.NetworkIdent, part.WeaponPart.Uid.ToString() );
-		
-		StateHasChanged();
-	}
+		// Remove part element
+		part.Element.Delete();
 
-	public void AddPart( WeaponPart part )
-	{
-		DisplayedParts.Add( new GraphableWeaponPart( part ) );
-		
+		// Redraw elements
 		StateHasChanged();
 	}
 
@@ -64,18 +98,27 @@ public partial class NodeGraph : Panel
 	/// Visualise a different weapon
 	/// </summary>
 	/// <param name="weapon">New weapon</param>
-	public void SwitchWeapon( Weapon weapon )
+	private void SwitchWeapon( Weapon weapon )
 	{
-		if ( weapon == Weapon )
-		{
-			Log.Info( "Tried to use SwitchWeapon to go to same weapon" );
-			return;
-		}
+		Log.Info( "SWITCH WEAPON!!!!!!!" );
+
+		// Clean up first
+		ActiveGraphableParts.Clear();
+		InactiveParts.Clear();
 
 		Weapon = weapon;
+		Log.Info( "hi" );
 		foreach ( var usedWeaponPart in WeaponPart.GetUsedWeaponParts( Weapon ) )
 		{
-			DisplayedParts.Add( new GraphableWeaponPart( usedWeaponPart ) );
+			ActiveGraphableParts.Add( new GraphableWeaponPart( usedWeaponPart ) );
 		}
+
+		foreach ( var unusedWeaponPart in WeaponPart.GetUnusedWeaponParts( Weapon.Owner ) )
+		{
+			Log.Info( unusedWeaponPart );
+			InactiveParts.Add( unusedWeaponPart );
+		}
+
+		StateHasChanged();
 	}
 }

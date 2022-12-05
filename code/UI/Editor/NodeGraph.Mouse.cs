@@ -9,6 +9,8 @@ namespace ProjectBullet.UI.Editor;
 
 public partial class NodeGraph : Panel
 {
+	private ContextMenu _contextMenu;
+
 	private object _mouseDownTarget;
 	private Vector2 _holdPoint;
 	private bool _makingInvalidConnection;
@@ -20,16 +22,51 @@ public partial class NodeGraph : Panel
 	private void DrawNodeLine( Vector2 start, Vector2 end ) => GraphicsX.Line( Color.White,
 		ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
 
+	private Vector2 GetStyleMousePosition() => new Vector2(
+		(Local.Hud.MousePosition.x - _holdPoint.x - Box.Rect.Left) * Local.Hud.ScaleFromScreen,
+		(Local.Hud.MousePosition.y - _holdPoint.y - Box.Rect.Top) * Local.Hud.ScaleFromScreen );
+
 	private void DrawPlaceholderNodeLine( Vector2 start, Vector2 end )
 	{
 		GraphicsX.Line( _makingInvalidConnection ? Color.Red : Color.White, ScaleToScreen * LineStartSize, start,
 			ScaleToScreen * LineEndSize, end );
 	}
 
+	protected override void OnRightClick( MousePanelEvent e )
+	{
+		base.OnRightClick( e );
+
+		if ( e.Target is NodeGraph && _contextMenu == null )
+		{
+			_contextMenu = new ContextMenu(this);
+			AddChild( _contextMenu );
+			
+			var panel = (_contextMenu as Panel);
+			var lmp = GetStyleMousePosition();
+			
+			panel.Style.Left = Length.Pixels(
+				lmp.x
+			);
+			panel.Style.Top = Length.Pixels(
+				lmp.y
+			);
+		}
+	}
+
 	protected override void OnMouseDown( MousePanelEvent e )
 	{
 		base.OnMouseDown( e );
 
+		if ( _contextMenu != null )
+		{
+			var ctx = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is ContextMenu );
+			if ( ctx == null )
+			{
+				_contextMenu.Delete();
+				_contextMenu = null;
+			}
+		}
+		
 		if ( _mouseDownTarget != null )
 		{
 			return;
@@ -98,27 +135,26 @@ public partial class NodeGraph : Panel
 		{
 			node.Style.Position = PositionMode.Absolute;
 
-			var x = (Local.Hud.MousePosition.x - _holdPoint.x - this.Box.Rect.Left) * Local.Hud.ScaleFromScreen;
-			var y = (Local.Hud.MousePosition.y - _holdPoint.y - this.Box.Rect.Top) * Local.Hud.ScaleFromScreen;
+			var lmp = GetStyleMousePosition();
 
-			node.GraphableWeaponPart.SavedX = (int)x;
-			node.GraphableWeaponPart.SavedY = (int)y;
+			node.GraphableWeaponPart.SavedX = (int)lmp.x;
+			node.GraphableWeaponPart.SavedY = (int)lmp.y;
 
-			if ( x < 0 )
+			if ( lmp.x < 0 )
 			{
-				x = 0;
+				lmp.x = 0;
 			}
 
-			if ( y < 0 )
+			if ( lmp.y < 0 )
 			{
-				y = 0;
+				lmp.y = 0;
 			}
 
 			node.Style.Left = Length.Pixels(
-				x
+				lmp.x
 			);
 			node.Style.Top = Length.Pixels(
-				y
+				lmp.y
 			);
 
 			return;

@@ -1,0 +1,27 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Editor
+@attribute [StyleSheet("/UI/Editor/ContextMenu.scss")]
+
+<root>
+    <div class="group">
+        <div class="title">
+            <div class="center-text-container">
+                <div class="info-text">inventory</div>
+            </div>
+        </div>
+        @foreach (var item in NodeGraph.InactiveParts)
+        {
+            <div class="item" @onclick=@(() => { NodeGraph.MovePartIntoActive(item); Delete(); })>
+                <div class="center-text-container">
+                    <div style="justify-content: space-between; width: 100%">
+                        <div class="info-text">add...</div>
+                        <div>
+                            @item.Description.DisplayName
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</root>

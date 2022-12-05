@@ -8,10 +8,7 @@ public class GraphableWeaponPart
 {
 	public class GraphableInput
 	{
-		public GraphableInput( GraphableWeaponPart parent )
-		{
-			Parent = parent;
-		}
+		public GraphableInput( GraphableWeaponPart parent ) => Parent = parent;
 
 		private GraphableOutput _connectedTo;
 
@@ -20,16 +17,17 @@ public class GraphableWeaponPart
 			get => _connectedTo;
 			set
 			{
-				if ( _connectedTo != null )
+				if ( value != null )
 				{
-					_connectedTo.Element.StateHasChanged();
-					_connectedTo.Target = null;
-					Log.Info( _connectedTo );
+					value.Target = this;
 				}
-
-				_connectedTo = value;
-
-				Element?.StateHasChanged();
+				else
+				{
+					if ( _connectedTo != null )
+					{
+						_connectedTo.Target = null;
+					}
+				}
 			}
 		}
 
@@ -56,9 +54,9 @@ public class GraphableWeaponPart
 			Parent = parent;
 		}
 
-		public GraphableWeaponPart Parent { get; }
-		public string PartOutputIdent { get; }
-		public string DisplayName { get; }
+		public GraphableWeaponPart Parent { get; init; }
+		public string PartOutputIdent { get; init; }
+		public string DisplayName { get; init; }
 
 		private GraphableInput _target;
 
@@ -67,28 +65,18 @@ public class GraphableWeaponPart
 			get => _target;
 			set
 			{
-				if ( _target == null && value == null )
-				{
-					return;
-				}
-
 				if ( value == null )
 				{
-					_target.ConnectedTo = null;
-					_target = null;
-
-					Log.Info( Parent.WeaponPart.Weapon.NetworkIdent );
-					Log.Info( Parent.WeaponPart.Uid.ToString() );
-					Log.Info( PartOutputIdent );
-
-					Weapon.ClearWeaponPartOutputTarget( Parent.WeaponPart.Weapon.NetworkIdent,
-						Parent.WeaponPart.Uid.ToString(),
-						PartOutputIdent );
+					if ( _target?.ConnectedTo is { } )
+					{
+						_target.SetRawConnectedTo( null );
+						_target = null;
+					}
 				}
 				else
 				{
 					_target = value;
-					_target.ConnectedTo = this;
+					_target.SetRawConnectedTo( this );
 				}
 
 				Element?.StateHasChanged();
@@ -121,7 +109,9 @@ public class GraphableWeaponPart
 		EnergyUsage = 0;
 		OutputOnly = true;
 		Input = new GraphableInput( this );
-		Outputs.Add( new GraphableOutput( this ) );
+
+		var output = new GraphableOutput( this );
+		Outputs.Add( output );
 	}
 
 	public List<GraphableOutput> Outputs { get; } = new();

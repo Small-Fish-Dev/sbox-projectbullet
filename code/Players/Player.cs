@@ -6,20 +6,11 @@ using Sandbox;
 
 namespace ProjectBullet.Players;
 
-public abstract partial class Player : AnimatedEntity
+public abstract partial class Player : Sandbox.Player
 {
-	[Net, Predicted] private PawnController Controller { get; set; }
-	[Net, Predicted] private PawnAnimator Animator { get; set; }
-
 	private ClothingContainer _clothing;
-
-	private CameraMode CameraMode
-	{
-		get => Components.Get<CameraMode>();
-		set => Components.Add( value );
-	}
-
-	private Inventory Inventory
+	
+	private new Inventory Inventory
 	{
 		get => Components.Get<Inventory>();
 		set => Components.Add( value );

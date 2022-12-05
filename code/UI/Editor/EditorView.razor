@@ -1,6 +1,4 @@
-﻿@using System.Collections.Generic
-@using System.Linq
-@using ProjectBullet.Items
+﻿@using System.Linq
 @using ProjectBullet.Weapons
 @using Sandbox;
 @using Sandbox.UI;
@@ -10,25 +8,10 @@
 
 @code {
     public Weapon SelectedWeapon => (Local.Pawn as Player).Weapons.Single();
-    public NodeGraph NodeGraph { get; set; }
-    public IEnumerable<WeaponPart> UnusedParts => WeaponPart.GetUnusedWeaponParts(Local.Pawn);
-
-    void AddWeaponPartToWeapon(WeaponPart part)
-    {
-        Weapon.AddWeaponPart(SelectedWeapon.NetworkIdent, part.Uid.ToString());
-        NodeGraph.AddPart(part);
-    }
-
 }
 
 <root>
-    <div class="inventory">
-        @foreach (var part in UnusedParts)
-        {
-            <div style="width:100%; height: 50px; position:relative;" @onclick=@(() => AddWeaponPartToWeapon(part))>@part.Description.DisplayName</div>
-        }
-    </div>
     <div class="content">
-        <NodeGraph @ref=NodeGraph Weapon=@SelectedWeapon/>
+        <NodeGraph Weapon=@SelectedWeapon/>
     </div>
 </root>

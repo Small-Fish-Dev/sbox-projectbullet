@@ -15,8 +15,8 @@ public class TestClass
 	public string Hello { get; set; }
 }
 
-[KnownWeaponPart("Shop Part One")]
-[Purchasable(300)]
+[KnownWeaponPart( "Test Part A" )]
+[Purchasable( 300 )]
 public class ShopPartOne : Items.WeaponPart
 {
 	public override void Execute( Entity target, Vector3 point, Weapon weapon )
@@ -25,8 +25,8 @@ public class ShopPartOne : Items.WeaponPart
 	}
 }
 
-[KnownWeaponPart("Shop Part Two")]
-[Purchasable(700)]
+[KnownWeaponPart( "Test Part B" )]
+[Purchasable( 700 )]
 public class ShopPartTwo : Items.WeaponPart
 {
 	public override void Execute( Entity target, Vector3 point, Weapon weapon )
@@ -35,9 +35,33 @@ public class ShopPartTwo : Items.WeaponPart
 	}
 }
 
-[KnownWeaponPart("Shop Part Three")]
-[Purchasable(75)]
+[KnownWeaponPart( "Test Part C" )]
+[Purchasable( 75 )]
 public class ShopPartThree : Items.WeaponPart
+{
+	public override void Execute( Entity target, Vector3 point, Weapon weapon )
+	{
+		throw new NotImplementedException();
+	}
+}
+
+[KnownWeaponPart( "Splitter" )]
+[Purchasable( 300 )]
+public class SplitterItem : Items.WeaponPart
+{
+	[KnownOutput( DisplayName = "One" )] public WeaponPart One { get; set; }
+
+	[KnownOutput( DisplayName = "Two" )] public WeaponPart Two { get; set; }
+
+	public override void Execute( Entity target, Vector3 point, Weapon weapon )
+	{
+		throw new NotImplementedException();
+	}
+}
+
+[KnownWeaponPart( "Poop Fart" )]
+[Purchasable( 1500 )]
+public class PoopFartItem : Items.WeaponPart
 {
 	public override void Execute( Entity target, Vector3 point, Weapon weapon )
 	{
@@ -48,9 +72,6 @@ public class ShopPartThree : Items.WeaponPart
 public partial class Entrypoint : Sandbox.Game
 {
 	[Net] public ShopController Shop { get; set; }
-
-	private Window _shopWindow = null;
-	private Window _editorWindow = null;
 	
 	public Entrypoint()
 	{
@@ -60,49 +81,47 @@ public partial class Entrypoint : Sandbox.Game
 		}
 	}
 
+	private ShopView _shopView;
+	private EditorView _editorView;
+	
 	public override void Spawn()
 	{
 		base.Spawn();
-		
+
 		Shop = new ShopController();
 		Shop.AddAllPurchasableItems();
 	}
 
-	[ConCmd.Client("pb_shop")]
+	[ConCmd.Client( "pb_shop" )]
 	public static void ToggleShop()
 	{
 		var entrypoint = Game.Current as Entrypoint;
-		if ( entrypoint._shopWindow == null )
+		if ( entrypoint._shopView == null )
 		{
-			entrypoint._shopWindow = new Window( new ShopView() );
-			entrypoint._shopWindow.Title = "Shop";
-			entrypoint._shopWindow.Width = 1200;
-			entrypoint._shopWindow.Height = 840;
-			Local.Hud.AddChild( entrypoint._shopWindow );
+			entrypoint._shopView = new ShopView();
+			Local.Hud.AddChild( entrypoint._shopView );
 		}
 		else
 		{
-			entrypoint._shopWindow.Delete(  );
-			entrypoint._shopWindow = null;
+			entrypoint._shopView.Delete();
+			entrypoint._shopView = null;
 		}
 	}
-	
-	[ConCmd.Client("pb_editor")]
+
+
+	[ConCmd.Client( "pb_editor" )]
 	public static void ToggleEditor()
 	{
 		var entrypoint = Game.Current as Entrypoint;
-		if ( entrypoint._editorWindow == null )
+		if ( entrypoint._editorView == null )
 		{
-			entrypoint._editorWindow = new Window( new EditorView() );
-			entrypoint._editorWindow.Title = "Editor";
-			entrypoint._editorWindow.Width = 1400;
-			entrypoint._editorWindow.Height = 900;
-			Local.Hud.AddChild( entrypoint._editorWindow );
+			entrypoint._editorView = new EditorView();
+			Local.Hud.AddChild( entrypoint._editorView );
 		}
 		else
 		{
-			entrypoint._editorWindow.Delete(  );
-			entrypoint._editorWindow = null;
+			(entrypoint._editorView as Panel).Delete(true);
+			entrypoint._editorView = null;
 		}
 	}
 

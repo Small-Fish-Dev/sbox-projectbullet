@@ -7,6 +7,16 @@ public partial class Node : Panel
 	public GraphableWeaponPart GraphableWeaponPart { get; set; }
 	public NodeGraph NodeGraph { get; set; }
 
+	protected override void OnAfterTreeRender( bool firstTime )
+	{
+		base.OnAfterTreeRender( firstTime );
+
+		if ( !firstTime )
+		{
+			return;
+		}
+	}
+
 	protected override void OnParametersSet()
 	{
 		base.OnParametersSet();
@@ -14,7 +24,7 @@ public partial class Node : Panel
 		if ( GraphableWeaponPart != null )
 		{
 			GraphableWeaponPart.Element = this;
-			
+
 			Style.Left = Length.Pixels(
 				GraphableWeaponPart.SavedX < 0 ? 0 : GraphableWeaponPart.SavedX
 			);
@@ -28,14 +38,6 @@ public partial class Node : Panel
 	{
 		base.OnRightClick( e );
 
-		if ( NodeGraph == null )
-		{
-			return;
-		}
-
-		NodeGraph.RemovePart( GraphableWeaponPart );
-
-		// Remove this node
-		Delete();
+		NodeGraph?.MovePartIntoInactive( GraphableWeaponPart );
 	}
 }

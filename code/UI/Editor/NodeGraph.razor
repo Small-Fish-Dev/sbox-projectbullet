@@ -5,12 +5,12 @@
 <root>
     <Node GraphableWeaponPart=@GraphableStartNode/>
     
-    @if (DisplayedParts == null)
+    @if (ActiveGraphableParts == null)
     {
         return;
     }
     
-    @foreach (var graphablePart in DisplayedParts)
+    @foreach (var graphablePart in ActiveGraphableParts)
     {
         <Node GraphableWeaponPart=@graphablePart NodeGraph=@this/>
     }

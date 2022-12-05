@@ -18,12 +18,6 @@
     font-family: Inter;
     font-weight: bold;
 
-    &.placeholder {
-        position: relative;
-        background-color: #ececec;
-        margin-top: 18px;
-    }
-
     .title {
         color: black;
         font-size: 28px;
@@ -69,7 +63,6 @@
 
     &:outro {
         transition: all 0.25s ease-out;
-        background-color: red;
         opacity: 0;
         filter: blur(5px);
         transform: scale(1.3);
