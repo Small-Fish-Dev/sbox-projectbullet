@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ProjectBullet.Items;
 using ProjectBullet.Weapons;
 using Sandbox.UI;
@@ -53,11 +54,15 @@ public partial class NodeGraph : Panel
 		}
 
 		// Add to active
-		ActiveGraphableParts.Add( new GraphableWeaponPart( part ) );
+		var gwp = new GraphableWeaponPart( part );
+		ActiveGraphableParts.Add( gwp );
 
 		// Remove from inactive
 		InactiveParts.Remove( part );
 
+		// Add to graph
+		AddChild( new Node( gwp, this ) );
+		
 		// Redraw elements
 		StateHasChanged();
 	}
@@ -106,16 +111,28 @@ public partial class NodeGraph : Panel
 		ActiveGraphableParts.Clear();
 		InactiveParts.Clear();
 
+		// Remove old nodes from the graph
+		foreach ( var node in Descendants.OfType<Node>() )
+		{
+			Log.Info( $"Removing old node {node}, {node.GraphableWeaponPart.DisplayName}" );
+			node.Delete( true );
+		}
+
+		// Add starting node
+		AddChild( new Node( GraphableStartNode ) );
+
 		Weapon = weapon;
-		Log.Info( "hi" );
 		foreach ( var usedWeaponPart in WeaponPart.GetUsedWeaponParts( Weapon ) )
 		{
-			ActiveGraphableParts.Add( new GraphableWeaponPart( usedWeaponPart ) );
+			var gwp = new GraphableWeaponPart( usedWeaponPart );
+			ActiveGraphableParts.Add( gwp );
+
+			// Add node to graph
+			AddChild( new Node( gwp, this ) );
 		}
 
 		foreach ( var unusedWeaponPart in WeaponPart.GetUnusedWeaponParts( Weapon.Owner ) )
 		{
-			Log.Info( unusedWeaponPart );
 			InactiveParts.Add( unusedWeaponPart );
 		}
 

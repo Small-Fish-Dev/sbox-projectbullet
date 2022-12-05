@@ -4,6 +4,14 @@ namespace ProjectBullet.UI.Editor;
 
 public partial class Node : Panel
 {
+	public Node( GraphableWeaponPart graphableWeaponPart ) => GraphableWeaponPart = graphableWeaponPart;
+
+	public Node( GraphableWeaponPart graphableWeaponPart, NodeGraph graph )
+	{
+		GraphableWeaponPart = graphableWeaponPart;
+		NodeGraph = graph;
+	}
+
 	public GraphableWeaponPart GraphableWeaponPart { get; set; }
 	public NodeGraph NodeGraph { get; set; }
 

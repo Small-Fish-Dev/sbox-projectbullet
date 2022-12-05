@@ -1,4 +1,4 @@
-﻿@using Sandbox;
+﻿@using System.Linq
 @using Sandbox.UI;
 @namespace ProjectBullet.UI.Editor
 @attribute [StyleSheet("/UI/Editor/ContextMenu.scss")]
@@ -7,7 +7,7 @@
     <div class="group">
         <div class="title">
             <div class="center-text-container">
-                <div class="info-text">inventory</div>
+                <div class="info-text">inventory @(!NodeGraph.InactiveParts.Any() ? "empty" : "")</div>
             </div>
         </div>
         @foreach (var item in NodeGraph.InactiveParts)
@@ -23,5 +23,13 @@
                 </div>
             </div>
         }
+    </div>
+
+    <div class="group">
+        <div class="title">
+            <div class="center-text-container">
+                <div class="info-text">data</div>
+            </div>
+        </div>
     </div>
 </root>

@@ -45,7 +45,7 @@ public class ShopPartThree : Items.WeaponPart
 	}
 }
 
-[KnownWeaponPart( "Splitter" )]
+[KnownWeaponPart( "Splitter", EnergyUsage = 30.0f )]
 [Purchasable( 300 )]
 public class SplitterItem : Items.WeaponPart
 {
@@ -72,7 +72,7 @@ public class PoopFartItem : Items.WeaponPart
 public partial class Entrypoint : Sandbox.Game
 {
 	[Net] public ShopController Shop { get; set; }
-	
+
 	public Entrypoint()
 	{
 		if ( Host.IsClient )
@@ -83,7 +83,7 @@ public partial class Entrypoint : Sandbox.Game
 
 	private ShopView _shopView;
 	private EditorView _editorView;
-	
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -120,7 +120,7 @@ public partial class Entrypoint : Sandbox.Game
 		}
 		else
 		{
-			(entrypoint._editorView as Panel).Delete(true);
+			(entrypoint._editorView as Panel).Delete( true );
 			entrypoint._editorView = null;
 		}
 	}

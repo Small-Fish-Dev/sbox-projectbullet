@@ -15,8 +15,8 @@ public partial class NodeGraph : Panel
 	private Vector2 _holdPoint;
 	private bool _makingInvalidConnection;
 
-	private const float LineStartSize = 25.0f;
-	private const float LineEndSize = 30.0f;
+	private const float LineStartSize = 23.0f;
+	private const float LineEndSize = 23.0f;
 	private static bool CheckHover( Panel target ) => target.Box.Rect.IsInside( Local.Hud.MousePosition );
 
 	private void DrawNodeLine( Vector2 start, Vector2 end ) => GraphicsX.Line( Color.White,

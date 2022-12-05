@@ -3,15 +3,5 @@
 @attribute [StyleSheet("/UI/Editor/NodeGraph.scss")]
 
 <root>
-    <Node GraphableWeaponPart=@GraphableStartNode/>
-    
-    @if (ActiveGraphableParts == null)
-    {
-        return;
-    }
-    
-    @foreach (var graphablePart in ActiveGraphableParts)
-    {
-        <Node GraphableWeaponPart=@graphablePart NodeGraph=@this/>
-    }
+    <ContextMenu NodeGraph=@this/>
 </root>
