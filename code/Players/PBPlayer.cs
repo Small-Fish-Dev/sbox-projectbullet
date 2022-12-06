@@ -9,23 +9,13 @@ namespace ProjectBullet.Players;
 public abstract partial class ClassBase : Sandbox.Player
 {
 	private ClothingContainer _clothing;
-	
-	private new Inventory Inventory
-	{
-		get => Components.Get<Inventory>();
-		set => Components.Add( value );
-	}
-
-	[Net] public IList<Weapon> Weapons { get; set; } = new List<Weapon>();
 
 	public override void Spawn()
 	{
 		EnableLagCompensation = true;
 
 		Tags.Add( "player" );
-
-		Inventory = new Inventory();
-
+		
 		base.Spawn();
 	}
 
