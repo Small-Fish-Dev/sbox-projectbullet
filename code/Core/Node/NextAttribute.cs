@@ -6,12 +6,12 @@ namespace ProjectBullet.Core.Node;
 /// Add connector / "next node" to WeaponNodeEntity class 
 /// </summary>
 [System.AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
-public sealed class NextAttribute : System.Attribute
+public sealed class ConnectorAttribute : System.Attribute
 {
 	public string DisplayName { get; init; }
 	public string Identifier { get; init; }
 
-	public NextAttribute( string identifier )
+	public ConnectorAttribute( string identifier )
 	{
 		Identifier = identifier;
 	}
