@@ -10,6 +10,8 @@ public partial class NodeGraph : Panel
 {
 	private bool _waitingForInit;
 
+	public ContextMenu ContextMenu { get; set; }
+
 	/// <summary>
 	/// Current weapon being visualised
 	/// </summary>
@@ -41,6 +43,28 @@ public partial class NodeGraph : Panel
 		}
 	}
 
+	private void UpdateGraph()
+	{
+		// Request context menu redraw
+		ContextMenu.StateHasChanged();
+
+		// Request self redraw
+		StateHasChanged();
+
+		// Request redraw of all important descendants
+		foreach ( var descendant in Descendants )
+		{
+			switch ( descendant )
+			{
+				case Node:
+				case NodeInput:
+				case NodeOutput:
+					descendant.StateHasChanged();
+					break;
+			}
+		}
+	}
+
 	/// <summary>
 	/// Make part active
 	/// </summary>
@@ -62,9 +86,9 @@ public partial class NodeGraph : Panel
 
 		// Add to graph
 		AddChild( new Node( gwp, this ) );
-		
+
 		// Redraw elements
-		StateHasChanged();
+		UpdateGraph();
 	}
 
 	/// <summary>
@@ -96,14 +120,14 @@ public partial class NodeGraph : Panel
 		part.Element.Delete();
 
 		// Redraw elements
-		StateHasChanged();
+		UpdateGraph();
 	}
 
 	/// <summary>
 	/// Visualise a different weapon
 	/// </summary>
 	/// <param name="weapon">New weapon</param>
-	private void SwitchWeapon( Weapon weapon )
+	public void SwitchWeapon( Weapon weapon )
 	{
 		Log.Info( "SWITCH WEAPON!!!!!!!" );
 
@@ -112,21 +136,30 @@ public partial class NodeGraph : Panel
 		InactiveParts.Clear();
 
 		// Remove old nodes from the graph
-		foreach ( var node in Descendants.OfType<Node>() )
+		var cleanList = Descendants.OfType<Node>().ToList();
+		foreach ( var node in cleanList )
 		{
 			Log.Info( $"Removing old node {node}, {node.GraphableWeaponPart.DisplayName}" );
 			node.Delete( true );
 		}
-
+	
+		// Set weapon
+		Weapon = weapon;
+		
 		// Add starting node
 		AddChild( new Node( GraphableStartNode ) );
-
-		Weapon = weapon;
+		
 		foreach ( var usedWeaponPart in WeaponPart.GetUsedWeaponParts( Weapon ) )
 		{
 			var gwp = new GraphableWeaponPart( usedWeaponPart );
 			ActiveGraphableParts.Add( gwp );
+		}
 
+		foreach ( var gwp in ActiveGraphableParts )
+		{
+			// Resolve links
+			//gwp.WeaponPart.
+			
 			// Add node to graph
 			AddChild( new Node( gwp, this ) );
 		}

@@ -9,8 +9,6 @@ namespace ProjectBullet.UI.Editor;
 
 public partial class NodeGraph : Panel
 {
-	private ContextMenu _contextMenu;
-
 	private object _mouseDownTarget;
 	private Vector2 _holdPoint;
 	private bool _makingInvalidConnection;
@@ -32,41 +30,10 @@ public partial class NodeGraph : Panel
 			ScaleToScreen * LineEndSize, end );
 	}
 
-	protected override void OnRightClick( MousePanelEvent e )
-	{
-		base.OnRightClick( e );
-
-		if ( e.Target is NodeGraph && _contextMenu == null )
-		{
-			_contextMenu = new ContextMenu(this);
-			AddChild( _contextMenu );
-			
-			var panel = (_contextMenu as Panel);
-			var lmp = GetStyleMousePosition();
-			
-			panel.Style.Left = Length.Pixels(
-				lmp.x
-			);
-			panel.Style.Top = Length.Pixels(
-				lmp.y
-			);
-		}
-	}
-
 	protected override void OnMouseDown( MousePanelEvent e )
 	{
 		base.OnMouseDown( e );
 
-		if ( _contextMenu != null )
-		{
-			var ctx = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is ContextMenu );
-			if ( ctx == null )
-			{
-				_contextMenu.Delete();
-				_contextMenu = null;
-			}
-		}
-		
 		if ( _mouseDownTarget != null )
 		{
 			return;
@@ -83,7 +50,7 @@ public partial class NodeGraph : Panel
 				_mouseDownTarget = output;
 				output.MakingLink = true;
 				return;
-			case NodeInput:
+			case NodeInput { HasConnection: false }:
 				return;
 		}
 

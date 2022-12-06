@@ -1,4 +1,8 @@
-﻿@using System.Linq
+﻿@using System.Collections.Generic
+@using System.Linq
+@using ProjectBullet.Players
+@using ProjectBullet.Weapons
+@using Sandbox
 @using Sandbox.UI;
 @namespace ProjectBullet.UI.Editor
 @attribute [StyleSheet("/UI/Editor/ContextMenu.scss")]
@@ -7,12 +11,35 @@
     <div class="group">
         <div class="title">
             <div class="center-text-container">
+                <div class="info-text">now editing @NodeGraph.Weapon.DisplayName!</div>
+            </div>
+        </div>
+        @if (UnusedWeapons != null)
+        {
+            @foreach (var weapon in UnusedWeapons)
+            {
+                <div class="item" @onclick=@(() => { @NodeGraph.SwitchWeapon(weapon); })>
+                    <div class="center-text-container">
+                        <div style="justify-content: space-between; width: 100%">
+                            <div class="info-text">switch...</div>
+                            <div>
+                                @weapon.DisplayName
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="group">
+        <div class="title">
+            <div class="center-text-container">
                 <div class="info-text">inventory @(!NodeGraph.InactiveParts.Any() ? "empty" : "")</div>
             </div>
         </div>
         @foreach (var item in NodeGraph.InactiveParts)
         {
-            <div class="item" @onclick=@(() => { NodeGraph.MovePartIntoActive(item); Delete(); })>
+            <div class="item" @onclick=@(() => { NodeGraph.MovePartIntoActive(item); })>
                 <div class="center-text-container">
                     <div style="justify-content: space-between; width: 100%">
                         <div class="info-text">add...</div>
@@ -24,12 +51,9 @@
             </div>
         }
     </div>
-
-    <div class="group">
-        <div class="title">
-            <div class="center-text-container">
-                <div class="info-text">data</div>
-            </div>
-        </div>
-    </div>
 </root>
+
+@code
+{
+    public IEnumerable<Weapon> UnusedWeapons => (Local.Pawn as ClassBase)?.Weapons.Where(v => v != @NodeGraph.Weapon);
+}

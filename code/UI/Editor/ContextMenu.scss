@@ -1,6 +1,6 @@
 ﻿ContextMenu {
     width: 300px;
-    height: 500px;
+    min-height: 500px;
     position: absolute;
     transition: all 0.08s ease-in;
     opacity: 1;
@@ -15,6 +15,7 @@
     
     /* Flex stuff */
     flex-direction: column;
+    overflow: scroll;
     
     &:intro {
         opacity: 0;
@@ -43,11 +44,15 @@
         
         padding: 5px;
         
+        overflow: scroll;
+        
         &.horizontal {
             flex-direction: row;
         }
         
-        margin-bottom: 4px;
+        &:not(:last-child) {
+            margin-bottom: 4px;
+        }
     }
     
     .item {

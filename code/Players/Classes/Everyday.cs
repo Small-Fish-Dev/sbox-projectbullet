@@ -6,19 +6,22 @@ namespace ProjectBullet.Players.Classes;
 /// <summary>
 /// Everyday, as in... an everyday guy
 /// </summary>
-public partial class Everyday : Player
+public partial class Everyday : ClassBase
 {
-	[KnownWeapon(DisplayName = "Primary")]
-	public class PrimaryFire : Weapon
+	[KnownWeapon( DisplayName = "Pistol" )]
+	public class WorldPistol : Weapon
 	{
 	}
-
-	[Net] public Weapon Primary { get; set; }
+	
+	[KnownWeapon( DisplayName = "Club" )]
+	public class Club : Weapon
+	{
+	}
 
 	public override void Spawn()
 	{
 		base.Spawn();
-		Primary = new PrimaryFire() { Owner = this };
-		Weapons.Add( Primary );
+		Weapons.Add( new WorldPistol() { Owner = this } );
+		Weapons.Add( new Club() { Owner = this } );
 	}
 }

@@ -46,6 +46,9 @@ public partial class Node : Panel
 	{
 		base.OnRightClick( e );
 
-		NodeGraph?.MovePartIntoInactive( GraphableWeaponPart );
+		if ( e.Target is not NodeInput && e.Target is not NodeOutput )
+		{
+			NodeGraph?.MovePartIntoInactive( GraphableWeaponPart );
+		}
 	}
 }

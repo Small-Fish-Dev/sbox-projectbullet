@@ -1,13 +1,13 @@
 ﻿@using System.Linq
+@using ProjectBullet.Players
 @using ProjectBullet.Weapons
 @using Sandbox;
 @using Sandbox.UI;
-@using Player = ProjectBullet.Players.Player
 @namespace ProjectBullet.UI.Editor
 @attribute [StyleSheet("/UI/Editor/EditorView.scss")]
 
 @code {
-    public Weapon SelectedWeapon => (Local.Pawn as Player).Weapons.Single();
+    public Weapon SelectedWeapon => (Local.Pawn as ClassBase).Weapons.First();
 }
 
 <root>

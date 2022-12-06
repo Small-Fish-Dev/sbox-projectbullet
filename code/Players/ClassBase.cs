@@ -6,7 +6,7 @@ using Sandbox;
 
 namespace ProjectBullet.Players;
 
-public abstract partial class Player : Sandbox.Player
+public abstract partial class ClassBase : Sandbox.Player
 {
 	private ClothingContainer _clothing;
 	
