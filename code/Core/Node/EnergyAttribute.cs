@@ -8,8 +8,8 @@ namespace ProjectBullet.Core.Node;
 [System.AttributeUsage( AttributeTargets.Class )]
 public class EnergyAttribute : System.Attribute
 {
-	public float Energy { get; }
-	public bool Estimated { get; }
+	public float Energy { get; init; }
+	public bool Estimated { get; init; }
 
 	public EnergyAttribute( float energy )
 	{

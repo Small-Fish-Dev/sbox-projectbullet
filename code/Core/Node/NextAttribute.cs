@@ -8,8 +8,8 @@ namespace ProjectBullet.Core.Node;
 [System.AttributeUsage( AttributeTargets.Class )]
 public class NextAttribute : System.Attribute
 {
-	public string DisplayName { get; }
-	public string Identifier { get; }
+	public string DisplayName { get; init; }
+	public string Identifier { get; init; }
 
 	public NextAttribute( string identifier )
 	{

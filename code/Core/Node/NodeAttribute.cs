@@ -8,6 +8,6 @@ namespace ProjectBullet.Core.Node;
 [System.AttributeUsage( AttributeTargets.Class )]
 public class NodeAttribute : System.Attribute
 {
-	public string DisplayName { get; }
-	public string Description { get; }
+	public string DisplayName { get; init; }
+	public string Description { get; init; }
 }
