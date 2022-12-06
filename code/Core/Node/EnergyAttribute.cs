@@ -6,7 +6,7 @@ namespace ProjectBullet.Core.Node;
 /// Mark WeaponNodeEntity as energy user 
 /// </summary>
 [System.AttributeUsage( AttributeTargets.Class )]
-public class EnergyAttribute : System.Attribute
+public sealed class EnergyAttribute : System.Attribute
 {
 	public float Energy { get; init; }
 	public bool Estimated { get; init; }

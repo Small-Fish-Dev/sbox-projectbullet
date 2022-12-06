@@ -6,7 +6,7 @@ namespace ProjectBullet.Core.Node;
 /// Mark WeaponNodeEntity as a registered node
 /// </summary>
 [System.AttributeUsage( AttributeTargets.Class )]
-public class NodeAttribute : System.Attribute
+public sealed class NodeAttribute : System.Attribute
 {
 	public string DisplayName { get; init; }
 	public string Description { get; init; }
