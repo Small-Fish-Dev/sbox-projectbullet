@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ProjectBullet.Players.Strafe;
+namespace ProjectBullet.Strafe;
 
 partial class StrafeController : WalkController
 {

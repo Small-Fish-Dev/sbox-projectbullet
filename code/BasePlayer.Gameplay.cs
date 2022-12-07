@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using ProjectBullet.Items;
-using ProjectBullet.Players.Strafe;
-using ProjectBullet.Weapons;
+﻿using ProjectBullet.Strafe;
 using Sandbox;
 
-namespace ProjectBullet.Players;
+namespace ProjectBullet;
 
-public abstract partial class ClassBase : Sandbox.Player
+public abstract partial class BasePlayer : Player
 {
 	private ClothingContainer _clothing;
 
@@ -15,11 +12,11 @@ public abstract partial class ClassBase : Sandbox.Player
 		EnableLagCompensation = true;
 
 		Tags.Add( "player" );
-		
+
 		base.Spawn();
 	}
 
-	public virtual void Respawn()
+	public override void Respawn()
 	{
 		Host.AssertServer();
 
@@ -30,7 +27,7 @@ public abstract partial class ClassBase : Sandbox.Player
 
 		CreateHull();
 
-		Game.Current?.MoveToSpawnpoint( this );
+		GameManager.Current?.MoveToSpawnpoint( this );
 		ResetInterpolation();
 
 		SetModel( "models/citizen/citizen.vmdl" );
@@ -46,8 +43,6 @@ public abstract partial class ClassBase : Sandbox.Player
 			GroundFriction = 6 //Do this just for safety if player respawns inside friction volume.
 		};
 
-		CameraMode = new StrafeCamera();
-
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
@@ -57,7 +52,7 @@ public abstract partial class ClassBase : Sandbox.Player
 		_clothing.DressEntity( this );
 	}
 
-	public virtual void CreateHull()
+	public override void CreateHull()
 	{
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 72 ) );
 		EnableHitboxes = true;
@@ -65,13 +60,28 @@ public abstract partial class ClassBase : Sandbox.Player
 
 	public override void Simulate( Client cl )
 	{
-		Controller?.Simulate( cl, this, Animator );
+		Controller?.Simulate( cl, this );
+
+		foreach ( var nodeExecutionEntity in ActiveNodeExecutors )
+		{
+			nodeExecutionEntity.Simulate( cl );
+		}
 	}
 
 	public override void FrameSimulate( Client cl )
 	{
 		base.FrameSimulate( cl );
 
-		Controller?.FrameSimulate( cl, this, Animator );
+		if ( !cl.IsOwnedByLocalClient )
+		{
+			return;
+		}
+
+		Camera.Rotation = ViewAngles.ToRotation();
+		Camera.Position = EyePosition;
+		Camera.FirstPersonViewer = this;
+		Camera.FieldOfView = 103.0f;
+		Camera.ZNear = 1f;
+		Camera.ZFar = 5000.0f;
 	}
 }

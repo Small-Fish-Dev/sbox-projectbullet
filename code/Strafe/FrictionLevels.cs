@@ -1,4 +1,4 @@
-﻿namespace ProjectBullet.Players.Strafe;
+﻿namespace ProjectBullet.Strafe;
 
 public enum FrictionLevels
 {

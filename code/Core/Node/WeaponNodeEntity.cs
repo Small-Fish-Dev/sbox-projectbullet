@@ -42,12 +42,30 @@ public abstract class WeaponNodeEntity : Entity
 	}
 
 	/// <summary>
+	/// Set connector link
+	/// </summary>
+	/// <param name="identifier">Connector ID</param>
+	/// <param name="weaponNodeEntity">Connector linked entity</param>
+	/// <exception cref="Exception"></exception>
+	protected void SetConnector( string identifier, WeaponNodeEntity weaponNodeEntity )
+	{
+		foreach ( var connector in _connectors.Where( connector => connector.Identifier == identifier ) )
+		{
+			connector.WeaponNodeEntity = weaponNodeEntity;
+			return;
+		}
+
+		// todo: write custom exception
+		throw new Exception( $"Unknown connector {identifier}" );
+	}
+
+	/// <summary>
 	/// Method to be executed when this node runs.
 	/// Either target or point should be non-null. *both don't have to be non-null!*
 	/// </summary>
 	/// <param name="target">Target (if any) entity hit</param>
 	/// <param name="point">Position (if any) of hit</param>
-	protected abstract void Execute( Entity target, Vector3 point );
+	public abstract void Execute( Entity target, Vector3 point );
 
 	public WeaponNodeDescription Description { get; }
 
