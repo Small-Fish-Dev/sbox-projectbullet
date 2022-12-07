@@ -2,10 +2,10 @@
 
 namespace ProjectBullet.Core.Shop;
 
-[System.AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
-public sealed class ShopItemAttribute : System.Attribute
+[AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
+public sealed class ShopItemAttribute : Attribute
 {
-	public int Price { get; init; }
+	public int Price { get; }
 
 	public ShopItemAttribute( int price )
 	{
