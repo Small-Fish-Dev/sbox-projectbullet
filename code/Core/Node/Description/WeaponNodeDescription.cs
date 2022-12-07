@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Sandbox;
 
@@ -8,6 +9,7 @@ namespace ProjectBullet.Core.Node.Description;
 public class WeaponNodeDescription : IStaticDescription
 {
 	private static readonly List<WeaponNodeDescription> Instances = new();
+	public static ReadOnlyCollection<WeaponNodeDescription> All => Instances.AsReadOnly();
 
 	private string _name;
 
@@ -31,11 +33,27 @@ public class WeaponNodeDescription : IStaticDescription
 		UseNewTypeDescription( typeDescription );
 
 		Event.Register( this );
+	}
 
-		Instances.Add( this );
+	public WeaponNodeDescription( TypeDescription typeDescription )
+	{
+		UseNewTypeDescription( typeDescription );
+
+		Event.Register( this );
 	}
 
 	~WeaponNodeDescription() => Event.Unregister( this );
+
+	/// <summary>
+	/// Register all WeaponNodeEntities
+	/// </summary>
+	public static void InitAll()
+	{
+		foreach ( var typeDescription in TypeLibrary.GetDescriptions<WeaponNodeEntity>() )
+		{
+			Instances.Add( new WeaponNodeDescription( typeDescription ) );
+		}
+	}
 
 	private void OnHotload() => UseNewTypeDescription
 		( TypeLibrary.GetDescription( _name ) );
@@ -52,4 +70,15 @@ public class WeaponNodeDescription : IStaticDescription
 
 	public static WeaponNodeDescription Get( Type type ) => Instances.SingleOrDefault( v => v.TargetType == type ) ??
 	                                                        new WeaponNodeDescription( type );
+
+	public static WeaponNodeDescription Get( TypeDescription typeDescription ) =>
+		Instances.SingleOrDefault( v => v.TypeDescription == typeDescription ) ??
+		new WeaponNodeDescription( typeDescription );
+
+	public static WeaponNodeDescription Get( string typeName )
+	{
+		var typeDescription = TypeLibrary.GetDescription( typeName );
+		return Instances.SingleOrDefault( v => v.TypeDescription == typeDescription ) ??
+		       new WeaponNodeDescription( typeDescription );
+	}
 }
