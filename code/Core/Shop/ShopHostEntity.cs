@@ -23,12 +23,15 @@ public partial class ShopHostEntity : Entity
 		WeaponNode = 0,
 	}
 
-	public partial class StockedItem : BaseNetworkable
+	// todo: this shouldn't need to be an entity...
+	public partial class StockedItem : Entity
 	{
+		public StockedItem() => Transmit = TransmitType.Always;
 		public ShopItemAttribute ShopItemAttribute { get; private set; }
 		[Net] private StockedItemType StockedItemType { get; set; }
 		[Net, Change( "OnTypeChanged" )] private string ItemTypeName { get; set; }
 		public object Description { get; private set; }
+		public int Price => ShopItemAttribute.Price;
 
 		/// <summary>
 		/// Find item display name based on description type
@@ -75,4 +78,16 @@ public partial class ShopHostEntity : Entity
 	}
 
 	[Net] public IList<StockedItem> Stock { get; set; } = new List<StockedItem>();
+
+	public void StockAllItems()
+	{
+		Game.AssertServer(  );
+
+		foreach ( var pair in TypeLibrary.GetTypesWithAttribute<ShopItemAttribute>() )
+		{
+			var item = new StockedItem();
+			item.SetItem( WeaponNodeDescription.Get( pair.Type ) );
+			Stock.Add( item );
+		}
+	}
 }

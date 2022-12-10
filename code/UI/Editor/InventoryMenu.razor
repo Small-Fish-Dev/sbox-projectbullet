@@ -1,0 +1,41 @@
+﻿@using System.Linq
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.Editor
+@attribute [StyleSheet("/UI/Editor/Menu.scss")]
+
+@code {
+    public GraphVisualizer GraphVisualizer { get; set; }
+}
+
+<root class="menu">
+    @if (GraphVisualizer == null)
+    {
+        return;
+    }
+
+    @if (GraphVisualizer.InactiveNodes == null)
+    {
+        return;
+    }
+
+    <div class="group">
+        <div class="title">
+            <div class="center-text-container">
+                <div class="info-text">inventory @(!GraphVisualizer.InactiveNodes.Any() ? "empty" : "")</div>
+            </div>
+        </div>
+        @foreach (var weaponNodeEntity in GraphVisualizer.InactiveNodes)
+        {
+            <div class="item" @onclick=@(() => { GraphVisualizer.AddToGraph(weaponNodeEntity); })>
+                <div class="center-text-container">
+                    <div style="justify-content: space-between; width: 100%">
+                        <div class="info-text">add...</div>
+                        <div>
+                            @weaponNodeEntity.Description.NodeAttribute.DisplayName
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</root>

@@ -7,23 +7,13 @@ public abstract partial class BasePlayer : Player
 {
 	private ClothingContainer _clothing;
 
-	public override void Spawn()
-	{
-		EnableLagCompensation = true;
-
-		Tags.Add( "player" );
-
-		base.Spawn();
-	}
-
 	public override void Respawn()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		LifeState = LifeState.Alive;
 		Health = 100;
 		Velocity = Vector3.Zero;
-		WaterLevel = 0;
 
 		CreateHull();
 
@@ -58,17 +48,17 @@ public abstract partial class BasePlayer : Player
 		EnableHitboxes = true;
 	}
 
-	public override void Simulate( Client cl )
+	public override void Simulate( IClient cl )
 	{
 		Controller?.Simulate( cl, this );
 
-		foreach ( var nodeExecutionEntity in ActiveNodeExecutors )
+		foreach ( var nodeExecutionEntity in NodeExecutors )
 		{
 			nodeExecutionEntity.Simulate( cl );
 		}
 	}
 
-	public override void FrameSimulate( Client cl )
+	public override void FrameSimulate( IClient cl )
 	{
 		base.FrameSimulate( cl );
 

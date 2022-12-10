@@ -4,9 +4,17 @@ namespace ProjectBullet.Core.Node;
 
 public partial class NodeExecutionEntity : Entity
 {
+	public NodeExecutionEntity() => Transmit = TransmitType.Owner;
 	public virtual float MaxEnergy => 100.0f;
 	public virtual float ActionDelay => 2.0f;
 	public virtual bool AllowAutoAction => false;
+
+	/// <summary>
+	/// Display name of this execution entity
+	/// todo: should this be done with reflection?
+	/// </summary>
+	public virtual string DisplayName => "Unknown Executor";
+
 	public virtual InputButton InputButton => InputButton.PrimaryAttack;
 
 	public BasePlayer BasePlayer => Owner as BasePlayer;
@@ -19,7 +27,7 @@ public partial class NodeExecutionEntity : Entity
 
 	[Net, Predicted] public float Energy { get; private set; } = 0.0f;
 	[Net, Predicted] public float MinimumEnergy { get; private set; } = 0.0f;
-	[Net, Predicted] public TimeSince TimeSinceAction { get; set; }
+	[Net, Predicted] private TimeSince TimeSinceAction { get; set; }
 
 	public override void Spawn()
 	{
@@ -28,7 +36,7 @@ public partial class NodeExecutionEntity : Entity
 		Energy = MaxEnergy;
 	}
 
-	public override void Simulate( Client cl )
+	public override void Simulate( IClient cl )
 	{
 		base.Simulate( cl );
 
@@ -60,7 +68,7 @@ public partial class NodeExecutionEntity : Entity
 		EntryNode.Execute( target, point );
 	}
 
-	protected virtual void PerformAction( Client cl )
+	protected virtual void PerformAction( IClient cl )
 	{
 	}
 
