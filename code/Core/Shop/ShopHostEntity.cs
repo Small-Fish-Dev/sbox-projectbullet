@@ -10,6 +10,14 @@ namespace ProjectBullet.Core.Shop;
 /// </summary>
 public partial class ShopHostEntity : Entity
 {
+	public ShopHostEntity()
+	{
+		Transmit = TransmitType.Always;
+		Instance = this;
+	}
+
+	public static ShopHostEntity Instance { get; private set; }
+
 	public enum StockedItemType
 	{
 		WeaponNode = 0,
@@ -50,7 +58,7 @@ public partial class ShopHostEntity : Entity
 
 		private void OnTypeChanged()
 		{
-			var typeDescription = TypeLibrary.GetDescription( ItemTypeName );
+			var typeDescription = TypeLibrary.GetType( ItemTypeName );
 			if ( typeDescription == null )
 			{
 				throw new Exception( $"Type {ItemTypeName} not found" );
