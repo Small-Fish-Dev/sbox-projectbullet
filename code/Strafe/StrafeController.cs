@@ -153,7 +153,7 @@ partial class StrafeController : WalkController
 		EyeRotation = Rotation.From( Player.ViewAngles );
 
 		CheckLadder();
-		Swimming = Pawn.WaterLevel > 0.6f;
+		Swimming = false;
 
 		if ( !Swimming && !IsTouchingLadder )
 		{
@@ -210,14 +210,7 @@ partial class StrafeController : WalkController
 		Duck.PreTick();
 
 		bool bStayOnGround = false;
-		if ( Swimming )
-		{
-			if ( Pawn.WaterLevel.AlmostEqual( 0.6f, .05f ) )
-				CheckWaterJump();
-
-			WaterMove();
-		}
-		else if ( IsTouchingLadder )
+		if ( IsTouchingLadder )
 		{
 			LadderMove();
 		}

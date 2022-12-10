@@ -23,7 +23,7 @@ public class WeaponNodeDescription : IStaticDescription
 	public WeaponNodeDescription( Type type )
 	{
 		// Find TypeDescription for provided type
-		var typeDescription = TypeLibrary.GetDescription( type );
+		var typeDescription = TypeLibrary.GetType( type );
 		if ( typeDescription == null )
 		{
 			// todo: write custom exception
@@ -49,14 +49,14 @@ public class WeaponNodeDescription : IStaticDescription
 	/// </summary>
 	public static void InitAll()
 	{
-		foreach ( var typeDescription in TypeLibrary.GetDescriptions<WeaponNodeEntity>() )
+		foreach ( var typeDescription in TypeLibrary.GetTypes<WeaponNodeEntity>() )
 		{
 			Instances.Add( new WeaponNodeDescription( typeDescription ) );
 		}
 	}
 
 	private void OnHotload() => UseNewTypeDescription
-		( TypeLibrary.GetDescription( _name ) );
+		( TypeLibrary.GetType( _name ) );
 
 	private void UseNewTypeDescription( TypeDescription typeDescription )
 	{
@@ -77,7 +77,7 @@ public class WeaponNodeDescription : IStaticDescription
 
 	public static WeaponNodeDescription Get( string typeName )
 	{
-		var typeDescription = TypeLibrary.GetDescription( typeName );
+		var typeDescription = TypeLibrary.GetType( typeName );
 		return Instances.SingleOrDefault( v => v.TypeDescription == typeDescription ) ??
 		       new WeaponNodeDescription( typeDescription );
 	}
