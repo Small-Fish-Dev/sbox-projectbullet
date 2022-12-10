@@ -15,7 +15,7 @@ public class WeaponNodeDescription : IStaticDescription
 
 	public NodeAttribute NodeAttribute { get; private set; }
 	public EnergyAttribute EnergyAttribute { get; private set; }
-	public IEnumerable<ConnectorAttribute> ConnectorAttributes { get; private set; }
+	public List<ConnectorAttribute> ConnectorAttributes { get; private set; }
 
 	public TypeDescription TypeDescription { get; private set; }
 	public Type TargetType => TypeDescription.TargetType;
@@ -65,7 +65,7 @@ public class WeaponNodeDescription : IStaticDescription
 
 		NodeAttribute = TypeLibrary.GetAttribute<NodeAttribute>( TargetType );
 		EnergyAttribute = TypeLibrary.GetAttribute<EnergyAttribute>( TargetType );
-		ConnectorAttributes = TypeLibrary.GetAttributes<ConnectorAttribute>( TargetType );
+		ConnectorAttributes = TypeLibrary.GetAttributes<ConnectorAttribute>( TargetType ).ToList();
 	}
 
 	public static WeaponNodeDescription Get( Type type ) => Instances.SingleOrDefault( v => v.TargetType == type ) ??
