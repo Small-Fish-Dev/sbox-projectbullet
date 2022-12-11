@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ProjectBullet.Core.Node;
 using Sandbox;
 
 namespace ProjectBullet.Core.Shop;
@@ -11,8 +10,19 @@ namespace ProjectBullet.Core.Shop;
 /// </summary>
 public partial class Inventory : EntityComponent
 {
-	[Net] public int Money { get; private set; } = 0;
+	[Net] public int Money { get; set; } = 0;
 	[Net] private IList<Entity> ItemsInternal { get; set; } = new List<Entity>();
+
+	public class NewItemAttribute : EventAttribute
+	{
+		public NewItemAttribute() : base( "onnewitem" ) { }
+	}
+
+	[ClientRpc]
+	public static void OnNewItemRpc( Entity item )
+	{
+		Event.Run( "onnewitem", item );
+	}
 
 	/// <summary>
 	/// Read only list of player items
@@ -34,7 +44,12 @@ public partial class Inventory : EntityComponent
 		}
 	}
 
-	public void Add( IInventoryItem item ) => ItemsInternal.Add( item as Entity );
+	public void Add( IInventoryItem item )
+	{
+		ItemsInternal.Add( item as Entity );
+		OnNewItemRpc( To.Single( Entity ), item as Entity );
+	}
+
 	public IInventoryItem Find( Guid uid ) => Items.SingleOrDefault( v => v.Uid == uid );
 
 	/// <summary>
