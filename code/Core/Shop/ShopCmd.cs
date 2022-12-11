@@ -5,13 +5,18 @@ using Sandbox;
 
 namespace ProjectBullet.Core.Shop;
 
+/// <summary>
+/// Client -> server communication for the shop system
+/// </summary>
 public static class ShopCmd
 {
-	[ConCmd.Server( "pb_buyitem" )]
-	public static void BuyItem( int stockedItemNetworkIndex )
+	[ConCmd.Server]
+	private static void BuyItem( int stockedItemNetworkIndex )
 	{
+		Game.AssertServer();
+
 		var shopHost = ShopHostEntity.Instance;
-		var inventory = ConsoleSystem.Caller.Pawn.Components.Get<Inventory>();
+		var inventory = ConsoleSystem.Caller.Pawn?.Components?.Get<Inventory>();
 		var item = shopHost.Stock.SingleOrDefault( v => v.NetworkIdent == stockedItemNetworkIndex );
 
 		if ( inventory == null )
@@ -48,5 +53,9 @@ public static class ShopCmd
 		}
 	}
 
+	/// <summary>
+	/// Send BuyItem request to the server - will buy an item if the player has funds
+	/// </summary>
+	/// <param name="item"><see cref="ShopHostEntity.StockedItem"/> to buy</param>
 	public static void BuyItem( ShopHostEntity.StockedItem item ) => BuyItem( item.NetworkIdent );
 }

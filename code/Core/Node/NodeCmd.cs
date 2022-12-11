@@ -1,92 +1,147 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json;
-using ProjectBullet.Core.Node.Description;
-using ProjectBullet.Core.Shop;
-using Sandbox;
+﻿using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
+/// <summary>
+/// Client -> server communication for the node system
+/// </summary>
 public static class NodeCmd
 {
-	[ConCmd.Server( "pb_update_executor" )]
-	public static void UpdateExecutor( int executorNetworkIdent, string json )
+	private static WeaponNodeEntity GetWeaponNodeEntity( int networkIdent )
 	{
-		var executor =
-			(ConsoleSystem.Caller.Pawn as BasePlayer)!.NodeExecutors.SingleOrDefault( v =>
-				v.NetworkIdent == executorNetworkIdent );
-
-		if ( executor == null )
+		if ( Entity.FindByIndex( networkIdent ) is WeaponNodeEntity wne )
 		{
-			Log.Warning(
-				$"{ConsoleSystem.Caller.Name} tried to update executor but executor was not found - index {executorNetworkIdent}" );
-			return;
+			return wne;
 		}
 
-		// Try to parse JSON
-		SerializableGraph graph = null;
-		try
-		{
-			graph = SerializableGraph.Deserialize( json, executor );
-		}
-		catch ( Exception e )
-		{
-			Log.Warning( $"Failed to parse serialized executor from {ConsoleSystem.Caller.Name}" );
-			Log.Info( e );
-			return;
-		}
-
-		foreach ( var graphConnector in graph.Connectors )
-		{
-			Log.Info( $"connector {graphConnector}: {graphConnector.Identifier}" );
-		}
-
-		foreach ( var weaponNode in graph.Nodes )
-		{
-			if ( weaponNode.InventoryItemUid == Guid.Empty )
-			{
-				// this is the fake starting node
-				// so next node should be entry
-
-				Log.Info( "entry connectors" );
-				foreach ( var weaponNodeConnector in weaponNode.Connectors )
-				{
-					Log.Info(
-						$"cn {weaponNodeConnector} {weaponNodeConnector.Identifier} {weaponNodeConnector.Connected} {weaponNodeConnector.ConnectedNode}"
-					);
-				}
-
-				var connector = weaponNode.Connectors.Single();
-				if ( connector.ConnectedNode == null )
-				{
-					Log.Info( "entry node not connected to anything, returning now" );
-					return;
-				}
-
-				executor.EntryNode = connector.ConnectedNode.Instance;
-				continue;
-			}
-
-			weaponNode.Instance?.ResetConnections();
-			Log.Info( $"!! {weaponNode.DisplayName}" );
-
-			foreach ( var connector in weaponNode.Connectors )
-			{
-				if ( connector.ConnectedNode != null )
-				{
-					Log.Info(
-						$"setting {weaponNode.DisplayName}->{connector.Identifier} to {connector.ConnectedNode.DisplayName}" );
-					weaponNode.Instance?.SetConnector( connector.Identifier, connector.ConnectedNode.Instance );
-				}
-			}
-
-			if ( weaponNode.Instance != null )
-			{
-				weaponNode.Instance.Owner = executor;
-			}
-		}
+		return null;
 	}
 
-	public static void UpdateExecutor( NodeExecutionEntity executor, string json ) =>
-		UpdateExecutor( executor.NetworkIdent, json );
+	private static NodeExecutionEntity GetNodeExecutor( int networkIdent )
+	{
+		if ( Entity.FindByIndex( networkIdent ) is NodeExecutionEntity ne )
+		{
+			return ne;
+		}
+
+		return null;
+	}
+
+	[ConCmd.Server]
+	private static void SetConnector( int targetNetworkIdent, string identifier, int newValueNetworkIdent )
+	{
+		Game.AssertServer();
+
+		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		if ( target == null )
+		{
+			Log.Error( $"SetConnector failed: target not found - index {targetNetworkIdent}" );
+			return;
+		}
+
+		var newValue = GetWeaponNodeEntity( newValueNetworkIdent );
+		if ( newValue == null )
+		{
+			Log.Error( $"SetConnector failed: newValue not found - index {targetNetworkIdent}" );
+			return;
+		}
+
+		target.SetConnector( identifier, newValue );
+	}
+
+	/// <summary>
+	/// Send SetConnector request to the server - will connect the provided connector of target to newValue
+	/// </summary>
+	/// <param name="target">WeaponNodeEntity to change connector of</param>
+	/// <param name="identifier">Connector identifier</param>
+	/// <param name="newValue">New value</param>
+	public static void SetConnector( WeaponNodeEntity target, string identifier, WeaponNodeEntity newValue )
+	{
+		Game.AssertClient();
+		SetConnector( target.NetworkIdent, identifier, newValue.NetworkIdent );
+	}
+
+	[ConCmd.Server]
+	private static void DisconnectConnector( int targetNetworkIdent, string identifier )
+	{
+		Game.AssertServer();
+
+		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		if ( target == null )
+		{
+			Log.Error( $"SetConnector failed: target not found - index {targetNetworkIdent}" );
+			return;
+		}
+
+		target.DisconnectConnector( identifier );
+	}
+
+	/// <summary>
+	/// Send DisconnectConnector request to the server - will clear the connections of the provided node
+	/// </summary>
+	/// <param name="target">WeaponNodeEntity to change connector of</param>
+	/// <param name="identifier">Connector identifier</param>
+	public static void DisconnectConnector( WeaponNodeEntity target, string identifier )
+	{
+		Game.AssertClient();
+		DisconnectConnector( target.NetworkIdent, identifier );
+	}
+
+	[ConCmd.Server]
+	private static void SetEntryNode( int executorNetworkIdent, int newValueNetworkIdent )
+	{
+		Game.AssertServer();
+
+		var executor = GetNodeExecutor( executorNetworkIdent );
+		if ( executor == null )
+		{
+			Log.Error( $"SetConnector failed: executor not found - index {executorNetworkIdent}" );
+			return;
+		}
+
+		var newValue = GetWeaponNodeEntity( newValueNetworkIdent );
+		if ( newValue == null )
+		{
+			Log.Error( $"SetConnector failed: newValue not found - index {newValueNetworkIdent}" );
+			return;
+		}
+
+		executor.EntryNode = newValue;
+	}
+
+	/// <summary>
+	/// Send SetEntryNode request to the server - will set the entry node of provided node executor to provided value
+	/// </summary>
+	/// <param name="nodeExecutionEntity">Node execution entity</param>
+	/// <param name="newValue">WeaponNodeEntity value</param>
+	public static void SetEntryNode( NodeExecutionEntity nodeExecutionEntity, WeaponNodeEntity newValue )
+	{
+		Game.AssertClient();
+		SetEntryNode( nodeExecutionEntity.NetworkIdent, newValue.NetworkIdent );
+	}
+
+	[ConCmd.Server]
+	private static void ClearEntryNode( int executorNetworkIdent )
+	{
+		Game.AssertServer();
+
+		var executor = GetNodeExecutor( executorNetworkIdent );
+		if ( executor == null )
+		{
+			Log.Error( $"SetConnector failed: executor not found - index {executorNetworkIdent}" );
+			return;
+		}
+
+		executor.EntryNode = null;
+	}
+
+	/// <summary>
+	/// Send ClearEntryNode request to the server - will clear the entry node of provided node executor
+	/// </summary>
+	/// <param name="nodeExecutionEntity">Node execution entity</param>
+	public static void ClearEntryNode( NodeExecutionEntity nodeExecutionEntity )
+	{
+		Game.AssertClient();
+		ClearEntryNode( nodeExecutionEntity.NetworkIdent );
+	}
 }

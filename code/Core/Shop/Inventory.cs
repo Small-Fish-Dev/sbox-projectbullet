@@ -75,19 +75,4 @@ public partial class Inventory : EntityComponent
 	/// <returns>Item or null</returns>
 	public static IInventoryItem FindAny( Guid uid ) =>
 		Entity.All.OfType<IInventoryItem>().SingleOrDefault( v => v.Uid == uid );
-
-	[ConCmd.Admin( "pb_inventory_givemoney" )]
-	public static void GiveMoney( int amount )
-	{
-		var inventory = ConsoleSystem.Caller.Pawn.Components.Get<Inventory>();
-
-		if ( inventory == null )
-		{
-			Log.Warning(
-				$"{ConsoleSystem.Caller.Name} tried to give themselves money but they have no inventory" );
-			return;
-		}
-
-		inventory.Money += amount;
-	}
 }
