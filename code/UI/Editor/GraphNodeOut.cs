@@ -5,7 +5,7 @@ namespace ProjectBullet.UI.Editor;
 
 public partial class GraphNodeOut : Panel
 {
-	public SerializableGraph.Connector Connector { get; set; }
+	public PreInstanceGraph.Connector Connector { get; set; }
 
 	protected override void OnAfterTreeRender( bool firstTime )
 	{
@@ -13,23 +13,28 @@ public partial class GraphNodeOut : Panel
 
 		if ( firstTime )
 		{
-			Connector.EditorData.Element = this;
+			Connector.Element = this;
 		}
 	}
 
 	public override void Delete( bool immediate = false )
 	{
-		Connector.EditorData.Element = null;
+		Connector.Element = null;
 
 		base.Delete( immediate );
 	}
 
-	public bool MakingLink { get; set; } = false;
-	public bool Connected => Connector.Connected;
-	public string RootClasses => $"{(Connected ? "connected" : "")} {(MakingLink ? "linking" : "")}";
-
 	protected override void OnRightClick( MousePanelEvent e )
 	{
-		Connector.Disconnect();
+		base.OnRightClick( e );
+
+		if ( Connector.IsConnected )
+		{
+			Connector.Disconnect();
+		}
 	}
+
+	public bool MakingLink { get; set; } = false;
+	public bool IsConnected => Connector.IsConnected;
+	public string RootClasses => $"{(IsConnected ? "connected" : "")} {(MakingLink ? "linking" : "")}";
 }

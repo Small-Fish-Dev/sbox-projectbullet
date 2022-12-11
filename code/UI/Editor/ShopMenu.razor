@@ -2,13 +2,15 @@
 @using System.Linq
 @using ProjectBullet.Core.Node.Description
 @using ProjectBullet.Core.Shop
+@using Sandbox
 @using Sandbox.UI;
 @namespace ProjectBullet.UI.Editor
 @attribute [StyleSheet("/UI/Editor/Menu.scss")]
 
 @code {
     public GraphVisualizer GraphVisualizer { get; set; }
-    public int LocalMoney => GraphVisualizer.LocalBasePlayer.Inventory.Money;
+    public BasePlayer LocalBasePlayer => Game.LocalPawn as BasePlayer;
+    public int LocalMoney => LocalBasePlayer.Inventory.Money;
     public IEnumerable<ShopHostEntity.StockedItem> BuyableItems => ShopHostEntity.Instance.Stock.Where(v => LocalMoney >= v.Price);
     public IEnumerable<ShopHostEntity.StockedItem> NoBuyItems => ShopHostEntity.Instance.Stock.Where(v => v.Price > LocalMoney);
 }
@@ -22,7 +24,7 @@
     <div class="group">
         <div class="title">
             <div class="center-text-container">
-                <div class="info-text">shop - @GraphVisualizer.LocalBasePlayer.Inventory.Money</div>
+                <div class="info-text">shop - @LocalBasePlayer.Inventory.Money</div>
             </div>
         </div>
 

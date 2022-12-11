@@ -17,7 +17,7 @@
     </div>
     <div class="content">
         <div style="right: 25px; width: 50px" class="handle-container">
-            @if (NodeData is not SerializableGraph.EntryWeaponNode)
+            @if (NodeData is not PreInstanceGraph.EntryNode)
             {
                 <GraphNodeIn GraphNode=@this/>
             }
@@ -28,11 +28,11 @@
             {
                 <div class="output">
                     <div class="center-text-container">
-                        ⚡@(connector.GetEnergyOutput() ?? 0.0f)
+                        ⚡@(connector.LastEstimatedEnergyOutput ?? 0.0f)
                     </div>
                     <div style="padding-left: 3px; padding-right: 3px">-</div>
                     <div class="center-text-container">
-                        @connector.Identifier
+                        @connector.DisplayName
                     </div>
                     <div style="width: 3px"/>
                     <GraphNodeOut style="width: 30px" Connector=@connector>

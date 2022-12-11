@@ -16,28 +16,31 @@ namespace ProjectBullet;
 
 [ShopItem( 300 )]
 [Energy( 12.0f, Estimated = true )]
-[Connector( "on_one", Order = 0, EnergyOutPercentage = 0.5f )]
-[Connector( "on_two", Order = 1, EnergyOutPercentage = 0.5f )]
+[Connector( "on_one", Order = 0, EnergyOutPercentage = 0.5f, DisplayName = "One" )]
+[Connector( "on_two", Order = 1, EnergyOutPercentage = 0.5f, DisplayName = "Two" )]
 [Node( DisplayName = "Splitter", Description = "Cheap and simple splitter" )]
 public class BasicSplitter : WeaponNodeEntity
 {
-	public override void Execute( Entity target, Vector3 point )
+	public override float Execute( float energy, Entity target, Vector3 point )
 	{
 		ExecuteConnector( "on_one", target, point );
 		ExecuteConnector( "on_two", target, point );
+
+		return energy;
 	}
 }
 
-
 [ShopItem( 200 )]
 [Energy( 15.0f, Estimated = true )]
-[Connector( "on_player_hit", Order = 0, EnergyOutAmount = 8f )]
+[Connector( "on_player_hit", Order = 0, EnergyOutAmount = 8f, DisplayName = "On Player Hit")]
 [Node( DisplayName = "Explosion", Description = "Cheap and simple explosion" )]
 public class CheapExplosion : WeaponNodeEntity
 {
-	public override void Execute( Entity target, Vector3 point )
+	public override float Execute( float energy, Entity target, Vector3 point )
 	{
 		ExecuteConnector( "on_player_hit", target, point );
+
+		return energy;
 	}
 }
 
@@ -46,8 +49,9 @@ public class CheapExplosion : WeaponNodeEntity
 [Node( DisplayName = "Damage", Description = "Cheap and simple damage" )]
 public class CheapDamage : WeaponNodeEntity
 {
-	public override void Execute( Entity target, Vector3 point )
+	public override float Execute( float energy, Entity target, Vector3 point )
 	{
+		return 0.0f;
 	}
 }
 
@@ -78,14 +82,13 @@ public partial class Entrypoint : GameManager
 		var entrypoint = Current as Entrypoint;
 		if ( entrypoint is { _nodeGraph: null } )
 		{
-			entrypoint._nodeGraph = new GraphVisualizer();
 			var nodeExecutor = (Game.LocalPawn as Gunner).NodeExecutors.First();
-			entrypoint._nodeGraph.NodeExecutor = nodeExecutor;
+			entrypoint._nodeGraph = new GraphVisualizer( nodeExecutor );
 			Game.RootPanel.AddChild( entrypoint._nodeGraph );
 		}
 		else
 		{
-			(entrypoint?._nodeGraph as Panel)?.Delete(  );
+			(entrypoint?._nodeGraph as Panel)?.Delete(true);
 			if ( entrypoint != null )
 			{
 				entrypoint._nodeGraph = null;

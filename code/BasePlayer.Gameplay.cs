@@ -24,13 +24,13 @@ public abstract partial class BasePlayer : Player
 
 		Controller = new StrafeController()
 		{
-			AirAcceleration = 1200,
-			WalkSpeed = 235,
-			SprintSpeed = 265,
+			AirAcceleration = 1000,
+			WalkSpeed = 240,
+			SprintSpeed = 245,
 			DefaultSpeed = 260,
-			AutoJump = true,
+			AutoJump = false,
 			Acceleration = 5,
-			GroundFriction = 6 //Do this just for safety if player respawns inside friction volume.
+			GroundFriction = 5 //Do this just for safety if player respawns inside friction volume.
 		};
 
 		EnableDrawing = true;

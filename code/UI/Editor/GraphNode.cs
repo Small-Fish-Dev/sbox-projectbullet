@@ -5,30 +5,45 @@ namespace ProjectBullet.UI.Editor;
 
 public partial class GraphNode : Panel
 {
-	public SerializableGraph.WeaponNode NodeData { get; set; }
+	public PreInstanceGraph.Node NodeData { get; set; }
 	public GraphVisualizer GraphVisualizer { get; set; }
+	private bool _waitingForInit = true;
 
-	public GraphNode( SerializableGraph.WeaponNode nodeData, GraphVisualizer graphVisualizer )
+	public GraphNode( PreInstanceGraph.Node nodeData, GraphVisualizer graphVisualizer )
 	{
 		NodeData = nodeData;
 		GraphVisualizer = graphVisualizer;
-
-		NodeData.EditorData.Element = this;
+		NodeData.Element = this;
 	}
 
-	public override void Delete( bool immediate = false )
+	public override void Tick()
 	{
-		NodeData.Isolate();
+		base.Tick();
 
-		NodeData.EditorData.Element = null;
+		if ( _waitingForInit && NodeData.Instance != null )
+		{
+			if ( NodeData.Instance.LastEditorX != null )
+			{
+				Style.Left = Length.Pixels(
+					NodeData.Instance.LastEditorX.Value
+				);
+			}
 
-		base.Delete( immediate );
+			if ( NodeData.Instance.LastEditorY != null )
+			{
+				Style.Top = Length.Pixels(
+					NodeData.Instance.LastEditorY.Value
+				);
+			}
+
+			_waitingForInit = false;
+		}
 	}
 
 	protected override void OnRightClick( MousePanelEvent e )
 	{
 		base.OnRightClick( e );
 
-		Delete();
+		NodeData.Root.RemoveFromGraph( NodeData );
 	}
 }

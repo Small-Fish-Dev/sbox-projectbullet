@@ -12,11 +12,11 @@ GraphVisualizer {
 
     pointer-events: all;
     
-    &:intro {
+    &:outro {
         top: 100%;
     }
 
-    &:outro {
+    &:intro {
         transition: all 0.25s ease-out;
         opacity: 0;
         filter: blur(5px);

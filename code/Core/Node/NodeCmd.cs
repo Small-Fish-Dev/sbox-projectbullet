@@ -46,6 +46,7 @@ public static class NodeCmd
 			return;
 		}
 
+		Log.Info( $"~~ SetConnector: {identifier}, {newValue}" );
 		target.SetConnector( identifier, newValue );
 	}
 
@@ -69,7 +70,7 @@ public static class NodeCmd
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
-			Log.Error( $"SetConnector failed: target not found - index {targetNetworkIdent}" );
+			Log.Error( $"DisconnectConnector failed: target not found - index {targetNetworkIdent}" );
 			return;
 		}
 
@@ -95,14 +96,14 @@ public static class NodeCmd
 		var executor = GetNodeExecutor( executorNetworkIdent );
 		if ( executor == null )
 		{
-			Log.Error( $"SetConnector failed: executor not found - index {executorNetworkIdent}" );
+			Log.Error( $"SetEntryNode failed: executor not found - index {executorNetworkIdent}" );
 			return;
 		}
 
 		var newValue = GetWeaponNodeEntity( newValueNetworkIdent );
 		if ( newValue == null )
 		{
-			Log.Error( $"SetConnector failed: newValue not found - index {newValueNetworkIdent}" );
+			Log.Error( $"SetEntryNode failed: newValue not found - index {newValueNetworkIdent}" );
 			return;
 		}
 
@@ -128,7 +129,7 @@ public static class NodeCmd
 		var executor = GetNodeExecutor( executorNetworkIdent );
 		if ( executor == null )
 		{
-			Log.Error( $"SetConnector failed: executor not found - index {executorNetworkIdent}" );
+			Log.Error( $"ClearEntryNode failed: executor not found - index {executorNetworkIdent}" );
 			return;
 		}
 
@@ -143,5 +144,70 @@ public static class NodeCmd
 	{
 		Game.AssertClient();
 		ClearEntryNode( nodeExecutionEntity.NetworkIdent );
+	}
+
+	[ConCmd.Server]
+	private static void AddNodeToExecutor( int targetNetworkIdent, int executorNetworkIdent )
+	{
+		Game.AssertServer();
+
+		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		if ( target == null )
+		{
+			Log.Error( $"AddNodeToExecutor failed: target not found - index {targetNetworkIdent}" );
+			return;
+		}
+
+		var executor = GetNodeExecutor( executorNetworkIdent );
+		if ( executor == null )
+		{
+			Log.Error( $"AddNodeToExecutor failed: executor not found - index {executorNetworkIdent}" );
+			return;
+		}
+
+		target.Owner = executor;
+	}
+
+	/// <summary>
+	/// Send AddNodeToExecutor request to the server - will set owner of target to the executor
+	/// </summary>
+	/// <param name="target">WeaponNodeEntity to change owner of</param>
+	/// <param name="nodeExecutionEntity">New owner</param>
+	public static void AddNodeToExecutor( WeaponNodeEntity target, NodeExecutionEntity nodeExecutionEntity )
+	{
+		Game.AssertClient();
+		AddNodeToExecutor( target.NetworkIdent, nodeExecutionEntity.NetworkIdent );
+	}
+
+	[ConCmd.Server]
+	private static void RemoveNodeFromExecutor( int targetNetworkIdent )
+	{
+		Game.AssertServer();
+
+		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		if ( target == null )
+		{
+			Log.Error( $"RemoveNodeFromExecutor failed: target not found - index {targetNetworkIdent}" );
+			return;
+		}
+
+		// find the pawn...
+		if ( target.Owner is not NodeExecutionEntity { Owner: BasePlayer } executor )
+		{
+			Log.Error( "RemoveNodeFromExecutor failed: Owner.Owner not a BasePlayer" );
+			return;
+		}
+
+		target.Owner = executor.Owner;
+	}
+
+	/// <summary>
+	/// Send RemoveNodeFromExecutor request to the server - will set owner of target back to pawn (if possible)
+	/// </summary>
+	/// <param name="target">WeaponNodeEntity to change owner of</param>
+	public static void RemoveNodeFromExecutor( WeaponNodeEntity target )
+	{
+		Game.AssertClient();
+		RemoveNodeFromExecutor( target.NetworkIdent );
 	}
 }

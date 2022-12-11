@@ -2,7 +2,7 @@ GraphNode {
     position: absolute;
     width: 300px;
     height: 150px;
-    
+
     top: 50%;
     left: 50%;
     background-color: #1EA6F2;
@@ -18,6 +18,11 @@ GraphNode {
     /* Node font styling */
     font-family: Inter;
     font-weight: bold;
+
+    &.entry-node {
+        top: 30%;
+        left: 5%;
+    }
 
     .title {
         color: black;

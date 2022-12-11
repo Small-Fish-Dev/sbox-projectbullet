@@ -43,11 +43,11 @@ public partial class GraphVisualizer : Panel
 
 		switch ( e.Target )
 		{
-			case GraphNodeOut { Connected: false } output:
+			case GraphNodeOut { IsConnected: false } output:
 				_mouseDownTarget = output;
 				output.MakingLink = true;
 				return;
-			case GraphNodeIn { Connected: false }:
+			case GraphNodeIn { IsConnected: false }:
 				return;
 		}
 
@@ -76,7 +76,8 @@ public partial class GraphVisualizer : Panel
 
 				if ( input.Hovered && !input.IsInvalidHover )
 				{
-					output.Connector.Connect( input.GraphNode.NodeData );
+					output.Connector.ConnectTo( input.GraphNode.NodeData );
+					input.GraphNode.StateHasChanged();
 				}
 
 				input.Hovered = false;
@@ -101,9 +102,6 @@ public partial class GraphVisualizer : Panel
 
 			var lmp = GetStyleMousePosition();
 
-			node.NodeData.EditorData.LastX = (int)lmp.x;
-			node.NodeData.EditorData.LastY = (int)lmp.y;
-
 			if ( lmp.x < 0 )
 			{
 				lmp.x = 0;
@@ -120,6 +118,13 @@ public partial class GraphVisualizer : Panel
 			node.Style.Top = Length.Pixels(
 				lmp.y
 			);
+
+			if ( node.NodeData.Instance != null )
+			
+			{
+				node.NodeData.Instance.LastEditorX = lmp.x;
+				node.NodeData.Instance.LastEditorY = lmp.y;
+			}
 
 			return;
 		}
@@ -161,12 +166,12 @@ public partial class GraphVisualizer : Panel
 					continue;
 				}
 
-				if ( !output.Connected )
+				if ( !output.IsConnected )
 				{
 					continue;
 				}
-				
-				var endpoint = output.Connector.ConnectedNode.EditorData.InputElement;
+
+				var endpoint = output.Connector.ConnectedNode.InputElement;
 				DrawNodeLine( output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
 			}
 		}

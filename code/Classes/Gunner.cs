@@ -14,6 +14,21 @@ public class PrimaryFireController : NodeExecutionEntity
 		base.PerformAction( cl );
 
 		Log.Info( "hello from primary fire" );
+
+		var ray = BasePlayer.AimRay;
+
+		var trace = Trace.Ray( ray, 8096 )
+			.UseHitboxes()
+			.WithAnyTags( "solid", "player", "npc", "glass" )
+			.Ignore( BasePlayer );
+
+		var result = trace.Run();
+
+		Log.Info( result.EndPosition );
+
+		DebugOverlay.Circle( result.EndPosition, Rotation.Identity, 20.0f, Color.Cyan, 3.0f );
+
+		ExecuteEntryNode( result.Entity, result.EndPosition );
 	}
 }
 

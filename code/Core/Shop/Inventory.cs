@@ -10,18 +10,20 @@ namespace ProjectBullet.Core.Shop;
 /// </summary>
 public partial class Inventory : EntityComponent
 {
-	[Net] public int Money { get; set; } = 0;
+	[Net] public int Money { get; set; } = 3000;
 	[Net] private IList<Entity> ItemsInternal { get; set; } = new List<Entity>();
+
+	private const string NewItemEvent = "newitem";
 
 	public class NewItemAttribute : EventAttribute
 	{
-		public NewItemAttribute() : base( "onnewitem" ) { }
+		public NewItemAttribute() : base( NewItemEvent ) { }
 	}
 
 	[ClientRpc]
 	public static void OnNewItemRpc( Entity item )
 	{
-		Event.Run( "onnewitem", item );
+		Event.Run( NewItemEvent, item );
 	}
 
 	/// <summary>

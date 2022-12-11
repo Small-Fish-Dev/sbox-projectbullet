@@ -65,7 +65,7 @@ public partial class NodeExecutionEntity : Entity
 			return;
 		}
 
-		EntryNode.Execute( target, point );
+		EntryNode.Execute( Energy, target, point );
 	}
 
 	protected virtual void PerformAction( IClient cl )
