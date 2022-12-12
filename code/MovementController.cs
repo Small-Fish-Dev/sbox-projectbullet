@@ -12,6 +12,10 @@ public partial class MovementController
 		Floating
 	}
 
+	private Vector3 LastBaseVelocity;
+	private float LastLeft;
+	private bool LastGrounded;
+
 	private BasePlayer BasePlayer;
 
 	public MovementController( BasePlayer basePlayer ) => BasePlayer = basePlayer;
@@ -39,7 +43,7 @@ public partial class MovementController
 	public virtual void FrameSimulate()
 	{
 		Start();
-		
+
 		End();
 	}
 }

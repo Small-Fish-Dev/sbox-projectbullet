@@ -4,8 +4,16 @@ using System.Collections.Generic;
 
 namespace ProjectBullet.Strafe;
 
-partial class StrafeController : WalkController
+public partial class StrafeController : WalkController
 {
+	public enum FrictionLevels
+	{
+		Normal,
+		Skate,
+		Sticky,
+		Floating
+	}
+	
 	[Net, Predicted] public bool Momentum { get; set; }
 	[Net, Predicted] public bool Activated { get; set; }
 	[Net, Predicted] public FrictionLevels FrictionLevel { get; set; }
@@ -13,7 +21,7 @@ partial class StrafeController : WalkController
 	private Vector3 LastBaseVelocity;
 	private float LastLeft;
 	private bool LastGrounded;
-	private Player Player => Pawn as Player;
+	private BasePlayer Player => Pawn as BasePlayer;
 
 	public StrafeController()
 	{

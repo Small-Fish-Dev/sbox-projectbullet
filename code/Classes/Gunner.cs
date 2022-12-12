@@ -70,12 +70,10 @@ public partial class Gunner : BasePlayer
 	{
 		base.Spawn();
 
-		PrimaryFire = new PrimaryFireController { Owner = this };
-		SecondaryFire = new SecondaryFireController { Owner = this };
-		UltraShift = new UltraShiftController { Owner = this };
+		PrimaryFire = new PrimaryFireController();
+		SecondaryFire = new SecondaryFireController();
+		UltraShift = new UltraShiftController();
 
-		NodeExecutors.Add( PrimaryFire );
-		NodeExecutors.Add( SecondaryFire );
-		NodeExecutors.Add( UltraShift );
+		RegisterNodeExecutors();
 	}
 }
