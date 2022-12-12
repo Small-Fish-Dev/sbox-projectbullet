@@ -10,7 +10,7 @@ public sealed class ConnectorAttribute : Attribute
 {
 	public string DisplayName { get; init; }
 	public int Order { get; init; }
-	public float EnergyOutPercentage { get; init; } = 1.0f;
+	public float EnergyOutPercentage { get; init; } = 0.0f;
 	public float EnergyOutAmount { get; set; } = 0.0f;
 	public string Identifier { get; }
 

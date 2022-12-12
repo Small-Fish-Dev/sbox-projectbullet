@@ -48,6 +48,8 @@ public static class NodeCmd
 
 		Log.Info( $"~~ SetConnector: {identifier}, {newValue}" );
 		target.SetConnector( identifier, newValue );
+
+		NodeEvent.OnConnectorChangedRpc( To.Single( target.BasePlayer ) );
 	}
 
 	/// <summary>
@@ -75,6 +77,8 @@ public static class NodeCmd
 		}
 
 		target.DisconnectConnector( identifier );
+
+		NodeEvent.OnConnectorChangedRpc( To.Single( target.BasePlayer ) );
 	}
 
 	/// <summary>
@@ -108,6 +112,8 @@ public static class NodeCmd
 		}
 
 		executor.EntryNode = newValue;
+
+		NodeEvent.OnConnectorChangedRpc( To.Single( executor.BasePlayer ) );
 	}
 
 	/// <summary>
@@ -134,6 +140,8 @@ public static class NodeCmd
 		}
 
 		executor.EntryNode = null;
+
+		NodeEvent.OnConnectorChangedRpc( To.Single( executor.BasePlayer ) );
 	}
 
 	/// <summary>
@@ -166,6 +174,8 @@ public static class NodeCmd
 		}
 
 		target.Owner = executor;
+
+		NodeEvent.OnConnectorChangedRpc( To.Single( executor.BasePlayer ) );
 	}
 
 	/// <summary>
@@ -199,6 +209,8 @@ public static class NodeCmd
 		}
 
 		target.Owner = executor.Owner;
+
+		NodeEvent.OnConnectorChangedRpc( To.Single( executor.BasePlayer ) );
 	}
 
 	/// <summary>

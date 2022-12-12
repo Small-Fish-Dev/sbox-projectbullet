@@ -49,6 +49,8 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// </summary>
 	public bool InUse => Owner is NodeExecutionEntity;
 
+	public BasePlayer BasePlayer => InUse ? (BasePlayer)Owner.Owner : (BasePlayer)Owner;
+
 	[Net] public IList<Connector> Connectors { get; set; } = new List<Connector>();
 
 	[Net] private WeaponNodeEntity Previous { get; set; }
@@ -241,7 +243,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 		var max = previousOutput.Value - Description.EnergyAttribute.Energy;
 		var result = max;
-		
+
 		foreach ( var connector in Connectors.OrderBy( v => v?.ConnectorAttribute?.Order ?? 99 ) )
 		{
 			// We need to find out how much energy this connector would take for itself
@@ -273,7 +275,17 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 			if ( connector.Identifier == identifier )
 			{
-				return Math.Max(usage, 0);
+				if ( usage > max )
+				{
+					usage = max;
+				}
+
+				if ( usage < 0 )
+				{
+					usage = 0;
+				}
+
+				return usage;
 			}
 
 			result -= usage;
@@ -286,6 +298,11 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	protected override void OnDestroy()
 	{
 		base.OnDestroy();
+
+		if ( Game.IsClient )
+		{
+			return;
+		}
 
 		foreach ( var connector in Connectors )
 		{
