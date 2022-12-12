@@ -25,7 +25,7 @@ public partial class NodeExecutionEntity : Entity
 	[Net]
 	public WeaponNodeEntity EntryNode { get; set; }
 
-	[Net, Predicted] public float Energy { get; private set; } = 0.0f;
+	[Net, Predicted] public float Energy { get; set; } = 0.0f;
 	[Net, Predicted] public float MinimumEnergy { get; private set; } = 0.0f;
 	[Net, Predicted] private TimeSince TimeSinceAction { get; set; }
 
@@ -65,7 +65,7 @@ public partial class NodeExecutionEntity : Entity
 			return;
 		}
 
-		EntryNode.Execute( Energy, target, point );
+		EntryNode.PreExecute( Energy, target, point );
 	}
 
 	protected virtual void PerformAction( IClient cl )

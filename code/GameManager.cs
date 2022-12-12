@@ -26,13 +26,13 @@ public class BasicSplitter : WeaponNodeEntity
 		ExecuteConnector( "on_one", target, point );
 		ExecuteConnector( "on_two", target, point );
 
-		return energy;
+		return 0.0f;
 	}
 }
 
 [ShopItem( 200 )]
 [Energy( 15.0f, Estimated = true )]
-[Connector( "on_player_hit", Order = 0, EnergyOutAmount = 8f, DisplayName = "On Player Hit")]
+[Connector( "on_player_hit", Order = 0, EnergyOutAmount = 8f, DisplayName = "On Player Hit" )]
 [Node( DisplayName = "Explosion", Description = "Cheap and simple explosion" )]
 public class CheapExplosion : WeaponNodeEntity
 {
@@ -40,17 +40,6 @@ public class CheapExplosion : WeaponNodeEntity
 	{
 		ExecuteConnector( "on_player_hit", target, point );
 
-		return energy;
-	}
-}
-
-[ShopItem( 300 )]
-[Energy( 5.0f, Estimated = true )]
-[Node( DisplayName = "Damage", Description = "Cheap and simple damage" )]
-public class CheapDamage : WeaponNodeEntity
-{
-	public override float Execute( float energy, Entity target, Vector3 point )
-	{
 		return 0.0f;
 	}
 }
@@ -88,7 +77,7 @@ public partial class Entrypoint : GameManager
 		}
 		else
 		{
-			(entrypoint?._nodeGraph as Panel)?.Delete(true);
+			(entrypoint?._nodeGraph as Panel)?.Delete( true );
 			if ( entrypoint != null )
 			{
 				entrypoint._nodeGraph = null;

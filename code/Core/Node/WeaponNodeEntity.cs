@@ -49,6 +49,8 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// </summary>
 	public bool InUse => Owner is NodeExecutionEntity;
 
+	public NodeExecutionEntity NodeExecutor => Owner as NodeExecutionEntity;
+
 	public BasePlayer BasePlayer => InUse ? (BasePlayer)Owner.Owner : (BasePlayer)Owner;
 
 	[Net] public IList<Connector> Connectors { get; set; } = new List<Connector>();
@@ -58,6 +60,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 	public float? LastEditorX = null;
 	public float? LastEditorY = null;
+	public float? PassedEnergy = null;
 
 	public float EnergyUsage => Description?.EnergyAttribute?.Energy ?? 0;
 
@@ -70,14 +73,26 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// <exception cref="Exception"></exception>
 	protected void ExecuteConnector( string identifier, Entity target, Vector3 point )
 	{
+		if ( Owner is not NodeExecutionEntity nodeExecutor )
+		{
+			Log.Warning( "ExecuteConnector called without NodeExecutionEntity" );
+			return;
+		}
+
 		foreach ( var connector in Connectors.Where( connector => connector.Identifier == identifier ) )
 		{
-			connector.WeaponNodeEntity?.Execute( 0.0f, target, point );
+			var instance = connector.WeaponNodeEntity;
+			if ( instance == null )
+			{
+				continue;
+			}
+
+			connector.WeaponNodeEntity?.PostExecuteConnector( this, connector, target, point );
 			return;
 		}
 
 		// todo: write custom exception
-		throw new Exception( $"Unknown connector {identifier}" );
+		Log.Warning( $"Unknown connector {identifier}" );
 	}
 
 	/// <summary>
@@ -181,6 +196,54 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// <param name="point">Position (if any) of hit</param>
 	/// <returns>Amount of energy to be taken away from the node executor</returns>
 	public abstract float Execute( float energy, Entity target, Vector3 point );
+
+	public void PreExecute( float energy, Entity target, Vector3 point )
+	{
+		if ( Description != null )
+		{
+			if ( !NodeExecutor.UseEnergy( Description.EnergyAttribute.Energy ) )
+			{
+				Log.Info( $"{GetType().Name}: Not enough real energy to run Execute" );
+				return;
+			}
+		}
+		
+		var inputEnergy = Math.Min( energy, NodeExecutor.Energy );
+		Log.Info( $"Executing {GetType().Name} with {inputEnergy} energy" );
+
+		var outputEnergy = Execute( Math.Min( energy, NodeExecutor.Energy ), target, point );
+		if ( NodeExecutor.Energy - outputEnergy <= 0 )
+		{
+			NodeExecutor.Energy = 0;
+		}
+		else
+		{
+			NodeExecutor.Energy -= outputEnergy;
+		}
+	}
+
+	protected void PostExecuteConnector( WeaponNodeEntity previous, Connector connector, Entity target, Vector3 point )
+	{
+		var estimatedEnergy = previous.EstimateConnectorOutput( connector.Identifier ) ??
+		                      NodeExecutor.Energy;
+
+		if ( estimatedEnergy <= 0 )
+		{
+			Log.Info( $"{GetType().Name}: No more estimated energy, can't run Execute" );
+			return;
+		}
+
+		if ( Description != null )
+		{
+			if ( !NodeExecutor.UseEnergy( Description.EnergyAttribute.Energy ) )
+			{
+				Log.Info( $"{GetType().Name}: Not enough real energy to run Execute" );
+				return;
+			}
+		}
+
+		PreExecute( estimatedEnergy, target, point );
+	}
 
 	/// <summary>
 	/// Removes node from NodeExecutor and returns ownership back to the pawn
