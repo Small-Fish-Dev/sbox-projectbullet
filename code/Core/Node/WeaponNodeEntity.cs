@@ -233,15 +233,6 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 			return;
 		}
 
-		if ( Description != null )
-		{
-			if ( !NodeExecutor.UseEnergy( Description.EnergyAttribute.Energy ) )
-			{
-				Log.Info( $"{GetType().Name}: Not enough real energy to run Execute" );
-				return;
-			}
-		}
-
 		PreExecute( estimatedEnergy, target, point );
 	}
 
