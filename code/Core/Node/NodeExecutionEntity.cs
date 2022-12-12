@@ -107,4 +107,20 @@ public partial class NodeExecutionEntity : Entity
 
 		return TimeSinceAction > (1 / delay);
 	}
+	
+	/// <summary>
+	/// Attempt to use some energy
+	/// </summary>
+	/// <param name="amount">Amount to take</param>
+	/// <returns>True if energy was deducted, false if not enough energy</returns>
+	public bool UseEnergy( float amount )
+	{
+		if ( amount > Energy )
+		{
+			return false;
+		}
+
+		Energy -= amount;
+		return true;
+	}
 }
