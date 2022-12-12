@@ -10,22 +10,26 @@ public partial class GraphVisualizer : Panel
 	private Vector2 _holdPoint;
 	private bool _makingInvalidConnection;
 
-	private const float LineStartSize = 13.0f;
-	private const float LineEndSize = 13.0f;
+	private const float LineStartSize = 14.0f;
+	private const float LineEndSize = 14.0f;
+	private const float OuterLineStartSize = 18.0f;
+	private const float OuterLineEndSize = 18.0f;
+
 	private static bool CheckHover( Panel target ) => target.Box.Rect.IsInside( Game.RootPanel.MousePosition );
 
-	private void DrawNodeLine( Vector2 start, Vector2 end ) => GraphicsX.Line( Color.White,
-		ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
+	private void DrawNodeLine( Color color, Vector2 start, Vector2 end )
+	{
+		GraphicsX.Line( Color.White,
+			ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
+
+		GraphicsX.Line( color,
+			ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
+	}
 
 	private Vector2 GetStyleMousePosition() => new Vector2(
 		(Game.RootPanel.MousePosition.x - _holdPoint.x - Box.Rect.Left) * Game.RootPanel.ScaleFromScreen,
 		(Game.RootPanel.MousePosition.y - _holdPoint.y - Box.Rect.Top) * Game.RootPanel.ScaleFromScreen );
 
-	private void DrawPlaceholderNodeLine( Vector2 start, Vector2 end )
-	{
-		GraphicsX.Line( _makingInvalidConnection ? Color.Red : Color.White, ScaleToScreen * LineStartSize, start,
-			ScaleToScreen * LineEndSize, end );
-	}
 
 	protected override void OnMouseDown( MousePanelEvent e )
 	{
@@ -120,7 +124,7 @@ public partial class GraphVisualizer : Panel
 			);
 
 			if ( node.NodeData.Instance != null )
-			
+
 			{
 				node.NodeData.Instance.LastEditorX = lmp.x;
 				node.NodeData.Instance.LastEditorY = lmp.y;
@@ -156,6 +160,12 @@ public partial class GraphVisualizer : Panel
 		}
 	}
 
+	public Color CalculateOutputColor( GraphNodeOut output )
+	{
+		var h = ((output.Connector.LastEstimatedEnergyOutput ?? 50.0f) * 0.01f) * 150;
+		return new ColorHsv( h, 1, 1 ).ToColor();
+	}
+
 	public override void DrawBackground( ref RenderState state )
 	{
 		foreach ( var child in Descendants )
@@ -171,8 +181,9 @@ public partial class GraphVisualizer : Panel
 					continue;
 				}
 
+
 				var endpoint = output.Connector.ConnectedNode.InputElement;
-				DrawNodeLine( output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
+				DrawNodeLine( CalculateOutputColor( output ), output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
 			}
 		}
 
@@ -182,7 +193,8 @@ public partial class GraphVisualizer : Panel
 				return;
 			}
 
-			DrawPlaceholderNodeLine( output.Box.Rect.Center, MousePosition + this.Box.Rect.TopLeft );
+			DrawNodeLine( CalculateOutputColor( output ), output.Box.Rect.Center,
+				MousePosition + this.Box.Rect.TopLeft );
 		}
 	}
 }

@@ -143,11 +143,14 @@ public partial class PreInstanceGraph
 		PerformAction( new RemoveNodeFromGraphAction( node.Instance ), true );
 	}
 
+	[NodeEvent.ConnectorChanged]
 	public void EstimateAllEnergyOutputs()
 	{
 		foreach ( var connector in Connectors )
 		{
 			connector.EstimateEnergyOutput();
+			
+			connector.Parent?.Element.StateHasChanged();
 		}
 	}
 
