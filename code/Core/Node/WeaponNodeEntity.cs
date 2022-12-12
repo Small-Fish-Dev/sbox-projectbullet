@@ -60,7 +60,6 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 	public float? LastEditorX = null;
 	public float? LastEditorY = null;
-	public float? PassedEnergy = null;
 
 	public float EnergyUsage => Description?.EnergyAttribute?.Energy ?? 0;
 
