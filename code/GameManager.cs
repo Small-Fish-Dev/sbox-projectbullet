@@ -14,36 +14,6 @@ using Sandbox.UI;
 
 namespace ProjectBullet;
 
-[ShopItem( 300 )]
-[Energy( 12.0f, Estimated = true )]
-[Connector( "on_one", Order = 0, EnergyOutPercentage = 0.5f, DisplayName = "One" )]
-[Connector( "on_two", Order = 1, EnergyOutPercentage = 0.5f, DisplayName = "Two" )]
-[Node( DisplayName = "Splitter", Description = "Cheap and simple splitter" )]
-public class BasicSplitter : WeaponNodeEntity
-{
-	public override float Execute( float energy, Entity target, Vector3 point )
-	{
-		ExecuteConnector( "on_one", target, point );
-		ExecuteConnector( "on_two", target, point );
-
-		return 0.0f;
-	}
-}
-
-[ShopItem( 200 )]
-[Energy( 15.0f, Estimated = true )]
-[Connector( "on_player_hit", Order = 0, EnergyOutAmount = 8f, DisplayName = "On Player Hit" )]
-[Node( DisplayName = "Explosion", Description = "Cheap and simple explosion" )]
-public class CheapExplosion : WeaponNodeEntity
-{
-	public override float Execute( float energy, Entity target, Vector3 point )
-	{
-		ExecuteConnector( "on_player_hit", target, point );
-
-		return 0.0f;
-	}
-}
-
 public partial class Entrypoint : GameManager
 {
 	[Net] public ShopHostEntity GameShop { get; set; }
