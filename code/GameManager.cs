@@ -1,26 +1,29 @@
 ﻿using Sandbox;
 using System;
 using System.Linq;
-using System.Text.Json;
 using ProjectBullet.Classes;
-using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Node.Description;
 using ProjectBullet.Core.Shop;
-using ProjectBullet.Nodes;
 using ProjectBullet.UI.Editor;
 using Sandbox.UI;
 
-// ReSharper disable InconsistentNaming
-
 namespace ProjectBullet;
 
-public partial class Entrypoint : GameManager
+public partial class GameManager : Sandbox.GameManager
 {
+	public new static GameManager Current => (GameManager)Sandbox.GameManager.Current;
+	
+	/// <summary>
+	/// Whether or not the game should have team damage
+	/// </summary>
+	[Net]
+	public bool AllowTeamDamage { get; set; } = false;
+	
 	[Net] public ShopHostEntity GameShop { get; set; }
 
 	private GraphVisualizer _nodeGraph { get; set; }
 
-	public Entrypoint()
+	public GameManager()
 	{
 		WeaponNodeDescription.InitAll();
 
@@ -38,7 +41,7 @@ public partial class Entrypoint : GameManager
 	[ConCmd.Client( "pb_editor" )]
 	public static void ToggleEditor()
 	{
-		var entrypoint = Current as Entrypoint;
+		var entrypoint = Current as GameManager;
 		if ( entrypoint is { _nodeGraph: null } )
 		{
 			var nodeExecutor = (Game.LocalPawn as Gunner).NodeExecutors.First();

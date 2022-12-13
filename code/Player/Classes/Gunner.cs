@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using ProjectBullet.Core.Node;
+using ProjectBullet.Player;
 
 namespace ProjectBullet.Classes;
 
@@ -49,7 +50,9 @@ public partial class Gunner : BasePlayer
 				.WithAnyTags( "solid", "player", "npc", "glass" )
 				.Ignore( BasePlayer );
 
-			ExecuteEntryNode( new ExecuteInfo().UsingTraceResult( trace.Run() ) );
+			ExecuteEntryNode( new ExecuteInfo()
+				.UsingTraceResult( trace.Run() )
+				.WithAttacker( BasePlayer ) );
 		}
 
 		protected override void BeginReload()

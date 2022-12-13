@@ -1,7 +1,7 @@
 ﻿using System;
 using Sandbox;
 
-namespace ProjectBullet.Strafe;
+namespace ProjectBullet.Player.Strafe;
 
 public class StrafeDuck : Duck
 {

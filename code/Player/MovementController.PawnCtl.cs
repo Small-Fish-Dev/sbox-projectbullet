@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace ProjectBullet;
+namespace ProjectBullet.Player;
 
 /// <summary>
 /// PawnController functionality

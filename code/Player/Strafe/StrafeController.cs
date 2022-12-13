@@ -1,8 +1,7 @@
 ﻿using Sandbox;
 using System;
-using System.Collections.Generic;
 
-namespace ProjectBullet.Strafe;
+namespace ProjectBullet.Player.Strafe;
 
 public partial class StrafeController : WalkController
 {

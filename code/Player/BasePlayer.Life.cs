@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace ProjectBullet;
+namespace ProjectBullet.Player;
 
 public abstract partial class BasePlayer
 {
@@ -43,5 +43,18 @@ public abstract partial class BasePlayer
 		}
 
 		Respawn();
+	}
+
+	public override void TakeDamage( DamageInfo info )
+	{
+		if ( info.Attacker is BasePlayer player )
+		{
+			if ( player.Team == Team )
+			{
+				return; // 
+			}
+		}
+		
+		base.TakeDamage( info );
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sandbox;
+using ProjectBullet.Player;
 
 namespace ProjectBullet.Core.Node;
 
@@ -43,9 +44,9 @@ public struct ExecuteInfo
 	public Vector3 Force { get; set; }
 
 	/// <summary>
-	/// The player or NPC or exploding barrel (etc)1 that is attacking
+	/// The BasePlayer that is attacking
 	/// </summary>
-	public Entity Attacker { get; set; }
+	public BasePlayer Attacker { get; set; }
 
 	/// <summary>Damage tags, extra information about this attack</summary>
 	public HashSet<string> Tags { get; set; }
@@ -69,6 +70,17 @@ public struct ExecuteInfo
 	}
 
 	/// <summary>
+	/// Set the attacker
+	/// </summary>
+	/// <param name="attacker">New attacker</param>
+	/// <returns>Self</returns>
+	public ExecuteInfo WithAttacker( BasePlayer attacker )
+	{
+		Attacker = attacker;
+		return this;
+	}
+
+	/// <summary>
 	/// Fills in Victim, BoneIndex & Hitbox
 	/// </summary>
 	public ExecuteInfo UsingTraceResult( TraceResult result )
@@ -78,5 +90,20 @@ public struct ExecuteInfo
 		Hitbox = result.Hitbox;
 		ImpactPoint = result.EndPosition;
 		return this;
+	}
+
+	public DamageInfo ToDamageInfo( float damage )
+	{
+		var result = new DamageInfo
+		{
+			Hitbox = Hitbox,
+			Attacker = Attacker,
+			Position = ImpactPoint,
+			BoneIndex = BoneIndex,
+			Force = Force,
+			Damage = damage * DamageMultiplier,
+			Tags = Tags
+		};
+		return result;
 	}
 }

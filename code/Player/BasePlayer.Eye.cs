@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace ProjectBullet;
+namespace ProjectBullet.Player;
 
 public abstract partial class BasePlayer
 {

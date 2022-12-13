@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
-using ProjectBullet.Strafe;
+using ProjectBullet.Player.Strafe;
 using Sandbox;
 
-namespace ProjectBullet;
+namespace ProjectBullet.Player;
 
 public abstract partial class BasePlayer : AnimatedEntity
 {

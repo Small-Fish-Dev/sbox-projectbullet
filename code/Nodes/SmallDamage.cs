@@ -18,10 +18,7 @@ public class CheapDamage : WeaponNodeEntity, IGoalNode
 
 		using ( Prediction.Off() )
 		{
-			var damageInfo = DamageInfo.FromBullet( info.ImpactPoint, 32, info.DamageMultiplier * 7.0f )
-				.WithAttacker( info.Attacker )
-				.WithWeapon( this );
-
+			var damageInfo = info.ToDamageInfo( 7.0f );
 			info.Victim.TakeDamage( damageInfo );
 		}
 
