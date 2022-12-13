@@ -8,7 +8,7 @@ public partial class GraphNodeIn : Panel
 	public GraphNode GraphNode { get; set; }
 	public PreInstanceGraph.Node NodeData => GraphNode.NodeData;
 	public PreInstanceGraph Graph => GraphNode.NodeData.Root;
-	
+
 	protected override void OnAfterTreeRender( bool firstTime )
 	{
 		base.OnAfterTreeRender( firstTime );
@@ -34,13 +34,32 @@ public partial class GraphNodeIn : Panel
 		{
 			NodeData.Previous.Disconnect();
 		}
+		
+		e.StopPropagation();
 	}
 
 	public bool Hovered { get; set; } = false;
 	public bool IsInvalidHover { get; set; } = false;
 	public bool MakingLink { get; set; } = false;
+
+	public bool InvalidEstimatedEnergy
+	{
+		get
+		{
+			var estimated = NodeData.Previous?.LastEstimatedEnergyOutput;
+			if ( estimated == null )
+			{
+				return false;
+			}
+
+			var required = NodeData.Instance?.Description?.EnergyAttribute?.Energy;
+
+			return required > estimated;
+		}
+	}
+
 	public bool IsConnected => GraphNode.NodeData.IsConnected;
 
 	public string RootClasses =>
-		$"{(IsConnected ? "connected" : "")} {(MakingLink ? "linking" : "")} {(IsInvalidHover ? "invalid-link" : "")}";
+		$"{(InvalidEstimatedEnergy ? "estimation-low" : "")} {(IsConnected ? "connected" : "")} {(MakingLink ? "linking" : "")} {(IsInvalidHover ? "invalid-link" : "")}";
 }

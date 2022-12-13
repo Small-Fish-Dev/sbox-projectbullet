@@ -19,8 +19,8 @@ public partial class GraphVisualizer : Panel
 
 	private void DrawNodeLine( Color color, Vector2 start, Vector2 end )
 	{
-		GraphicsX.Line( Color.White,
-			ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
+		//GraphicsX.Line( Color.White,
+		//	ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
 
 		GraphicsX.Line( color,
 			ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
@@ -78,8 +78,13 @@ public partial class GraphVisualizer : Panel
 					continue;
 				}
 
-				if ( input.Hovered && !input.IsInvalidHover )
+				if ( input.Hovered )
 				{
+					if ( input.IsInvalidHover )
+					{
+						input.NodeData.Previous?.Disconnect(  );
+					}
+					
 					output.Connector.ConnectTo( input.GraphNode.NodeData );
 					input.GraphNode.StateHasChanged();
 				}
@@ -144,6 +149,11 @@ public partial class GraphVisualizer : Panel
 			{
 				input.Hovered = true;
 
+				if ( input.IsConnected && _mouseDownTarget != null )
+				{
+					input.IsInvalidHover = true;
+				}
+				
 				child.StateHasChanged();
 			}
 			else
@@ -163,7 +173,7 @@ public partial class GraphVisualizer : Panel
 	public Color CalculateOutputColor( GraphNodeOut output )
 	{
 		var h = ((output.Connector.LastEstimatedEnergyOutput ?? 50.0f) * 0.01f) * 150;
-		return new ColorHsv( h, 1, 1 ).ToColor();
+		return new ColorHsv( h, 0.6f, 1 ).ToColor();
 	}
 
 	public override void DrawBackground( ref RenderState state )

@@ -4,17 +4,36 @@ namespace ProjectBullet.Core.Node;
 
 public static partial class NodeEvent
 {
-	private const string ConnectorChangedEvent = "connectorchanged";
-
-	public class ConnectorChangedAttribute : EventAttribute
+	private const string ClientConnectorChangedEvent = "clientconnectorchanged";
+	public static partial class Client
 	{
-		public ConnectorChangedAttribute() : base( ConnectorChangedEvent ) { }
+		public class ConnectorChangedAttribute : EventAttribute
+		{
+			public ConnectorChangedAttribute() : base( ClientConnectorChangedEvent ) { }
+		}
+	}
+	
+	[ClientRpc]
+	public static void ConnectorChangedRpc()
+	{
+		Event.Run( ClientConnectorChangedEvent );
+	}
+	
+	private const string ServerConnectorChangedEvent = "serverconnectorchanged";
+	public static class Server
+	{
+		public class ConnectorChangedAttribute : EventAttribute
+		{
+			public ConnectorChangedAttribute() : base( ServerConnectorChangedEvent ) { }
+		}
 	}
 
-	[ClientRpc]
-	public static void OnConnectorChangedRpc()
+	public static void RunConnectorChanged( Entity player )
 	{
-		// this is just a hacky way to update energies
-		Event.Run( ConnectorChangedEvent );
+		Game.AssertServer();
+
+		Event.Run( ServerConnectorChangedEvent, player );
+
+		ConnectorChangedRpc( To.Single( player ) );
 	}
 }

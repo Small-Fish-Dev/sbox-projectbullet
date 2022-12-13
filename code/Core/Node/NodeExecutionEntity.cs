@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using System.Linq;
+using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
@@ -26,8 +27,17 @@ public partial class NodeExecutionEntity : Entity
 	public WeaponNodeEntity EntryNode { get; set; }
 
 	[Net, Predicted] public float Energy { get; set; } = 0.0f;
-	[Net, Predicted] public float MinimumEnergy { get; private set; } = 0.0f;
-	[Net, Predicted] private TimeSince TimeSinceAction { get; set; }
+	[Net] public float MinimumEnergy { get; private set; } = 0.0f;
+
+	/// <summary>
+	/// If this is false the user needs to reload to gain energy
+	/// </summary>
+	public virtual bool AutomaticEnergyGain => false;
+
+	public virtual float EnergyGain => 0.65f;
+	[Net, Predicted] public bool EnergyGainEnabled { get; set; }
+	[Net, Predicted] public TimeUntil TimeUntilAction { get; private set; }
+	[Net, Predicted] public bool IsReloading { get; set; }
 
 	public override void Spawn()
 	{
@@ -45,19 +55,52 @@ public partial class NodeExecutionEntity : Entity
 			return;
 		}
 
+		if ( Input.Pressed( InputButton.Reload ) && !IsReloading && !AutomaticEnergyGain )
+		{
+			IsReloading = true;
+			BeginReload();
+		}
+
+		if ( IsReloading || AutomaticEnergyGain )
+		{
+			Energy += EnergyGain;
+			if ( Energy > MaxEnergy )
+			{
+				EndReload();
+				IsReloading = false;
+				Energy = MaxEnergy;
+			}
+		}
+
 		if ( !CanPerformAction() )
 		{
+			if ( Energy < MinimumEnergy && !AutomaticEnergyGain )
+			{
+				IsReloading = true;
+				BeginReload();
+			}
+
 			return;
 		}
 
 		using ( LagCompensation() )
 		{
-			TimeSinceAction = 0;
+			TimeUntilAction = ActionDelay;
 			PerformAction( cl );
 		}
 	}
 
-	protected void ExecuteEntryNode( Entity target, Vector3 point )
+	protected virtual void BeginReload()
+	{
+		BasePlayer.SetAnimParameter( "b_reload", true );
+	}
+
+	protected virtual void EndReload()
+	{
+		BasePlayer.SetAnimParameter( "b_reload", true );
+	}
+
+	protected void ExecuteEntryNode( ExecuteInfo info )
 	{
 		if ( EntryNode == null )
 		{
@@ -65,7 +108,7 @@ public partial class NodeExecutionEntity : Entity
 			return;
 		}
 
-		EntryNode.PreExecute( Energy, target, point );
+		EntryNode.PreExecute( Energy, info );
 	}
 
 	protected virtual void PerformAction( IClient cl )
@@ -89,6 +132,11 @@ public partial class NodeExecutionEntity : Entity
 			}
 		}
 
+		if ( IsReloading )
+		{
+			return false;
+		}
+
 		if ( !Owner.IsValid() )
 		{
 			return false;
@@ -105,9 +153,9 @@ public partial class NodeExecutionEntity : Entity
 			return true;
 		}
 
-		return TimeSinceAction > (1 / delay);
+		return TimeUntilAction <= 0;
 	}
-	
+
 	/// <summary>
 	/// Attempt to use some energy
 	/// </summary>
@@ -122,5 +170,72 @@ public partial class NodeExecutionEntity : Entity
 
 		Energy -= amount;
 		return true;
+	}
+
+	/// <summary>
+	/// Estimate minimum energy required to use this executor.
+	/// note: this is slow!! use sparingly
+	/// </summary>
+	/// <returns>Minimum energy or null</returns>
+	public float? EstimateMinimumEnergy()
+	{
+		if ( EntryNode == null )
+		{
+			return null;
+		}
+
+		float? result = null;
+
+		void CalcPath( WeaponNodeEntity node, float input )
+		{
+			var hasPopulatedConnector = false;
+			var output = input;
+
+			output += node.Description?.EnergyAttribute?.Energy ?? 0.0f;
+
+			Log.Info( $"CalcPath ({node.GetType().Name}) - input {input}, output {output}" );
+
+			float? savedResult = result;
+			
+			foreach ( var connector in node.Connectors )
+			{
+				if ( connector.WeaponNodeEntity != null )
+				{
+					hasPopulatedConnector = true;
+					CalcPath( connector.WeaponNodeEntity, output );
+
+					if ( savedResult == null || result > savedResult )
+					{
+						savedResult = result; // hack: we NEED the worst case scenario (order etc.)
+						// actually, i'm not even sure if we need the hack....
+					}
+				}
+			}
+
+			result = savedResult;
+			
+			if ( !hasPopulatedConnector && node is IGoalNode )
+			{
+				// This node has no connectors and it's a goal node!
+				if ( result > output || result == null )
+				{
+					result = output;
+				}
+			}
+		}
+
+		CalcPath( EntryNode, 0.0f );
+
+		return result;
+	}
+
+	[NodeEvent.Server.ConnectorChanged]
+	public void OnConnectorChanged( Entity player )
+	{
+		if ( player == BasePlayer )
+		{
+			Log.Info( "reestimating" );
+			MinimumEnergy = EstimateMinimumEnergy() ?? 0.0f;
+		}
 	}
 }

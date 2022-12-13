@@ -32,6 +32,8 @@ public partial class GraphNodeOut : Panel
 		{
 			Connector.Disconnect();
 		}
+		
+		e.StopPropagation();
 	}
 
 	public bool MakingLink { get; set; } = false;

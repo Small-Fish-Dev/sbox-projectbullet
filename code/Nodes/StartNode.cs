@@ -7,10 +7,10 @@ namespace ProjectBullet.Nodes;
 [Node( DisplayName = "Start", Description = "The start of your weapon code" )]
 public class PlaceholderNode : WeaponNodeEntity
 {
-	public override float Execute( float energy, Entity target, Vector3 point )
+	public override float Execute( float energy, ExecuteInfo info )
 	{
 		Log.Warning( "PlaceholderNode has been executed. This shouldn't be done." );
-		ExecuteConnector( "on_start", target, point );
+		ExecuteConnector( "on_start", info );
 		return energy;
 	}
 }

@@ -70,7 +70,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// <param name="target">Target to pass to Execute (if any)</param>
 	/// <param name="point">Position to pass to Execute (if any)</param>
 	/// <exception cref="Exception"></exception>
-	protected void ExecuteConnector( string identifier, Entity target, Vector3 point )
+	protected void ExecuteConnector( string identifier, ExecuteInfo info )
 	{
 		if ( Owner is not NodeExecutionEntity nodeExecutor )
 		{
@@ -86,7 +86,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 				continue;
 			}
 
-			connector.WeaponNodeEntity?.PostExecuteConnector( this, connector, target, point );
+			connector.WeaponNodeEntity?.PostExecuteConnector( this, connector, info );
 			return;
 		}
 
@@ -191,12 +191,11 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// Either target or point should be non-null. *both don't have to be non-null!*
 	/// </summary>
 	/// <param name="energy">Amount of energy provided to the node</param>
-	/// <param name="target">Target (if any) entity hit</param>
-	/// <param name="point">Position (if any) of hit</param>
+	/// <param name="info">ExecuteInfo</param>
 	/// <returns>Amount of energy to be taken away from the node executor</returns>
-	public abstract float Execute( float energy, Entity target, Vector3 point );
+	public abstract float Execute( float energy, ExecuteInfo info );
 
-	public void PreExecute( float energy, Entity target, Vector3 point )
+	public void PreExecute( float energy, ExecuteInfo info )
 	{
 		if ( Description != null )
 		{
@@ -206,11 +205,11 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 				return;
 			}
 		}
-		
+
 		var inputEnergy = Math.Min( energy, NodeExecutor.Energy );
 		Log.Info( $"Executing {GetType().Name} with {inputEnergy} energy" );
 
-		var outputEnergy = Execute( Math.Min( energy, NodeExecutor.Energy ), target, point );
+		var outputEnergy = Execute( Math.Min( energy, NodeExecutor.Energy ), info );
 		if ( NodeExecutor.Energy - outputEnergy <= 0 )
 		{
 			NodeExecutor.Energy = 0;
@@ -221,7 +220,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		}
 	}
 
-	protected void PostExecuteConnector( WeaponNodeEntity previous, Connector connector, Entity target, Vector3 point )
+	protected void PostExecuteConnector( WeaponNodeEntity previous, Connector connector, ExecuteInfo info )
 	{
 		var estimatedEnergy = previous.EstimateConnectorOutput( connector.Identifier ) ??
 		                      NodeExecutor.Energy;
@@ -232,7 +231,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 			return;
 		}
 
-		PreExecute( estimatedEnergy, target, point );
+		PreExecute( estimatedEnergy, info );
 	}
 
 	/// <summary>
@@ -252,10 +251,10 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// <summary>
 	/// Estimate the output energy of the provided connector
 	/// </summary>
-	/// <param name="identifier">Connector ID</param>
+	/// <param name="providedConnector">Connector</param>
 	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
-	public float? EstimateConnectorOutput( string identifier, NodeExecutionEntity otherNodeExecutor = null )
+	public float? EstimateConnectorOutput( Connector providedConnector, NodeExecutionEntity otherNodeExecutor = null )
 	{
 		NodeExecutionEntity nodeExecutor = otherNodeExecutor;
 
@@ -285,7 +284,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		{
 			// The main way of estimating won't work!
 			// Just return the absolute output...
-			var absolute = GetConnector( identifier )?.ConnectorAttribute?.EnergyOutAmount;
+			var absolute = providedConnector?.ConnectorAttribute?.EnergyOutAmount;
 			if ( absolute != null && absolute.Value != 0.0f )
 			{
 				return absolute.Value;
@@ -307,7 +306,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 			     connector.ConnectorAttribute.EnergyOutPercentage == 0.0f )
 			{
 				// If that connector is the one we're looking for...
-				if ( connector.Identifier == identifier )
+				if ( connector == providedConnector )
 				{
 					return null; // ... just return null.
 				}
@@ -326,7 +325,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 				usage = MathF.Min( result, connector.ConnectorAttribute.EnergyOutAmount );
 			}
 
-			if ( connector.Identifier == identifier )
+			if ( connector == providedConnector )
 			{
 				if ( usage > max )
 				{
@@ -347,6 +346,14 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		return null;
 	}
 
+	/// <summary>
+	/// Estimate the output energy of the provided connector
+	/// </summary>
+	/// <param name="identifier">Connector ID</param>
+	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
+	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
+	public float? EstimateConnectorOutput( string identifier, NodeExecutionEntity otherNodeExecutor = null ) =>
+		EstimateConnectorOutput( GetConnector( identifier ), otherNodeExecutor );
 
 	protected override void OnDestroy()
 	{
