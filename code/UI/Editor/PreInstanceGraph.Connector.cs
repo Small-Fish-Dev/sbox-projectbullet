@@ -85,7 +85,7 @@ public partial class PreInstanceGraph
 
 		public override float? EstimateEnergyOutput()
 		{
-			LastEstimatedEnergyOutput = Root.NodeExecutor.Energy;
+			LastEstimatedEnergyOutput = Root.NodeExecutor.MaxEnergy;
 			return LastEstimatedEnergyOutput;
 		}
 
