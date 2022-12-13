@@ -55,7 +55,7 @@ public partial class NodeExecutionEntity : Entity
 			return;
 		}
 
-		if ( Input.Pressed( InputButton.Reload ) && !IsReloading && !AutomaticEnergyGain )
+		if ( Input.Pressed( InputButton.Reload ) && !IsReloading && !AutomaticEnergyGain && Energy != MaxEnergy )
 		{
 			IsReloading = true;
 			BeginReload();
@@ -74,7 +74,7 @@ public partial class NodeExecutionEntity : Entity
 
 		if ( !CanPerformAction() )
 		{
-			if ( Energy < MinimumEnergy && !AutomaticEnergyGain )
+			if ( Energy < MinimumEnergy && !AutomaticEnergyGain && !IsReloading )
 			{
 				IsReloading = true;
 				BeginReload();
@@ -92,6 +92,8 @@ public partial class NodeExecutionEntity : Entity
 
 	protected virtual void BeginReload()
 	{
+		Energy = 0;
+		
 		BasePlayer.SetAnimParameter( "b_reload", true );
 	}
 
