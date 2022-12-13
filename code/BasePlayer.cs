@@ -13,9 +13,10 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 	[Net] public IList<NodeExecutionEntity> NodeExecutors { get; private set; } = new List<NodeExecutionEntity>();
 
-	[Net, Predicted]
-	protected StrafeController Controller { get; set; }
+	[Net, Predicted] protected StrafeController Controller { get; set; }
 
+	private ClothingContainer _clothing;
+	
 	/// <summary>
 	/// Register all node executors
 	/// </summary>
@@ -51,17 +52,6 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 	public override void Spawn()
 	{
-		Controller = new StrafeController()
-		{
-			AirAcceleration = 1000,
-			WalkSpeed = 240,
-			SprintSpeed = 245,
-			DefaultSpeed = 260,
-			AutoJump = false,
-			Acceleration = 5,
-			GroundFriction = 5 //Do this just for safety if player respawns inside friction volume.
-		};
-
 		Components.Create<Inventory>();
 
 		EnableLagCompensation = true;
@@ -69,8 +59,6 @@ public abstract partial class BasePlayer : AnimatedEntity
 		Tags.Add( "player" );
 
 		base.Spawn();
-
-		Respawn();
 	}
 
 	public virtual void Respawn()
@@ -85,6 +73,28 @@ public abstract partial class BasePlayer : AnimatedEntity
 		GameManager.Current?.MoveToSpawnpoint( this );
 
 		ResetInterpolation();
+		
+		SetModel( "models/citizen/citizen.vmdl" );
+		
+		Controller = new StrafeController()
+		{
+			AirAcceleration = 1000,
+			WalkSpeed = 240,
+			SprintSpeed = 245,
+			DefaultSpeed = 260,
+			AutoJump = false,
+			Acceleration = 5,
+			GroundFriction = 5 //Do this just for safety if player respawns inside friction volume.
+		};
+		
+		EnableDrawing = true;
+		EnableHideInFirstPerson = true;
+		EnableShadowInFirstPerson = true;
+		EnableHitboxes = false;
+		
+		_clothing ??= new ClothingContainer();
+		_clothing.LoadFromClient( Client );
+		_clothing.DressEntity( this );
 	}
 
 	public override void Simulate( IClient cl )
@@ -99,9 +109,9 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 		EyeSimulate();
 
-		Controller?.Simulate(cl, this);
-		
-		foreach (var nodeExecutor in NodeExecutors)
+		Controller?.Simulate( cl, this );
+
+		foreach ( var nodeExecutor in NodeExecutors )
 		{
 			nodeExecutor.Simulate( cl );
 		}
@@ -115,9 +125,17 @@ public abstract partial class BasePlayer : AnimatedEntity
 		{
 			return;
 		}
-		
+
 		Controller?.Simulate( cl, this );
 
 		CameraFrameSimulate();
+
+		var line = 0;
+		foreach ( var ne in NodeExecutors )
+		{
+			var color = ne.Energy >= ne.MinimumEnergy ? Color.Green : Color.Red;
+			DebugOverlay.ScreenText( $"{ne.DisplayName} {ne.Energy.Floor()}/{ne.MaxEnergy} - need {ne.MinimumEnergy} {ne.TimeUntilAction}",
+				Vector2.One * 20, line++, color );
+		}
 	}
 }

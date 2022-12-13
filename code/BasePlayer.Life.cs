@@ -25,6 +25,9 @@ public abstract partial class BasePlayer
 		LifeState = LifeState.Dead;
 
 		TimeUntilRespawn = RespawnDelay;
+
+		EnableDrawing = false;
+		EnableHitboxes = false;
 	}
 
 	public virtual void SimulateWhileDead()
