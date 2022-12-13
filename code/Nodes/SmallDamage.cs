@@ -7,7 +7,7 @@ namespace ProjectBullet.Nodes;
 [ShopItem( 280 )]
 [Energy( 5.0f, Estimated = true )]
 [Node( DisplayName = "Damage", Description = "Cheap and simple damage" )]
-public class CheapDamage : WeaponNodeEntity, IGoalNode
+public partial class CheapDamage : WeaponNodeEntity, IGoalNode
 {
 	public override float Execute( float energy, ExecuteInfo info )
 	{

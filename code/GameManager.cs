@@ -4,6 +4,8 @@ using System.Linq;
 using ProjectBullet.Classes;
 using ProjectBullet.Core.Node.Description;
 using ProjectBullet.Core.Shop;
+using ProjectBullet.MapEnts;
+using ProjectBullet.Player;
 using ProjectBullet.UI.Editor;
 using Sandbox.UI;
 
@@ -12,16 +14,15 @@ namespace ProjectBullet;
 public partial class GameManager : Sandbox.GameManager
 {
 	public new static GameManager Current => (GameManager)Sandbox.GameManager.Current;
-	
+
 	/// <summary>
 	/// Whether or not the game should have team damage
 	/// </summary>
 	[Net]
 	public bool AllowTeamDamage { get; set; } = false;
-	
-	[Net] public ShopHostEntity GameShop { get; set; }
 
-	private GraphVisualizer _nodeGraph { get; set; }
+	[Net] public ShopHostEntity GameShop { get; set; } = null;
+	
 
 	public GameManager()
 	{
@@ -38,24 +39,48 @@ public partial class GameManager : Sandbox.GameManager
 		}
 	}
 
-	[ConCmd.Client( "pb_editor" )]
-	public static void ToggleEditor()
+	/// <summary>
+	/// Get team for new player to join
+	/// </summary>
+	/// <returns>PlayerTeam</returns>
+	private PlayerTeam GetDisadvantagedTeam()
 	{
-		var entrypoint = Current as GameManager;
-		if ( entrypoint is { _nodeGraph: null } )
+		var players = All.OfType<BasePlayer>().ToList();
+		var teamOneCount = players.Count( v => v.Team == PlayerTeam.TeamOne );
+		var teamTwoCount = players.Count( v => v.Team == PlayerTeam.TeamTwo );
+
+		return teamOneCount >= teamTwoCount
+			?
+			// add to team two
+			PlayerTeam.TeamTwo
+			:
+			// add to team one
+			PlayerTeam.TeamOne;
+	}
+
+	public override void MoveToSpawnpoint( Entity pawn )
+	{
+		if ( pawn is not BasePlayer player )
 		{
-			var nodeExecutor = (Game.LocalPawn as Gunner).NodeExecutors.First();
-			entrypoint._nodeGraph = new GraphVisualizer( nodeExecutor );
-			Game.RootPanel.AddChild( entrypoint._nodeGraph );
+			base.MoveToSpawnpoint( pawn );
+			return;
 		}
-		else
+
+		// get all markers
+		var markers = Entity.All.OfType<SpawnMarker>().Where( v => v.Team == player.Team );
+
+		// choose random one...
+		var marker = markers.MinBy( x => Guid.NewGuid() );
+
+		// if it exists put the pawn down!
+		if ( marker == null )
 		{
-			(entrypoint?._nodeGraph as Panel)?.Delete( true );
-			if ( entrypoint != null )
-			{
-				entrypoint._nodeGraph = null;
-			}
+			return;
 		}
+
+		var transform = marker.Transform;
+		transform.Position += Vector3.Up * 50.0f;
+		player.Transform = transform;
 	}
 
 	/// <summary>
@@ -68,20 +93,14 @@ public partial class GameManager : Sandbox.GameManager
 		// Create a pawn for this client to play with
 		var pawn = new Gunner();
 		client.Pawn = pawn;
+
+		// Give the pawn a team
+		pawn.Team = GetDisadvantagedTeam();
+
+		// Say which team
+		Log.Info( $"Put {client.Name} on {pawn.Team}" );
+		
+		// Respawn pawn
 		pawn.Respawn();
-
-		// Get all of the spawnpoints
-		var spawnpoints = Entity.All.OfType<SpawnPoint>();
-
-		// chose a random one
-		var randomSpawnPoint = spawnpoints.OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
-
-		// if it exists, place the pawn there
-		if ( randomSpawnPoint != null )
-		{
-			var tx = randomSpawnPoint.Transform;
-			tx.Position = tx.Position + Vector3.Up * 50.0f; // raise it up
-			//pawn.Transform = tx;
-		}
 	}
 }

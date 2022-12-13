@@ -123,6 +123,8 @@ public partial class Gunner : BasePlayer
 	[Net] public SecondaryFireController SecondaryFire { get; set; }
 	[Net] public UltraShiftController UltraShift { get; set; }
 
+	public override NodeExecutionEntity MainExecutor => PrimaryFire;
+
 	public virtual string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
 	public GunnerViewmodel ViewModelEntity { get; protected set; }
 
@@ -210,12 +212,12 @@ public partial class Gunner : BasePlayer
 		DebugOverlay.Circle( result.EndPosition, Rotation.Identity, 3.0f, Color.Red );
 	}
 
-	protected override void AnimationSimulate(CitizenAnimationHelper? providedAnimHelper = null)
+	protected override void AnimationSimulate( CitizenAnimationHelper? providedAnimHelper = null )
 	{
 		var animHelper = new CitizenAnimationHelper( this );
-		
-		base.AnimationSimulate(animHelper);
-		
+
+		base.AnimationSimulate( animHelper );
+
 		animHelper.HoldType = CitizenAnimationHelper.HoldTypes.Pistol;
 		animHelper.Handedness = CitizenAnimationHelper.Hand.Both;
 		animHelper.AimBodyWeight = 1.0f;

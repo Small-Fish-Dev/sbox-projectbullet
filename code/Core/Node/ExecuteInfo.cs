@@ -33,6 +33,11 @@ public struct ExecuteInfo
 	public float DamageMultiplier { get; set; } = 1.0f;
 
 	/// <summary>
+	/// Normal - direction vector
+	/// </summary>
+	public Vector3? Normal { get; set; }
+
+	/// <summary>
 	/// The player or NPC or exploding barrel (etc)1 that is being attacked
 	/// </summary>
 	public Entity Victim { get; set; }
@@ -89,6 +94,7 @@ public struct ExecuteInfo
 		BoneIndex = result.Bone;
 		Hitbox = result.Hitbox;
 		ImpactPoint = result.EndPosition;
+		Normal = result.Normal;
 		return this;
 	}
 

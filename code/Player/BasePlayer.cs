@@ -19,6 +19,10 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 	private ClothingContainer _clothing;
 
+	public virtual NodeExecutionEntity MainExecutor => NodeExecutors.First();
+
+	[Net] public float SlowEffectValue { get; set; } = 0.0f;
+	
 	/// <summary>
 	/// Register all node executors
 	/// </summary>

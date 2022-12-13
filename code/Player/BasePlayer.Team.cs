@@ -9,13 +9,6 @@ namespace ProjectBullet.Player;
 /// </summary>
 public abstract partial class BasePlayer : AnimatedEntity
 {
-	public enum PlayerTeam
-	{
-		None,
-		TeamOne,
-		TeamTwo
-	}
-
 	private readonly List<KeyValuePair<PlayerTeam, string>> _teamTagPairs = new()
 	{
 		new KeyValuePair<PlayerTeam, string>( PlayerTeam.TeamOne, "team_one" ),

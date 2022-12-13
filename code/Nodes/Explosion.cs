@@ -38,15 +38,18 @@ public partial class Explosion : WeaponNodeEntity
 		public TimeUntil TimeUntilComplete;
 		[Net] public float Size { get; set; } = 15.0f;
 
+		public virtual float Speed => 250.0f;
+		public virtual float MaxSize => 140.0f;
+		
 		private List<BasePlayer> _hitPlayers = new();
 
 		[Event.Tick.Server]
 		private void Tick()
 		{
-			Size += 250.0f * Time.Delta;
-			if ( Size > 140 )
+			Size += Speed * Time.Delta;
+			if ( Size > MaxSize )
 			{
-				Size = 140;
+				Size = MaxSize;
 			}
 
 			foreach ( var player in All.OfType<BasePlayer>() )

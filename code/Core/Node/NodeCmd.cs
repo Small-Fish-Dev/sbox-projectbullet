@@ -27,12 +27,20 @@ public static class NodeCmd
 
 		return null;
 	}
+	
+	private static BasePlayer GetCallerPlayer() => ConsoleSystem.Caller.Pawn as BasePlayer;
 
 	[ConCmd.Server]
 	private static void SetConnector( int targetNetworkIdent, string identifier, int newValueNetworkIdent )
 	{
 		Game.AssertServer();
 
+		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		{
+			Log.Info( "SetConnector failed: target not allowed to use editor" );
+			return;
+		}
+		
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -70,6 +78,12 @@ public static class NodeCmd
 	{
 		Game.AssertServer();
 
+		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		{
+			Log.Info( "DisconnectConnector failed: target not allowed to use editor" );
+			return;
+		}
+		
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -98,6 +112,12 @@ public static class NodeCmd
 	{
 		Game.AssertServer();
 
+		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		{
+			Log.Info( "SetEntryNode failed: target not allowed to use editor" );
+			return;
+		}
+		
 		var executor = GetNodeExecutor( executorNetworkIdent );
 		if ( executor == null )
 		{
@@ -133,6 +153,12 @@ public static class NodeCmd
 	{
 		Game.AssertServer();
 
+		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		{
+			Log.Info( "ClearEntryNode failed: target not allowed to use editor" );
+			return;
+		}
+		
 		var executor = GetNodeExecutor( executorNetworkIdent );
 		if ( executor == null )
 		{
@@ -160,6 +186,12 @@ public static class NodeCmd
 	{
 		Game.AssertServer();
 
+		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		{
+			Log.Info( "AddNodeToExecutor failed: target not allowed to use editor" );
+			return;
+		}
+		
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -196,6 +228,12 @@ public static class NodeCmd
 	{
 		Game.AssertServer();
 
+		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		{
+			Log.Info( "RemoveNodeFromExecutor failed: target not allowed to use editor" );
+			return;
+		}
+		
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
