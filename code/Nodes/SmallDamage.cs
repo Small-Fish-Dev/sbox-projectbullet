@@ -22,8 +22,6 @@ public class CheapDamage : WeaponNodeEntity, IGoalNode
 				.WithAttacker( info.Attacker )
 				.WithWeapon( this );
 
-			if (info.Hitbox.)
-			
 			info.Victim.TakeDamage( damageInfo );
 		}
 
