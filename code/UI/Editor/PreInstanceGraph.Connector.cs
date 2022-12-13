@@ -60,7 +60,7 @@ public partial class PreInstanceGraph
 
 		public virtual float? EstimateEnergyOutput()
 		{
-			LastEstimatedEnergyOutput = Parent.Instance.EstimateConnectorOutput( Identifier, Root.NodeExecutor );
+			LastEstimatedEnergyOutput = Parent.Instance.EstimateConnectorOutput( Identifier, Root.NodeExecutor, true );
 			return LastEstimatedEnergyOutput;
 		}
 

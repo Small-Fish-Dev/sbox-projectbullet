@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.Player.Strafe;
@@ -16,7 +18,7 @@ public abstract partial class BasePlayer : AnimatedEntity
 	[Net, Predicted] protected StrafeController Controller { get; set; }
 
 	private ClothingContainer _clothing;
-	
+
 	/// <summary>
 	/// Register all node executors
 	/// </summary>
@@ -73,9 +75,9 @@ public abstract partial class BasePlayer : AnimatedEntity
 		GameManager.Current?.MoveToSpawnpoint( this );
 
 		ResetInterpolation();
-		
+
 		SetModel( "models/citizen/citizen.vmdl" );
-		
+
 		Controller = new StrafeController()
 		{
 			AirAcceleration = 1000,
@@ -86,15 +88,17 @@ public abstract partial class BasePlayer : AnimatedEntity
 			Acceleration = 5,
 			GroundFriction = 5 //Do this just for safety if player respawns inside friction volume.
 		};
-		
+
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
 		EnableHitboxes = false;
-		
+
 		_clothing ??= new ClothingContainer();
 		_clothing.LoadFromClient( Client );
 		_clothing.DressEntity( this );
+
+		RunClientRespawn();
 	}
 
 	public override void Simulate( IClient cl )
@@ -115,6 +119,8 @@ public abstract partial class BasePlayer : AnimatedEntity
 		{
 			nodeExecutor.Simulate( cl );
 		}
+
+		AnimationSimulate();
 	}
 
 	public override void FrameSimulate( IClient cl )
@@ -131,11 +137,26 @@ public abstract partial class BasePlayer : AnimatedEntity
 		CameraFrameSimulate();
 
 		var line = 0;
+		DebugOverlay.ScreenText( $"{Client.Name}, health {Health}/{MaxHealth}",
+			Vector2.One * 20, line++, Color.Cyan );
 		foreach ( var ne in NodeExecutors )
 		{
 			var color = ne.Energy >= ne.MinimumEnergy ? Color.Green : Color.Red;
-			DebugOverlay.ScreenText( $"{ne.DisplayName} {ne.Energy.Floor()}/{ne.MaxEnergy} - need {ne.MinimumEnergy} {ne.TimeUntilAction}",
+			DebugOverlay.ScreenText(
+				$"{ne.DisplayName} {ne.Energy.Floor()}/{ne.MaxEnergy} - need {ne.MinimumEnergy} {ne.TimeUntilAction}",
 				Vector2.One * 20, line++, color );
+		}
+
+		foreach ( var player in All.OfType<BasePlayer>() )
+		{
+			if ( player == this )
+			{
+				continue;
+			}
+
+			DebugOverlay.Text(
+				$"{player.Health}/{player.MaxHealth}",
+				player.EyePosition, 0, Color.Orange );
 		}
 	}
 }

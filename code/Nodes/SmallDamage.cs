@@ -26,6 +26,28 @@ public class CheapDamage : WeaponNodeEntity, IGoalNode
 	}
 }
 
+[ShopItem( 580 )]
+[Energy( 5.0f, Estimated = true )]
+[Node( DisplayName = "More Damage", Description = "Cheap and simple damage" )]
+public class MoreDamage : WeaponNodeEntity, IGoalNode
+{
+	public override float Execute( float energy, ExecuteInfo info )
+	{
+		if ( info.Victim == null )
+		{
+			return 0.0f;
+		}
+
+		using ( Prediction.Off() )
+		{
+			var damageInfo = info.ToDamageInfo( 14.0f );
+			info.Victim.TakeDamage( damageInfo );
+		}
+
+		return 0.0f;
+	}
+}
+
 [ShopItem( 300 )]
 [Energy( 12.0f, Estimated = true )]
 [Connector( "on_one", Order = 0, EnergyOutPercentage = 0.5f, DisplayName = "One" )]

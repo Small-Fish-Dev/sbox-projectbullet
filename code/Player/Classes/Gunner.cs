@@ -50,8 +50,17 @@ public partial class Gunner : BasePlayer
 				.WithAnyTags( "solid", "player", "npc", "glass" )
 				.Ignore( BasePlayer );
 
+			var result = trace.Run();
+
+			// get the muzzle position on our effect entity - either viewmodel or world model
+			//var pos = (BasePlayer as Gunner)?.ViewModelEntity.GetAttachment( "muzzle" ) ?? Transform;
+
+			//var system = Particles.Create( "particles/tracer.standard.vpcf" );
+			//system?.SetPosition( 0, pos.Position );
+			//system?.SetPosition( 1, result.EndPosition );
+
 			ExecuteEntryNode( new ExecuteInfo()
-				.UsingTraceResult( trace.Run() )
+				.UsingTraceResult( result )
 				.WithAttacker( BasePlayer ) );
 		}
 
@@ -83,8 +92,10 @@ public partial class Gunner : BasePlayer
 	public class SecondaryFireController : NodeExecutionEntity
 	{
 		public override string DisplayName => "Secondary Fire";
-		public override float ActionDelay => 4.0f;
+		public override float ActionDelay => 0.01f;
 		public override InputButton InputButton => InputButton.SecondaryAttack;
+		public override bool AllowAutoAction => true;
+		public override bool AutomaticEnergyGain => true;
 
 		protected override void PerformAction( IClient cl )
 		{
@@ -117,6 +128,13 @@ public partial class Gunner : BasePlayer
 
 	public void ShootEffect()
 	{
+		if ( Game.IsServer )
+		{
+			return;
+		}
+
+		//Particles.Create( "particles/pistol_muzzleflash.vpcf", ViewModelEntity, "muzzle" );
+
 		ViewModelEntity?.SetAnimParameter( "fire", true );
 	}
 
@@ -131,11 +149,16 @@ public partial class Gunner : BasePlayer
 		RegisterNodeExecutors();
 	}
 
-	public override void ClientSpawn()
+	protected override void ClientRespawn()
 	{
-		base.ClientSpawn();
+		base.ClientRespawn();
 
 		if ( !IsLocalPawn )
+		{
+			return;
+		}
+
+		if ( Game.IsServer )
 		{
 			return;
 		}
@@ -143,6 +166,25 @@ public partial class Gunner : BasePlayer
 		ViewModelEntity =
 			new GunnerViewmodel { Position = Position, Owner = Owner, EnableViewmodelRendering = true };
 		ViewModelEntity.SetModel( ViewModelPath );
+	}
+
+	protected override void HandleDeath()
+	{
+		base.HandleDeath();
+
+		if ( !IsLocalPawn )
+		{
+			return;
+		}
+
+		if ( Game.IsServer )
+		{
+			return;
+		}
+
+		Log.Info( "hi" );
+		ViewModelEntity.Delete();
+		ViewModelEntity = null;
 	}
 
 	protected override void CameraFrameSimulate()
@@ -166,5 +208,16 @@ public partial class Gunner : BasePlayer
 		var result = trace.Run();
 
 		DebugOverlay.Circle( result.EndPosition, Rotation.Identity, 3.0f, Color.Red );
+	}
+
+	protected override void AnimationSimulate(CitizenAnimationHelper? providedAnimHelper = null)
+	{
+		var animHelper = new CitizenAnimationHelper( this );
+		
+		base.AnimationSimulate(animHelper);
+		
+		animHelper.HoldType = CitizenAnimationHelper.HoldTypes.Pistol;
+		animHelper.Handedness = CitizenAnimationHelper.Hand.Both;
+		animHelper.AimBodyWeight = 1.0f;
 	}
 }

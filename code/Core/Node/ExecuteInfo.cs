@@ -24,10 +24,10 @@ public struct ExecuteInfo
 	public Vector3 ImpactPoint { get; set; }
 
 	/// <summary>The hitbox (if any) that was hit</summary>
-	public Hitbox Hitbox { get; set; }
+	public Hitbox? Hitbox { get; set; }
 
 	/// <summary>The bone index that the hitbox was attached to</summary>
-	public int BoneIndex { get; set; }
+	public int? BoneIndex { get; set; }
 
 	/// <summary>Multiplier for damage</summary>
 	public float DamageMultiplier { get; set; } = 1.0f;
@@ -41,7 +41,7 @@ public struct ExecuteInfo
 	/// The force of the damage - for moving physics etc. This would be the trajectory
 	/// of the bullet multiplied by the speed and mass.
 	/// </summary>
-	public Vector3 Force { get; set; }
+	public Vector3? Force { get; set; }
 
 	/// <summary>
 	/// The BasePlayer that is attacking
@@ -96,14 +96,24 @@ public struct ExecuteInfo
 	{
 		var result = new DamageInfo
 		{
-			Hitbox = Hitbox,
-			Attacker = Attacker,
-			Position = ImpactPoint,
-			BoneIndex = BoneIndex,
-			Force = Force,
-			Damage = damage * DamageMultiplier,
-			Tags = Tags
+			Attacker = Attacker, Position = ImpactPoint, Damage = damage * DamageMultiplier, Tags = Tags
 		};
+
+		if ( Hitbox != null )
+		{
+			result.Hitbox = Hitbox.Value;
+		}
+
+		if ( Force != null )
+		{
+			result.Force = Force.Value;
+		}
+
+		if ( BoneIndex != null )
+		{
+			result.BoneIndex = BoneIndex.Value;
+		}
+
 		return result;
 	}
 }

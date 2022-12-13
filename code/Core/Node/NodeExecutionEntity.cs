@@ -34,7 +34,7 @@ public partial class NodeExecutionEntity : Entity
 	/// </summary>
 	public virtual bool AutomaticEnergyGain => false;
 
-	public virtual float EnergyGain => 0.65f;
+	public virtual float EnergyGain => 38f;
 	[Net, Predicted] public bool EnergyGainEnabled { get; set; }
 	[Net, Predicted] public TimeUntil TimeUntilAction { get; private set; }
 	[Net, Predicted] public bool IsReloading { get; set; }
@@ -58,15 +58,15 @@ public partial class NodeExecutionEntity : Entity
 		if ( Input.Pressed( InputButton.Reload ) && !IsReloading && !AutomaticEnergyGain && Energy != MaxEnergy )
 		{
 			IsReloading = true;
-			BeginReload();
+			BeginReloadShared();
 		}
 
 		if ( IsReloading || AutomaticEnergyGain )
 		{
-			Energy += EnergyGain;
+			Energy += EnergyGain * Time.Delta;
 			if ( Energy > MaxEnergy )
 			{
-				EndReload();
+				EndReloadShared();
 				IsReloading = false;
 				Energy = MaxEnergy;
 			}
@@ -77,7 +77,7 @@ public partial class NodeExecutionEntity : Entity
 			if ( Energy < MinimumEnergy && !AutomaticEnergyGain && !IsReloading )
 			{
 				IsReloading = true;
-				BeginReload();
+				BeginReloadShared();
 			}
 
 			return;
@@ -90,6 +90,30 @@ public partial class NodeExecutionEntity : Entity
 		}
 	}
 
+	public void BeginReloadShared()
+	{
+		BeginReloadClient();
+		BeginReload();
+	}
+	
+	[ClientRpc]
+	public void BeginReloadClient()
+	{
+		BeginReload();
+	}
+	
+	public void EndReloadShared()
+	{
+		EndReloadClient();
+		EndReload();
+	}
+	
+	[ClientRpc]
+	public void EndReloadClient()
+	{
+		EndReload();
+	}
+	
 	protected virtual void BeginReload()
 	{
 		Energy = 0;
@@ -99,7 +123,7 @@ public partial class NodeExecutionEntity : Entity
 
 	protected virtual void EndReload()
 	{
-		BasePlayer.SetAnimParameter( "b_reload", true );
+		BasePlayer.SetAnimParameter( "b_reload", false );
 	}
 
 	protected void ExecuteEntryNode( ExecuteInfo info )

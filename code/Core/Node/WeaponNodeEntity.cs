@@ -254,8 +254,10 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// </summary>
 	/// <param name="providedConnector">Connector</param>
 	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
+	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
-	public float? EstimateConnectorOutput( Connector providedConnector, NodeExecutionEntity otherNodeExecutor = null )
+	public float? EstimateConnectorOutput( Connector providedConnector, NodeExecutionEntity otherNodeExecutor = null,
+		bool useMaxEnergy = false )
 	{
 		NodeExecutionEntity nodeExecutor = otherNodeExecutor;
 
@@ -274,7 +276,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		float? previousOutput;
 		if ( nodeExecutor?.EntryNode != null && nodeExecutor.EntryNode == this )
 		{
-			previousOutput = nodeExecutor.Energy;
+			previousOutput = useMaxEnergy ? nodeExecutor.MaxEnergy : nodeExecutor.Energy;
 		}
 		else
 		{
@@ -352,9 +354,11 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// </summary>
 	/// <param name="identifier">Connector ID</param>
 	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
+	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
-	public float? EstimateConnectorOutput( string identifier, NodeExecutionEntity otherNodeExecutor = null ) =>
-		EstimateConnectorOutput( GetConnector( identifier ), otherNodeExecutor );
+	public float? EstimateConnectorOutput( string identifier, NodeExecutionEntity otherNodeExecutor = null,
+		bool useMaxEnergy = false ) =>
+		EstimateConnectorOutput( GetConnector( identifier ), otherNodeExecutor, useMaxEnergy );
 
 	protected override void OnDestroy()
 	{
