@@ -6,7 +6,6 @@ using ProjectBullet.Core.Node.Description;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
 using ProjectBullet.Player;
-using ProjectBullet.UI.Editor;
 using Sandbox.UI;
 
 namespace ProjectBullet;
@@ -21,9 +20,6 @@ public partial class GameManager : Sandbox.GameManager
 	[Net]
 	public bool AllowTeamDamage { get; set; } = false;
 
-	[Net] public ShopHostEntity GameShop { get; set; } = null;
-	
-
 	public GameManager()
 	{
 		WeaponNodeDescription.InitAll();
@@ -34,8 +30,9 @@ public partial class GameManager : Sandbox.GameManager
 		}
 		else
 		{
-			GameShop = new ShopHostEntity();
-			GameShop.StockAllItems();
+			// we don't need to store this, ShopHostEntity.Instance works
+			var shopHost = new ShopHostEntity();
+			shopHost.StockAllItems();
 		}
 	}
 
@@ -43,7 +40,7 @@ public partial class GameManager : Sandbox.GameManager
 	/// Get team for new player to join
 	/// </summary>
 	/// <returns>PlayerTeam</returns>
-	private PlayerTeam GetDisadvantagedTeam()
+	private static PlayerTeam GetDisadvantagedTeam()
 	{
 		var players = All.OfType<BasePlayer>().ToList();
 		var teamOneCount = players.Count( v => v.Team == PlayerTeam.TeamOne );
@@ -73,12 +70,7 @@ public partial class GameManager : Sandbox.GameManager
 		var marker = markers.MinBy( x => Guid.NewGuid() );
 
 		// if it exists put the pawn down!
-		if ( marker == null )
-		{
-			return;
-		}
-
-		var transform = marker.Transform;
+		var transform = marker?.Transform ?? player.Transform;
 		transform.Position += Vector3.Up * 50.0f;
 		player.Transform = transform;
 	}
@@ -99,7 +91,7 @@ public partial class GameManager : Sandbox.GameManager
 
 		// Say which team
 		Log.Info( $"Put {client.Name} on {pawn.Team}" );
-		
+
 		// Respawn pawn
 		pawn.Respawn();
 	}
