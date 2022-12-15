@@ -55,6 +55,11 @@ public partial class GameManager : Sandbox.GameManager
 			PlayerTeam.TeamOne;
 	}
 
+
+	/// <summary>
+	/// Move player to their team spawnpoint
+	/// </summary>
+	/// <param name="pawn">Player</param>
 	public override void MoveToSpawnpoint( Entity pawn )
 	{
 		if ( pawn is not BasePlayer player )
@@ -64,15 +69,16 @@ public partial class GameManager : Sandbox.GameManager
 		}
 
 		// get all markers
-		var markers = Entity.All.OfType<SpawnMarker>().Where( v => v.Team == player.Team );
+		var markers = All.OfType<SpawnMarker>().Where( v => v.Team == player.Team );
 
 		// choose random one...
-		var marker = markers.MinBy( x => Guid.NewGuid() );
+		var marker = markers.MinBy( _ => Guid.NewGuid() );
 
 		// if it exists put the pawn down!
 		var transform = marker?.Transform ?? player.Transform;
 		transform.Position += Vector3.Up * 50.0f;
 		player.Transform = transform;
+		var test = Vector3.Random;
 	}
 
 	/// <summary>
