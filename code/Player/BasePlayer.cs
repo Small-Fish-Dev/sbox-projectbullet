@@ -15,14 +15,12 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 	[Net] public IList<NodeExecutionEntity> NodeExecutors { get; private set; } = new List<NodeExecutionEntity>();
 
-	[Net, Predicted] protected StrafeController Controller { get; set; }
+	[Net, Predicted] private StrafeController Controller { get; set; }
 
 	private ClothingContainer _clothing;
 
-	public virtual NodeExecutionEntity MainExecutor => NodeExecutors.First();
+	protected virtual NodeExecutionEntity MainExecutor => NodeExecutors.First();
 
-	[Net] public float SlowEffectValue { get; set; } = 0.0f;
-	
 	/// <summary>
 	/// Register all node executors
 	/// </summary>
@@ -96,6 +94,7 @@ public abstract partial class BasePlayer : AnimatedEntity
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
+		EnableAllCollisions = true;
 		EnableHitboxes = false;
 
 		_clothing ??= new ClothingContainer();
@@ -105,14 +104,31 @@ public abstract partial class BasePlayer : AnimatedEntity
 		RunClientRespawn();
 	}
 
+	[ClientRpc]
+	public void RunClientRespawn()
+	{
+		ClientRespawn();
+	}
+
+	protected virtual void ClientRespawn() { }
+
 	public override void Simulate( IClient cl )
 	{
 		base.Simulate( cl );
 
 		if ( IsDead )
 		{
-			SimulateWhileDead();
-			return;
+			if ( LifeState != LifeState.Dead )
+			{
+				return;
+			}
+
+			if ( !(TimeUntilRespawn <= 0) || !Game.IsServer )
+			{
+				return;
+			}
+
+			Respawn();
 		}
 
 		EyeSimulate();
@@ -139,28 +155,5 @@ public abstract partial class BasePlayer : AnimatedEntity
 		Controller?.Simulate( cl, this );
 
 		CameraFrameSimulate();
-
-		var line = 0;
-		DebugOverlay.ScreenText( $"{Client.Name}, health {Health}/{MaxHealth}",
-			Vector2.One * 20, line++, Color.Cyan );
-		foreach ( var ne in NodeExecutors )
-		{
-			var color = ne.Energy >= ne.MinimumEnergy ? Color.Green : Color.Red;
-			DebugOverlay.ScreenText(
-				$"{ne.DisplayName} {ne.Energy.Floor()}/{ne.MaxEnergy} - need {ne.MinimumEnergy} {ne.TimeUntilAction}",
-				Vector2.One * 20, line++, color );
-		}
-
-		foreach ( var player in All.OfType<BasePlayer>() )
-		{
-			if ( player == this )
-			{
-				continue;
-			}
-
-			DebugOverlay.Text(
-				$"{player.Health}/{player.MaxHealth}",
-				player.EyePosition, 0, Color.Orange );
-		}
 	}
 }

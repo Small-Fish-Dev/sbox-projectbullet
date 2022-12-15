@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using ProjectBullet.Classes;
-using ProjectBullet.UI.Editor;
+﻿using ProjectBullet.UI.Editor;
 using Sandbox;
-using Sandbox.UI;
 
 namespace ProjectBullet.Player;
 
@@ -12,13 +9,15 @@ public abstract partial class BasePlayer
 
 	private GraphVisualizer _nodeGraph;
 
-	public void OnCanUseEditorChanged()
+	private void OnCanUseEditorChanged()
 	{
-		if ( CanUseEditor == false && _nodeGraph != null )
+		if ( CanUseEditor != false || _nodeGraph == null )
 		{
-			_nodeGraph.Delete( true );
-			_nodeGraph = null;
+			return;
 		}
+
+		_nodeGraph.Delete( true );
+		_nodeGraph = null;
 	}
 
 	[ConCmd.Client( "pb_editor" )]

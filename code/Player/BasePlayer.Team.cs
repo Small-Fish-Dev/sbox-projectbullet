@@ -4,10 +4,15 @@ using Sandbox;
 
 namespace ProjectBullet.Player;
 
-/// <summary>
-/// Basic team impl
-/// </summary>
-public abstract partial class BasePlayer : AnimatedEntity
+public enum PlayerTeam
+{
+	None,
+	TeamOne,
+	TeamTwo
+}
+
+
+public abstract partial class BasePlayer
 {
 	private readonly List<KeyValuePair<PlayerTeam, string>> _teamTagPairs = new()
 	{

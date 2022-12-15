@@ -4,29 +4,29 @@ namespace ProjectBullet.Player;
 
 public abstract partial class BasePlayer
 {
-	public bool IsAlive => LifeState == Sandbox.LifeState.Alive;
+	public bool IsAlive => LifeState == LifeState.Alive;
 	public bool IsDead => LifeState == LifeState.Dead;
 	[Net, Predicted] protected TimeUntil TimeUntilRespawn { get; set; }
 
 	/// <summary>
 	/// Time between death and respawn
 	/// </summary>
-	public virtual float RespawnDelay => 5.0f;
+	protected virtual float RespawnDelay => 5.0f;
 
 	/// <summary>
 	/// Max player health
 	/// </summary>
-	public virtual float MaxHealth => 100.0f;
+	protected virtual float MaxHealth => 100.0f;
+
+	/// <summary>
+	/// The information for the last piece of damage this player took.
+	/// </summary>
+	private DamageInfo LastDamage { get; set; }
 
 	public override void OnKilled()
 	{
 		GameManager.Current?.OnKilled( this );
 
-		HandleDeathShared();
-	}
-
-	protected void HandleDeathShared()
-	{
 		HandleDeathClient();
 		HandleDeath();
 	}
@@ -37,16 +37,6 @@ public abstract partial class BasePlayer
 		HandleDeath();
 	}
 
-	[ClientRpc]
-	public void RunClientRespawn()
-	{
-		ClientRespawn();
-	}
-
-	protected virtual void ClientRespawn()
-	{
-	}
-
 	protected virtual void HandleDeath()
 	{
 		LifeState = LifeState.Dead;
@@ -54,22 +44,14 @@ public abstract partial class BasePlayer
 		TimeUntilRespawn = RespawnDelay;
 
 		EnableDrawing = false;
+		EnableAllCollisions = false;
 		EnableHitboxes = false;
-	}
 
-	protected virtual void SimulateWhileDead()
-	{
-		if ( LifeState != LifeState.Dead )
+		if ( Game.IsClient )
 		{
-			return;
+			CreateRagdoll( Controller.Velocity, LastDamage.Position, LastDamage.Force,
+				LastDamage.BoneIndex, LastDamage.HasTag( "bullet" ), LastDamage.HasTag( "blast" ) );
 		}
-
-		if ( !(TimeUntilRespawn <= 0) || !Game.IsServer )
-		{
-			return;
-		}
-
-		Respawn();
 	}
 
 	[ClientRpc]
@@ -90,6 +72,8 @@ public abstract partial class BasePlayer
 
 			player.DidDamage( To.Single( player ), info.Position, info.Damage, Health.LerpInverse( 0, 100 ) );
 		}
+
+		LastDamage = info;
 
 		var preDamage = Health;
 		base.TakeDamage( info );

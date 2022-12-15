@@ -123,7 +123,7 @@ public partial class Gunner : BasePlayer
 	[Net] public SecondaryFireController SecondaryFire { get; set; }
 	[Net] public UltraShiftController UltraShift { get; set; }
 
-	public override NodeExecutionEntity MainExecutor => PrimaryFire;
+	protected override NodeExecutionEntity MainExecutor => PrimaryFire;
 
 	public virtual string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
 	public GunnerViewmodel ViewModelEntity { get; protected set; }
