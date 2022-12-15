@@ -1,6 +1,7 @@
 ﻿@using ProjectBullet.Core.Node
 @using Sandbox.UI;
 @namespace ProjectBullet.UI.Editor
+@inherits Sandbox.UI.Panel
 @attribute [StyleSheet("/UI/Editor/GraphNode.scss")]
 
 <root>
@@ -35,7 +36,7 @@
                         @connector.DisplayName
                     </div>
                     <div style="width: 3px"/>
-                    <GraphNodeOut style="width: 30px" Connector=@connector>
+                    <GraphNodeOut style="width: 30px" Connector=@connector/>
                 </div>
             }
         </div>
