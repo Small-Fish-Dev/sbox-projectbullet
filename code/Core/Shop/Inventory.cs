@@ -10,20 +10,12 @@ namespace ProjectBullet.Core.Shop;
 /// </summary>
 public partial class Inventory : EntityComponent
 {
-	[Net] public int Money { get; set; } = 3000;
+	[Net, Change( "OnMoneyChanged" )] public int Money { get; set; } = 3000;
 	[Net] private IList<Entity> ItemsInternal { get; set; } = new List<Entity>();
 
-	private const string NewItemEvent = "newitem";
-
-	public class NewItemAttribute : EventAttribute
+	private void OnMoneyChanged()
 	{
-		public NewItemAttribute() : base( NewItemEvent ) { }
-	}
-
-	[ClientRpc]
-	public static void OnNewItemRpc( Entity item )
-	{
-		Event.Run( NewItemEvent, item );
+		GameEvent.Client.Workshop.RunMoneyChanged( Money );
 	}
 
 	/// <summary>
@@ -49,7 +41,7 @@ public partial class Inventory : EntityComponent
 	public void Add( IInventoryItem item )
 	{
 		ItemsInternal.Add( item as Entity );
-		OnNewItemRpc( To.Single( Entity ), item as Entity );
+		GameEvent.Shared.Workshop.RunNewItem( To.Single( Entity ), item as Entity );
 	}
 
 	public IInventoryItem Find( Guid uid ) => Items.SingleOrDefault( v => v.Uid == uid );

@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using ProjectBullet.UI.HUD;
+using Sandbox;
 
 namespace ProjectBullet.Player;
 
@@ -57,8 +58,9 @@ public abstract partial class BasePlayer
 	[ClientRpc]
 	public void DidDamage( Vector3 pos, float amount, float healthinv )
 	{
-		Sound.FromScreen( "blip" )
-			.SetPitch( 1 + healthinv * 1 );
+		Sound.FromScreen( "hitsound" );
+
+		Game.RootPanel.AddChild<Hitmarker>();
 	}
 
 	public override void TakeDamage( DamageInfo info )
@@ -74,6 +76,11 @@ public abstract partial class BasePlayer
 		}
 
 		LastDamage = info;
+
+		if ( info.Hitbox.HasTag( "head" ) )
+		{
+			info.Damage *= 1.3f;
+		}
 
 		var preDamage = Health;
 		base.TakeDamage( info );

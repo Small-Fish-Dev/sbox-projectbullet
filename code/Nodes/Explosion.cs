@@ -23,7 +23,7 @@ public partial class Explosion : WeaponNodeEntity
 
 			Transmit = TransmitType.Always;
 
-			TimeUntilComplete = ExplosionTime;
+			_timeUntilComplete = ExplosionTime;
 
 			if ( Game.IsServer )
 			{
@@ -33,15 +33,15 @@ public partial class Explosion : WeaponNodeEntity
 
 		public ExplosionEntity() { }
 
-		public float ExplosionTime => 3.0f;
+		private static float ExplosionTime => 1.0f;
 
-		public TimeUntil TimeUntilComplete;
-		[Net] public float Size { get; set; } = 15.0f;
+		private TimeUntil _timeUntilComplete;
+		[Net] protected float Size { get; set; } = 15.0f;
 
-		public virtual float Speed => 250.0f;
-		public virtual float MaxSize => 140.0f;
+		protected virtual float Speed => 250.0f;
+		protected virtual float MaxSize => 140.0f;
 		
-		private List<BasePlayer> _hitPlayers = new();
+		private readonly List<BasePlayer> _hitPlayers = new();
 
 		[Event.Tick.Server]
 		private void Tick()

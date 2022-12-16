@@ -11,7 +11,6 @@ public enum PlayerTeam
 	TeamTwo
 }
 
-
 public abstract partial class BasePlayer
 {
 	private readonly List<KeyValuePair<PlayerTeam, string>> _teamTagPairs = new()

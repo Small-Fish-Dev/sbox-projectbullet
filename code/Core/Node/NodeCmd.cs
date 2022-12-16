@@ -27,7 +27,7 @@ public static class NodeCmd
 
 		return null;
 	}
-	
+
 	private static BasePlayer GetCallerPlayer() => ConsoleSystem.Caller.Pawn as BasePlayer;
 
 	[ConCmd.Server]
@@ -40,7 +40,7 @@ public static class NodeCmd
 			Log.Info( "SetConnector failed: target not allowed to use editor" );
 			return;
 		}
-		
+
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -58,7 +58,7 @@ public static class NodeCmd
 		Log.Info( $"~~ SetConnector: {identifier}, {newValue}" );
 		target.SetConnector( identifier, newValue );
 
-		NodeEvent.RunConnectorChanged( target.BasePlayer );
+		GameEvent.Shared.Node.RunConnectorChanged( target.BasePlayer );
 	}
 
 	/// <summary>
@@ -83,7 +83,7 @@ public static class NodeCmd
 			Log.Info( "DisconnectConnector failed: target not allowed to use editor" );
 			return;
 		}
-		
+
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -93,7 +93,7 @@ public static class NodeCmd
 
 		target.DisconnectConnector( identifier );
 
-		NodeEvent.RunConnectorChanged( target.BasePlayer );
+		GameEvent.Shared.Node.RunConnectorChanged( target.BasePlayer );
 	}
 
 	/// <summary>
@@ -117,7 +117,7 @@ public static class NodeCmd
 			Log.Info( "SetEntryNode failed: target not allowed to use editor" );
 			return;
 		}
-		
+
 		var executor = GetNodeExecutor( executorNetworkIdent );
 		if ( executor == null )
 		{
@@ -134,7 +134,7 @@ public static class NodeCmd
 
 		executor.EntryNode = newValue;
 
-		NodeEvent.RunConnectorChanged( executor.BasePlayer );
+		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>
@@ -158,7 +158,7 @@ public static class NodeCmd
 			Log.Info( "ClearEntryNode failed: target not allowed to use editor" );
 			return;
 		}
-		
+
 		var executor = GetNodeExecutor( executorNetworkIdent );
 		if ( executor == null )
 		{
@@ -168,7 +168,7 @@ public static class NodeCmd
 
 		executor.EntryNode = null;
 
-		NodeEvent.RunConnectorChanged( executor.BasePlayer );
+		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>
@@ -191,7 +191,7 @@ public static class NodeCmd
 			Log.Info( "AddNodeToExecutor failed: target not allowed to use editor" );
 			return;
 		}
-		
+
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -209,7 +209,7 @@ public static class NodeCmd
 		target.Owner = executor;
 		target.Parent = executor;
 
-		NodeEvent.RunConnectorChanged( executor.BasePlayer );
+		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>
@@ -233,7 +233,7 @@ public static class NodeCmd
 			Log.Info( "RemoveNodeFromExecutor failed: target not allowed to use editor" );
 			return;
 		}
-		
+
 		var target = GetWeaponNodeEntity( targetNetworkIdent );
 		if ( target == null )
 		{
@@ -251,7 +251,7 @@ public static class NodeCmd
 		target.Owner = executor.Owner;
 		target.Parent = executor.Owner;
 
-		NodeEvent.RunConnectorChanged( executor.BasePlayer );
+		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>

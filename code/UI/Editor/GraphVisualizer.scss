@@ -4,6 +4,8 @@ GraphVisualizer {
     width: 100%;
     height: 100%;
 
+    z-index: 30;
+    
     transition: all 0.18s ease-in;
     
     background: radial-gradient(rgba(15, 19, 26, 0.99) 0%, rgba(15, 19, 26, 1) 50%, rgba(15, 19, 26, 1) 35%, rgba(15, 19, 26, 1) 50%);

@@ -1,0 +1,33 @@
+﻿@namespace ProjectBullet.UI.HUD
+@inherits Sandbox.UI.Panel
+
+<style>
+    Hitmarker {
+        width: 25px; height: 25px;
+        
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: scale(1) translate( -50%, -50% );
+        
+        background-color: transparent;
+        opacity: 0.40;
+        border: 1px solid black;
+      
+        border-radius: 50%;
+       
+        z-index: 20;
+        
+        transition: all 0.05s ease-out;
+        
+        &:intro {
+            transform: scale(0.2);
+        }
+        
+        &:outro {
+            transform: scale(0.2);
+        }
+    }
+</style>
+
+<root>
+</root>

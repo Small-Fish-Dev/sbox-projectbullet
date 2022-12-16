@@ -5,7 +5,9 @@ using System.Linq;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.Player.Strafe;
+using ProjectBullet.UI.HUD;
 using Sandbox;
+using Sandbox.UI;
 
 namespace ProjectBullet.Player;
 
@@ -18,7 +20,7 @@ public abstract partial class BasePlayer : AnimatedEntity
 	[Net, Predicted] private StrafeController Controller { get; set; }
 
 	private ClothingContainer _clothing;
-
+	
 	protected virtual NodeExecutionEntity MainExecutor => NodeExecutors.First();
 
 	/// <summary>
@@ -95,7 +97,7 @@ public abstract partial class BasePlayer : AnimatedEntity
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
 		EnableAllCollisions = true;
-		EnableHitboxes = false;
+		EnableHitboxes = true;
 
 		_clothing ??= new ClothingContainer();
 		_clothing.LoadFromClient( Client );
@@ -110,7 +112,9 @@ public abstract partial class BasePlayer : AnimatedEntity
 		ClientRespawn();
 	}
 
-	protected virtual void ClientRespawn() { }
+	protected virtual void ClientRespawn()
+	{
+	}
 
 	public override void Simulate( IClient cl )
 	{

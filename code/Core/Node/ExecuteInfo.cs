@@ -98,6 +98,18 @@ public struct ExecuteInfo
 		return this;
 	}
 
+	/// <summary>
+	/// Fills in Force
+	/// </summary>
+	/// <param name="multiplier">Multiplier</param>
+	/// <param name="forward">Forward</param>
+	/// <returns>Self</returns>
+	public ExecuteInfo WithForce( float multiplier, Vector3 forward )
+	{
+		Force = multiplier * 32 * forward;
+		return this;
+	}
+	
 	public DamageInfo ToDamageInfo( float damage )
 	{
 		var result = new DamageInfo

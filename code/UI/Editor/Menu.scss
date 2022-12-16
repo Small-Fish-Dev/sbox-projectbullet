@@ -1,3 +1,5 @@
+@import "ui/shared.scss";
+
 .menu {
     width: 300px;
     min-height: 10px;
@@ -69,11 +71,6 @@
         &.disabled {
             color: rgba(0, 0, 0, 0.3);
         }
-    }
-
-    .center-text-container {
-        align-items: center;
-        justify-content: center;
     }
 
     .info-text {

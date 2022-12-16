@@ -34,8 +34,19 @@ public partial class Gunner : BasePlayer
 	public class PrimaryFireController : NodeExecutionEntity
 	{
 		public override string DisplayName => "Primary Fire";
-		public override float ActionDelay => 0.15f;
+		public override float ActionDelay => 0.13f;
 		public override InputButton InputButton => InputButton.PrimaryAttack;
+
+		private float CalculateSpread()
+		{
+			var speed = BasePlayer.Velocity.Length;
+			return speed switch
+			{
+				<= 50.0f => 0.0f,
+				<= 200.0f => 0.3f,
+				_ => speed <= 350.0f ? 1f : 1.4f
+			};
+		}
 
 		protected override void PerformAction( IClient cl )
 		{
@@ -43,25 +54,40 @@ public partial class Gunner : BasePlayer
 
 			(BasePlayer as Gunner)?.ShootEffect();
 
+			Game.SetRandomSeed( Time.Tick );
+
 			var ray = BasePlayer.AimRay;
 
-			var trace = Trace.Ray( ray, 8096 )
+			var forward = ray.Forward;
+			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) *
+			           (CalculateSpread() * 0.02f);
+			forward = forward.Normal;
+
+			var trace = Trace.Ray( ray.Position, ray.Position + forward * 5000 )
 				.UseHitboxes()
 				.WithAnyTags( "solid", "player", "npc", "glass" )
 				.Ignore( BasePlayer );
 
 			var result = trace.Run();
 
-			// get the muzzle position on our effect entity - either viewmodel or world model
-			//var pos = (BasePlayer as Gunner)?.ViewModelEntity.GetAttachment( "muzzle" ) ?? Transform;
+			DebugOverlay.Circle( result.EndPosition + -ray.Forward, Rotation.LookAt( result.Normal ), 1.0f, Color.White,
+				3.0f );
 
-			//var system = Particles.Create( "particles/tracer.standard.vpcf" );
-			//system?.SetPosition( 0, pos.Position );
-			//system?.SetPosition( 1, result.EndPosition );
+			(BasePlayer as Gunner).PlaySound( "rust_pistol.shoot" );
+
+			if ( Game.IsClient )
+			{
+				var pos = (BasePlayer as Gunner)?.ViewModelEntity.GetAttachment( "muzzle" );
+
+				var system = Particles.Create( "particles/tracer.standard.vpcf" );
+				system?.SetPosition( 0, pos.Value.Position );
+				system?.SetPosition( 1, result.EndPosition );
+			}
 
 			ExecuteEntryNode( new ExecuteInfo()
 				.UsingTraceResult( result )
-				.WithAttacker( BasePlayer ) );
+				.WithAttacker( BasePlayer )
+				.WithForce( 1, ray.Forward ) );
 		}
 
 		protected override void BeginReload()
@@ -135,8 +161,6 @@ public partial class Gunner : BasePlayer
 			return;
 		}
 
-		//Particles.Create( "particles/pistol_muzzleflash.vpcf", ViewModelEntity, "muzzle" );
-
 		ViewModelEntity?.SetAnimParameter( "fire", true );
 	}
 
@@ -193,23 +217,14 @@ public partial class Gunner : BasePlayer
 	{
 		base.CameraFrameSimulate();
 
-		if ( IsLocalPawn )
+		if ( !IsLocalPawn )
 		{
-			ViewModelEntity?.UpdateCamera();
-
-			Camera.Main.SetViewModelCamera( Camera.FieldOfView + 20.0f );
+			return;
 		}
 
-		var ray = AimRay;
+		ViewModelEntity?.UpdateCamera();
 
-		var trace = Trace.Ray( ray, 8096 )
-			.UseHitboxes()
-			.WithAnyTags( "solid", "player", "npc", "glass" )
-			.Ignore( this );
-
-		var result = trace.Run();
-
-		DebugOverlay.Circle( result.EndPosition, Rotation.Identity, 3.0f, Color.Red );
+		Camera.Main.SetViewModelCamera( Camera.FieldOfView + 20.0f );
 	}
 
 	protected override void AnimationSimulate( CitizenAnimationHelper? providedAnimHelper = null )

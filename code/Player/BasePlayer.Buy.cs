@@ -1,4 +1,5 @@
-﻿using ProjectBullet.UI.Editor;
+﻿using ProjectBullet.Core;
+using ProjectBullet.UI.Editor;
 using Sandbox;
 
 namespace ProjectBullet.Player;
@@ -11,6 +12,8 @@ public abstract partial class BasePlayer
 
 	private void OnCanUseEditorChanged()
 	{
+		GameEvent.Client.Workshop.RunEditorAccessChanged( CanUseEditor );
+
 		if ( CanUseEditor != false || _nodeGraph == null )
 		{
 			return;

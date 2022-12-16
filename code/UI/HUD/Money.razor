@@ -1,0 +1,77 @@
+﻿@using ProjectBullet.Core
+@using ProjectBullet.Player
+@using Sandbox
+@namespace ProjectBullet.UI.HUD
+@inherits Sandbox.UI.Panel;
+
+<style>
+    Money {
+        font-family: Inter;
+        font-weight: bold;
+        font-size: 15px;
+    
+        color: black;
+    
+        padding: 10px;
+    
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background-color: rgba(255, 255, 255, 0.40);
+      
+        height: 40px;
+        border-radius: 20px;
+        
+        z-index: 20;
+        
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+@code {
+    private bool CanUseEditor { get; set; } = false;
+    private int LocalMoney { get; set; } = 0;
+
+    private static string EditorKey => Input.GetButtonOrigin(InputButton.View);
+    private static string SmallMessage => EditorKey == "" ? "please bind the View button" : $"press {EditorKey} to open the workshop";
+    private static BasePlayer LocalBasePlayer => Game.LocalPawn as BasePlayer;
+
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (firstTime)
+        {
+            CanUseEditor = LocalBasePlayer.CanUseEditor;
+            LocalMoney = LocalBasePlayer.Inventory.Money;
+        }
+    }
+
+    [GameEvent.Client.Workshop.EditorAccessChanged]
+    public void OnEditorAccessChanged(bool value)
+    {
+        CanUseEditor = value;
+        StateHasChanged();
+    }
+
+    [GameEvent.Client.Workshop.MoneyChanged]
+    public void OnMoneyChanged(int value)
+    {
+        LocalMoney = value;
+        StateHasChanged();
+    }
+
+}
+
+<root>
+    <div class="center">
+        <div>🪙 @LocalMoney</div>
+        
+        @if (CanUseEditor)
+        {
+            <div style="width: 8px"></div>
+            <div style="color: rgba(0, 0, 0, 0.7)">@SmallMessage</div> 
+        }
+    </div>
+</root>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ProjectBullet.Core;
 using ProjectBullet.Player;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
@@ -48,9 +49,7 @@ public partial class PreInstanceGraph
 	public PreInstanceGraph( NodeExecutionEntity nodeExecutor, GraphVisualizer graphVisualizer )
 	{
 		Event.Register( this );
-
-		Log.Info( "preinstancegraph" );
-
+		
 		GraphVisualizer = graphVisualizer;
 
 		// Create entry node
@@ -107,11 +106,14 @@ public partial class PreInstanceGraph
 		PerformAction( new ConnectEntryNodeAction( nodeExecutor.EntryNode ), false );
 	}
 
-	~PreInstanceGraph() => Event.Unregister( this );
+	~PreInstanceGraph()
+	{
+		Event.Unregister( this );
+	}
 
 	private readonly List<Action> _actionHistory = new();
 	private int _actionPointer = 0;
-
+	
 	public object PerformAction( Action action, bool addToHistory )
 	{
 		if ( addToHistory )
@@ -144,7 +146,7 @@ public partial class PreInstanceGraph
 		PerformAction( new RemoveNodeFromGraphAction( node.Instance ), true );
 	}
 
-	[NodeEvent.Client.ConnectorChanged]
+	[GameEvent.Client.Node.ConnectorChanged]
 	public void EstimateAllEnergyOutputs()
 	{
 		foreach ( var connector in Connectors )
@@ -163,7 +165,7 @@ public partial class PreInstanceGraph
 	/// Update on new inventory item event
 	/// </summary>
 	/// <param name="entity">New item entity</param>
-	[Inventory.NewItem]
+	[GameEvent.Client.Workshop.NewItem]
 	private void OnNewItem( WeaponNodeEntity entity )
 	{
 		GraphInventory.Add( entity );

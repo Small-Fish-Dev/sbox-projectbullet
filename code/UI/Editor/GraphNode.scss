@@ -1,3 +1,5 @@
+@import "ui/shared.scss";
+
 GraphNode {
     position: absolute;
     width: 300px;
@@ -19,7 +21,7 @@ GraphNode {
     font-family: Inter;
     font-weight: bold;
 
-    box-shadow: 10px 10px 0px 1px rgba(0,0,0,1);
+    /* box-shadow: 10px 10px 0px 1px rgba(0,0,0,1); */
 
     &.entry-node {
         top: 30%;
@@ -74,10 +76,5 @@ GraphNode {
         opacity: 0;
         filter: blur(5px);
         transform: scale(1.3);
-    }
-
-    .center-text-container {
-        align-items: center;
-        justify-content: center;
     }
 }

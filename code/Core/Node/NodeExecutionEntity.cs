@@ -130,7 +130,7 @@ public partial class NodeExecutionEntity : Entity
 	{
 		if ( EntryNode == null )
 		{
-			Log.Warning( "ExecuteEntryNode used with no entry node" );
+			// Log.Warning( "ExecuteEntryNode used with no entry node" );
 			return;
 		}
 
@@ -255,12 +255,12 @@ public partial class NodeExecutionEntity : Entity
 		return result;
 	}
 
-	[NodeEvent.Server.ConnectorChanged]
+	[GameEvent.Server.Node.ConnectorChanged]
 	public void OnConnectorChanged( Entity player )
 	{
 		if ( player == BasePlayer )
 		{
-			Log.Info( "reestimating" );
+			Log.Info( "estimating" );
 			MinimumEnergy = EstimateMinimumEnergy() ?? 0.0f;
 		}
 	}

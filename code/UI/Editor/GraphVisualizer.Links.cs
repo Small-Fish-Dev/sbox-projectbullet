@@ -19,11 +19,11 @@ public partial class GraphVisualizer : Panel
 
 	private void DrawNodeLine( Color color, Vector2 start, Vector2 end )
 	{
-		//GraphicsX.Line( Color.White,
-		//	ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
+		GraphicsX.Line( Color.White,
+			ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
 
-		GraphicsX.Line( color,
-			ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
+		//GraphicsX.Line( color,
+			//ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
 	}
 
 	private Vector2 GetStyleMousePosition() => new Vector2(
