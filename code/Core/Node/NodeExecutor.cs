@@ -95,29 +95,29 @@ public partial class NodeExecutor : Entity
 		BeginReloadClient();
 		BeginReload();
 	}
-	
+
 	[ClientRpc]
 	public void BeginReloadClient()
 	{
 		BeginReload();
 	}
-	
+
 	public void EndReloadShared()
 	{
 		EndReloadClient();
 		EndReload();
 	}
-	
+
 	[ClientRpc]
 	public void EndReloadClient()
 	{
 		EndReload();
 	}
-	
+
 	protected virtual void BeginReload()
 	{
 		Energy = 0;
-		
+
 		BasePlayer.SetAnimParameter( "b_reload", true );
 	}
 
@@ -222,7 +222,7 @@ public partial class NodeExecutor : Entity
 			Log.Info( $"CalcPath ({node.GetType().Name}) - input {input}, output {output}" );
 
 			float? savedResult = result;
-			
+
 			foreach ( var connector in node.Connectors )
 			{
 				if ( connector.WeaponNode != null )
@@ -239,7 +239,7 @@ public partial class NodeExecutor : Entity
 			}
 
 			result = savedResult;
-			
+
 			if ( !hasPopulatedConnector && node is IGoalNode )
 			{
 				// This node has no connectors and it's a goal node!
