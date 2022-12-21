@@ -8,7 +8,7 @@ using Sandbox;
 namespace ProjectBullet.Nodes;
 
 [ShopItem( 580 )]
-[Energy( 8.0f, Estimated = true )]
+[Energy( 8.0f )]
 [Connector( "on_hit", Order = 0, EnergyOutAmount = 10f, DisplayName = "One" )]
 [Node( DisplayName = "Mist", Description = "Cheap and simple damage" )]
 public partial class Mist : WeaponNodeEntity

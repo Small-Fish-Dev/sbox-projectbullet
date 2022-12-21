@@ -4,7 +4,7 @@ using ProjectBullet.Core.Shop;
 namespace ProjectBullet.Nodes;
 
 [ShopItem( 300 )]
-[Energy( 2.0f, Estimated = true )]
+[Energy( 2.0f )]
 [Connector( "on_one", Order = 0, EnergyOutPercentage = 0.2f, DisplayName = "One" )]
 [Connector( "on_two", Order = 1, EnergyOutPercentage = 0.2f, DisplayName = "Two" )]
 [Node( DisplayName = "Mini Splitter", Description = "Cheap and simple splitter" )]

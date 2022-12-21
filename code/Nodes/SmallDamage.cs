@@ -5,7 +5,7 @@ using Sandbox;
 namespace ProjectBullet.Nodes;
 
 [ShopItem( 280 )]
-[Energy( 5.0f, Estimated = true )]
+[Energy( 5.0f )]
 [Node( DisplayName = "Damage", Description = "Cheap and simple damage" )]
 public partial class CheapDamage : WeaponNodeEntity, IGoalNode
 {
@@ -27,7 +27,7 @@ public partial class CheapDamage : WeaponNodeEntity, IGoalNode
 }
 
 [ShopItem( 580 )]
-[Energy( 5.0f, Estimated = true )]
+[Energy( 5.0f )]
 [Node( DisplayName = "More Damage", Description = "Cheap and simple damage" )]
 public class MoreDamage : WeaponNodeEntity, IGoalNode
 {

@@ -5,7 +5,7 @@ using Sandbox;
 namespace ProjectBullet.Nodes;
 
 [ShopItem( 250 )]
-[Energy( 3.0f, Estimated = true )]
+[Energy( 3.0f )]
 [Node( DisplayName = "Push", Description = "Push target away" )]
 public partial class Push : WeaponNodeEntity, IGoalNode
 {
@@ -32,7 +32,7 @@ public partial class Push : WeaponNodeEntity, IGoalNode
 }
 
 [ShopItem( 250 )]
-[Energy( 3.0f, Estimated = true )]
+[Energy( 3.0f )]
 [Node( DisplayName = "Pull", Description = "Pull target in" )]
 public partial class Pull : WeaponNodeEntity, IGoalNode
 {
@@ -57,4 +57,3 @@ public partial class Pull : WeaponNodeEntity, IGoalNode
 		return 0.0f;
 	}
 }
-
