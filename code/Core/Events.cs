@@ -3,7 +3,7 @@ using Sandbox;
 
 namespace ProjectBullet.Core;
 
-public static partial class GameEvent
+public static partial class Events
 {
 	private const string ClientNodeConnectorChangedEvent = "clientconnectorchanged";
 	private const string ClientWorkshopMoneyChangedEvent = "clientmoneychanged";

@@ -15,7 +15,7 @@ public partial class Inventory : EntityComponent
 
 	private void OnMoneyChanged()
 	{
-		GameEvent.Client.Workshop.RunMoneyChanged( Money );
+		Events.Client.Workshop.RunMoneyChanged( Money );
 	}
 
 	/// <summary>
@@ -41,7 +41,7 @@ public partial class Inventory : EntityComponent
 	public void Add( IInventoryItem item )
 	{
 		ItemsInternal.Add( item as Entity );
-		GameEvent.Shared.Workshop.RunNewItem( To.Single( Entity ), item as Entity );
+		Events.Shared.Workshop.RunNewItem( To.Single( Entity ), item as Entity );
 	}
 
 	public IInventoryItem Find( Guid uid ) => Items.SingleOrDefault( v => v.Uid == uid );
@@ -68,5 +68,5 @@ public partial class Inventory : EntityComponent
 	/// <param name="uid">Item UID</param>
 	/// <returns>Item or null</returns>
 	public static IInventoryItem FindAny( Guid uid ) =>
-		Entity.All.OfType<IInventoryItem>().SingleOrDefault( v => v.Uid == uid );
+		Sandbox.Entity.All.OfType<IInventoryItem>().SingleOrDefault( v => v.Uid == uid );
 }

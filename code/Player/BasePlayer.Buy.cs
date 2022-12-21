@@ -12,7 +12,7 @@ public abstract partial class BasePlayer
 
 	private void OnCanUseEditorChanged()
 	{
-		GameEvent.Client.Workshop.RunEditorAccessChanged( CanUseEditor );
+		Events.Client.Workshop.RunEditorAccessChanged( CanUseEditor );
 
 		if ( CanUseEditor != false || _nodeGraph == null )
 		{

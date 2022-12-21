@@ -58,7 +58,7 @@ public static class NodeCmd
 		Log.Info( $"~~ SetConnector: {identifier}, {newValue}" );
 		target.SetConnector( identifier, newValue );
 
-		GameEvent.Shared.Node.RunConnectorChanged( target.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( target.BasePlayer );
 	}
 
 	/// <summary>
@@ -93,7 +93,7 @@ public static class NodeCmd
 
 		target.DisconnectConnector( identifier );
 
-		GameEvent.Shared.Node.RunConnectorChanged( target.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( target.BasePlayer );
 	}
 
 	/// <summary>
@@ -134,7 +134,7 @@ public static class NodeCmd
 
 		executor.EntryNode = newValue;
 
-		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>
@@ -168,7 +168,7 @@ public static class NodeCmd
 
 		executor.EntryNode = null;
 
-		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>
@@ -209,7 +209,7 @@ public static class NodeCmd
 		target.Owner = executor;
 		target.Parent = executor;
 
-		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>
@@ -251,7 +251,7 @@ public static class NodeCmd
 		target.Owner = executor.Owner;
 		target.Parent = executor.Owner;
 
-		GameEvent.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
 	}
 
 	/// <summary>

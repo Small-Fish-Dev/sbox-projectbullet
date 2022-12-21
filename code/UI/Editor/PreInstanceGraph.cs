@@ -146,7 +146,7 @@ public partial class PreInstanceGraph
 		PerformAction( new RemoveNodeFromGraphAction( node.Instance ), true );
 	}
 
-	[GameEvent.Client.Node.ConnectorChanged]
+	[Events.Client.Node.ConnectorChanged]
 	public void EstimateAllEnergyOutputs()
 	{
 		foreach ( var connector in Connectors )
@@ -165,7 +165,7 @@ public partial class PreInstanceGraph
 	/// Update on new inventory item event
 	/// </summary>
 	/// <param name="entity">New item entity</param>
-	[GameEvent.Client.Workshop.NewItem]
+	[Events.Client.Workshop.NewItem]
 	private void OnNewItem( WeaponNodeEntity entity )
 	{
 		GraphInventory.Add( entity );

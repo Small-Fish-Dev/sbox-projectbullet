@@ -255,7 +255,7 @@ public partial class NodeExecutionEntity : Entity
 		return result;
 	}
 
-	[GameEvent.Server.Node.ConnectorChanged]
+	[Events.Server.Node.ConnectorChanged]
 	public void OnConnectorChanged( Entity player )
 	{
 		if ( player == BasePlayer )
