@@ -8,7 +8,7 @@ namespace ProjectBullet.Core.Shop;
 /// <summary>
 /// Player inventory / item storage component
 /// </summary>
-public partial class Inventory : EntityComponent
+public partial class Inventory : EntityComponent<Player>, ISingletonComponent
 {
 	[Net, Change( "OnMoneyChanged" )] public int Money { get; private set; } = 3000;
 	[Net] private IList<Entity> ItemsInternal { get; set; } = new List<Entity>();
