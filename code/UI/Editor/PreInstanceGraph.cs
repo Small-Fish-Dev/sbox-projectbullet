@@ -20,7 +20,7 @@ public partial class PreInstanceGraph
 	/// <summary>
 	/// Current node executor being visualised
 	/// </summary>
-	public NodeExecutionEntity NodeExecutor { get; set; }
+	public NodeExecutor NodeExecutor { get; set; }
 
 	/// <summary>
 	/// Node inventory - not always up to date
@@ -46,7 +46,7 @@ public partial class PreInstanceGraph
 
 	public EntryNode Entry { get; }
 
-	public PreInstanceGraph( NodeExecutionEntity nodeExecutor, GraphVisualizer graphVisualizer )
+	public PreInstanceGraph( NodeExecutor nodeExecutor, GraphVisualizer graphVisualizer )
 	{
 		Event.Register( this );
 

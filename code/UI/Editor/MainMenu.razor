@@ -10,7 +10,7 @@
 @code {
     public GraphVisualizer GraphVisualizer { get; set; }
 
-    public IEnumerable<NodeExecutionEntity> SwitchableExecutors =>
+    public IEnumerable<NodeExecutor> SwitchableExecutors =>
         (Game.LocalPawn as BasePlayer)?.NodeExecutors.Where(v => v != @GraphVisualizer.NodeExecutor);
 
 }

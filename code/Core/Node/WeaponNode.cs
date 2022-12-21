@@ -47,9 +47,9 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// <summary>
 	/// Whether or not the node is being used in a graph
 	/// </summary>
-	public bool InUse => Owner is NodeExecutionEntity;
+	public bool InUse => Owner is NodeExecutor;
 
-	public NodeExecutionEntity NodeExecutor => Owner as NodeExecutionEntity;
+	public NodeExecutor NodeExecutor => Owner as NodeExecutor;
 
 	public BasePlayer BasePlayer => InUse ? (BasePlayer)Owner.Owner : (BasePlayer)Owner;
 
@@ -71,7 +71,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// <exception cref="Exception"></exception>
 	protected void ExecuteConnector( string identifier, ExecuteInfo info )
 	{
-		if ( Owner is not NodeExecutionEntity nodeExecutor )
+		if ( Owner is not NodeExecutor nodeExecutor )
 		{
 			Log.Warning( "ExecuteConnector called without NodeExecutionEntity" );
 			return;
@@ -238,7 +238,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// </summary>
 	public void RemoveFromExecutor()
 	{
-		if ( Owner is not NodeExecutionEntity nodeExecutor )
+		if ( Owner is not NodeExecutor nodeExecutor )
 		{
 			Log.Warning( $"RemoveFromExecutor called but Owner is unknown type {Owner.GetType()}" );
 			return;
@@ -254,14 +254,14 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
 	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
-	private float? EstimateConnectorOutput( Connector providedConnector, NodeExecutionEntity otherNodeExecutor = null,
+	private float? EstimateConnectorOutput( Connector providedConnector, NodeExecutor otherNodeExecutor = null,
 		bool useMaxEnergy = false )
 	{
 		var nodeExecutor = otherNodeExecutor;
 
 		if ( otherNodeExecutor == null )
 		{
-			if ( Owner is not NodeExecutionEntity ownerNodeExecutor )
+			if ( Owner is not NodeExecutor ownerNodeExecutor )
 			{
 				Log.Error( "Can't estimate WeaponNodeEntity that's not owned by a NodeExecutionEntity" );
 				return null;
@@ -354,7 +354,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
 	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
-	public float? EstimateConnectorOutput( string identifier, NodeExecutionEntity otherNodeExecutor = null,
+	public float? EstimateConnectorOutput( string identifier, NodeExecutor otherNodeExecutor = null,
 		bool useMaxEnergy = false ) =>
 		EstimateConnectorOutput( GetConnector( identifier ), otherNodeExecutor, useMaxEnergy );
 

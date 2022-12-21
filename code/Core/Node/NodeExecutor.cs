@@ -3,9 +3,9 @@ using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
-public partial class NodeExecutionEntity : Entity
+public partial class NodeExecutor : Entity
 {
-	public NodeExecutionEntity() => Transmit = TransmitType.Owner;
+	public NodeExecutor() => Transmit = TransmitType.Owner;
 	public virtual float MaxEnergy => 100.0f;
 	public virtual float ActionDelay => 2.0f;
 	public virtual bool AllowAutoAction => false;

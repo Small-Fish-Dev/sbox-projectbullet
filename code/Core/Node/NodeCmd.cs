@@ -18,9 +18,9 @@ public static class NodeCmd
 		return null;
 	}
 
-	private static NodeExecutionEntity GetNodeExecutor( int networkIdent )
+	private static NodeExecutor GetNodeExecutor( int networkIdent )
 	{
-		if ( Entity.FindByIndex( networkIdent ) is NodeExecutionEntity ne )
+		if ( Entity.FindByIndex( networkIdent ) is NodeExecutor ne )
 		{
 			return ne;
 		}
@@ -140,12 +140,12 @@ public static class NodeCmd
 	/// <summary>
 	/// Send SetEntryNode request to the server - will set the entry node of provided node executor to provided value
 	/// </summary>
-	/// <param name="nodeExecutionEntity">Node execution entity</param>
+	/// <param name="nodeExecutor">Node execution entity</param>
 	/// <param name="newValue">WeaponNodeEntity value</param>
-	public static void SetEntryNode( NodeExecutionEntity nodeExecutionEntity, WeaponNode newValue )
+	public static void SetEntryNode( NodeExecutor nodeExecutor, WeaponNode newValue )
 	{
 		Game.AssertClient();
-		SetEntryNode( nodeExecutionEntity.NetworkIdent, newValue.NetworkIdent );
+		SetEntryNode( nodeExecutor.NetworkIdent, newValue.NetworkIdent );
 	}
 
 	[ConCmd.Server]
@@ -174,11 +174,11 @@ public static class NodeCmd
 	/// <summary>
 	/// Send ClearEntryNode request to the server - will clear the entry node of provided node executor
 	/// </summary>
-	/// <param name="nodeExecutionEntity">Node execution entity</param>
-	public static void ClearEntryNode( NodeExecutionEntity nodeExecutionEntity )
+	/// <param name="nodeExecutor">Node execution entity</param>
+	public static void ClearEntryNode( NodeExecutor nodeExecutor )
 	{
 		Game.AssertClient();
-		ClearEntryNode( nodeExecutionEntity.NetworkIdent );
+		ClearEntryNode( nodeExecutor.NetworkIdent );
 	}
 
 	[ConCmd.Server]
@@ -216,11 +216,11 @@ public static class NodeCmd
 	/// Send AddNodeToExecutor request to the server - will set owner of target to the executor
 	/// </summary>
 	/// <param name="target">WeaponNodeEntity to change owner of</param>
-	/// <param name="nodeExecutionEntity">New owner</param>
-	public static void AddNodeToExecutor( WeaponNode target, NodeExecutionEntity nodeExecutionEntity )
+	/// <param name="nodeExecutor">New owner</param>
+	public static void AddNodeToExecutor( WeaponNode target, NodeExecutor nodeExecutor )
 	{
 		Game.AssertClient();
-		AddNodeToExecutor( target.NetworkIdent, nodeExecutionEntity.NetworkIdent );
+		AddNodeToExecutor( target.NetworkIdent, nodeExecutor.NetworkIdent );
 	}
 
 	[ConCmd.Server]
@@ -242,7 +242,7 @@ public static class NodeCmd
 		}
 
 		// find the pawn...
-		if ( target.Owner is not NodeExecutionEntity { Owner: BasePlayer } executor )
+		if ( target.Owner is not NodeExecutor { Owner: BasePlayer } executor )
 		{
 			Log.Error( "RemoveNodeFromExecutor failed: Owner.Owner not a BasePlayer" );
 			return;

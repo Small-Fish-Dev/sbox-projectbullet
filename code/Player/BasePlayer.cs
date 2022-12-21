@@ -15,13 +15,13 @@ public abstract partial class BasePlayer : AnimatedEntity
 {
 	public Inventory Inventory => Components.Get<Inventory>();
 
-	[Net] public IList<NodeExecutionEntity> NodeExecutors { get; private set; } = new List<NodeExecutionEntity>();
+	[Net] public IList<NodeExecutor> NodeExecutors { get; private set; } = new List<NodeExecutor>();
 
 	[Net, Predicted] private StrafeController Controller { get; set; }
 
 	private ClothingContainer _clothing;
 	
-	protected virtual NodeExecutionEntity MainExecutor => NodeExecutors.First();
+	protected virtual NodeExecutor MainExecutor => NodeExecutors.First();
 
 	/// <summary>
 	/// Register all node executors
@@ -38,12 +38,12 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 		foreach ( var property in typeDescription.Properties )
 		{
-			if ( !property.PropertyType.IsSubclassOf( typeof(NodeExecutionEntity) ) )
+			if ( !property.PropertyType.IsSubclassOf( typeof(NodeExecutor) ) )
 			{
 				continue;
 			}
 
-			if ( property.GetValue( this ) is not NodeExecutionEntity instance )
+			if ( property.GetValue( this ) is not NodeExecutor instance )
 			{
 				continue;
 			}

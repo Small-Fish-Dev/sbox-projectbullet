@@ -7,11 +7,11 @@ namespace ProjectBullet.UI.Editor;
 public partial class GraphVisualizer : Panel
 {
 	private bool _waitingForInit = true;
-	public NodeExecutionEntity NodeExecutor { get; private set; }
+	public NodeExecutor NodeExecutor { get; private set; }
 
 	public PreInstanceGraph Graph { get; private set; }
 
-	public GraphVisualizer( NodeExecutionEntity nodeExecutor ) => NodeExecutor = nodeExecutor;
+	public GraphVisualizer( NodeExecutor nodeExecutor ) => NodeExecutor = nodeExecutor;
 
 	public override void Tick()
 	{
@@ -30,7 +30,7 @@ public partial class GraphVisualizer : Panel
 	/// Visualize a different NodeExecutionEntity
 	/// </summary>
 	/// <param name="nodeExecutor">New NodeExecutionEntity</param>
-	public void SwitchNodeExecutor( NodeExecutionEntity nodeExecutor )
+	public void SwitchNodeExecutor( NodeExecutor nodeExecutor )
 	{
 		Log.Info( "SWITCH WEAPON!!!!!!!" );
 

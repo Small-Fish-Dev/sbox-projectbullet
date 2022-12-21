@@ -32,7 +32,7 @@ public class GunnerViewmodel : BaseViewModel
 
 public partial class Gunner : BasePlayer
 {
-	public class PrimaryFireController : NodeExecutionEntity
+	public class PrimaryFireController : NodeExecutor
 	{
 		public override string DisplayName => "Primary Fire";
 		public override float ActionDelay => 0.13f;
@@ -116,7 +116,7 @@ public partial class Gunner : BasePlayer
 		}
 	}
 
-	public class SecondaryFireController : NodeExecutionEntity
+	public class SecondaryFireController : NodeExecutor
 	{
 		public override string DisplayName => "Secondary Fire";
 		public override float ActionDelay => 0.01f;
@@ -132,7 +132,7 @@ public partial class Gunner : BasePlayer
 		}
 	}
 
-	public partial class UltraShiftController : NodeExecutionEntity
+	public partial class UltraShiftController : NodeExecutor
 	{
 		public override string DisplayName => "Ultra Shift";
 		public override float ActionDelay => 0.4f;
@@ -246,7 +246,7 @@ public partial class Gunner : BasePlayer
 	[Net] public SecondaryFireController SecondaryFire { get; set; }
 	[Net] public UltraShiftController UltraShift { get; set; }
 
-	protected override NodeExecutionEntity MainExecutor => PrimaryFire;
+	protected override NodeExecutor MainExecutor => PrimaryFire;
 
 	public virtual string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
 	public GunnerViewmodel ViewModelEntity { get; protected set; }
