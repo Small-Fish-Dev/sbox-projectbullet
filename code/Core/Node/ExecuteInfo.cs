@@ -5,6 +5,9 @@ using ProjectBullet.Player;
 
 namespace ProjectBullet.Core.Node;
 
+/// <summary>
+/// Execution info passed to WeaponNodeEntity - similar to <see cref="DamageInfo"/>
+/// </summary>
 public struct ExecuteInfo
 {
 	public ExecuteInfo()
@@ -109,7 +112,7 @@ public struct ExecuteInfo
 		Force = multiplier * 32 * forward;
 		return this;
 	}
-	
+
 	public DamageInfo ToDamageInfo( float damage )
 	{
 		var result = new DamageInfo
