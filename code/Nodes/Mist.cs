@@ -75,7 +75,7 @@ public partial class Mist : WeaponNodeEntity
 		}
 	}
 
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		if ( Game.IsServer )
 		{

@@ -9,7 +9,7 @@ namespace ProjectBullet.Nodes;
 [Node( DisplayName = "Damage", Description = "Cheap and simple damage" )]
 public partial class CheapDamage : WeaponNodeEntity, IGoalNode
 {
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		if ( info.Victim == null )
 		{
@@ -31,7 +31,7 @@ public partial class CheapDamage : WeaponNodeEntity, IGoalNode
 [Node( DisplayName = "More Damage", Description = "Cheap and simple damage" )]
 public class MoreDamage : WeaponNodeEntity, IGoalNode
 {
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		if ( info.Victim == null )
 		{

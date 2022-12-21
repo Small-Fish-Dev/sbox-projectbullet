@@ -9,7 +9,7 @@ namespace ProjectBullet.Nodes;
 [Node( DisplayName = "Push", Description = "Push target away" )]
 public partial class Push : WeaponNodeEntity, IGoalNode
 {
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		if ( info.Victim is not Player.BasePlayer )
 		{
@@ -36,7 +36,7 @@ public partial class Push : WeaponNodeEntity, IGoalNode
 [Node( DisplayName = "Pull", Description = "Pull target in" )]
 public partial class Pull : WeaponNodeEntity, IGoalNode
 {
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		if ( info.Victim is not Player.BasePlayer )
 		{

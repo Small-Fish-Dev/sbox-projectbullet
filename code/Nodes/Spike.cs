@@ -63,7 +63,7 @@ public partial class Spike : WeaponNodeEntity
 		}
 	}
 
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		if ( Game.IsServer )
 		{

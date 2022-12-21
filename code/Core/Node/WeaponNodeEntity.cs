@@ -67,8 +67,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// Run <see cref="Execute"/> on connected node with provided connector ID
 	/// </summary>
 	/// <param name="identifier">Connector ID</param>
-	/// <param name="target">Target to pass to Execute (if any)</param>
-	/// <param name="point">Position to pass to Execute (if any)</param>
+	/// <param name="info">ExecuteInfo</param>
 	/// <exception cref="Exception"></exception>
 	protected void ExecuteConnector( string identifier, ExecuteInfo info )
 	{
@@ -193,7 +192,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// <param name="energy">Amount of energy provided to the node</param>
 	/// <param name="info">ExecuteInfo</param>
 	/// <returns>Amount of energy to be taken away from the node executor</returns>
-	public abstract float Execute( float energy, ExecuteInfo info );
+	protected abstract float Execute( float energy, ExecuteInfo info );
 
 	public void PreExecute( float energy, ExecuteInfo info )
 	{
@@ -220,7 +219,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		}
 	}
 
-	protected void PostExecuteConnector( WeaponNodeEntity previous, Connector connector, ExecuteInfo info )
+	private void PostExecuteConnector( WeaponNodeEntity previous, Connector connector, ExecuteInfo info )
 	{
 		var estimatedEnergy = previous.EstimateConnectorOutput( connector.Identifier ) ??
 		                      NodeExecutor.Energy;
@@ -255,10 +254,10 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
 	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
-	public float? EstimateConnectorOutput( Connector providedConnector, NodeExecutionEntity otherNodeExecutor = null,
+	private float? EstimateConnectorOutput( Connector providedConnector, NodeExecutionEntity otherNodeExecutor = null,
 		bool useMaxEnergy = false )
 	{
-		NodeExecutionEntity nodeExecutor = otherNodeExecutor;
+		var nodeExecutor = otherNodeExecutor;
 
 		if ( otherNodeExecutor == null )
 		{

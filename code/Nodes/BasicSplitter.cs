@@ -10,7 +10,7 @@ namespace ProjectBullet.Nodes;
 [Node( DisplayName = "Mini Splitter", Description = "Cheap and simple splitter" )]
 public class MiniSplitter : WeaponNodeEntity
 {
-	public override float Execute( float energy, ExecuteInfo info )
+	protected override float Execute( float energy, ExecuteInfo info )
 	{
 		ExecuteConnector( "on_one", info );
 		ExecuteConnector( "on_two", info );
