@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ProjectBullet.Core.Node.Description;
+using ProjectBullet.Core.Node;
 using Sandbox;
 
 namespace ProjectBullet.Core.Shop;

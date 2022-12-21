@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using ProjectBullet.Core.Node;
-using ProjectBullet.Core.Node.Description;
 using Sandbox;
 
 namespace ProjectBullet.Core.Shop;

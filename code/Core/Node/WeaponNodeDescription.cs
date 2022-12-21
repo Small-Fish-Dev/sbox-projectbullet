@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Sandbox;
 
-namespace ProjectBullet.Core.Node.Description;
+namespace ProjectBullet.Core.Node;
 
 public class WeaponNodeDescription
 {
 	private static readonly List<WeaponNodeDescription> Instances = new();
-	public static ReadOnlyCollection<WeaponNodeDescription> All => Instances.AsReadOnly();
 
 	private string _name;
 
@@ -20,7 +18,7 @@ public class WeaponNodeDescription
 	public TypeDescription TypeDescription { get; private set; }
 	public Type TargetType => TypeDescription.TargetType;
 
-	public WeaponNodeDescription( Type type )
+	private WeaponNodeDescription( Type type )
 	{
 		// Find TypeDescription for provided type
 		var typeDescription = TypeLibrary.GetType( type );
@@ -35,7 +33,7 @@ public class WeaponNodeDescription
 		Event.Register( this );
 	}
 
-	public WeaponNodeDescription( TypeDescription typeDescription )
+	private WeaponNodeDescription( TypeDescription typeDescription )
 	{
 		UseNewTypeDescription( typeDescription );
 
@@ -68,13 +66,28 @@ public class WeaponNodeDescription
 		ConnectorAttributes = TypeLibrary.GetAttributes<ConnectorAttribute>( TargetType ).ToList();
 	}
 
+	/// <summary>
+	/// Get stored (or newly created) WeaponNodeDescription by type
+	/// </summary>
+	/// <param name="type">Type / key</param>
+	/// <returns>WeaponNodeDescription</returns>
 	public static WeaponNodeDescription Get( Type type ) => Instances.SingleOrDefault( v => v.TargetType == type ) ??
 	                                                        new WeaponNodeDescription( type );
 
+	/// <summary>
+	/// Get stored (or newly created) WeaponNodeDescription by TypeDescription
+	/// </summary>
+	/// <param name="typeDescription">TypeDescription / key</param>
+	/// <returns>WeaponNodeDescription</returns>
 	public static WeaponNodeDescription Get( TypeDescription typeDescription ) =>
 		Instances.SingleOrDefault( v => v.TypeDescription == typeDescription ) ??
 		new WeaponNodeDescription( typeDescription );
 
+	/// <summary>
+	/// Get stored (or newly created) WeaponNodeDescription by type name
+	/// </summary>
+	/// <param name="typeName">Type name / key</param>
+	/// <returns>WeaponNodeDescription</returns>
 	public static WeaponNodeDescription Get( string typeName )
 	{
 		var typeDescription = TypeLibrary.GetType( typeName );

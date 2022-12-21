@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using ProjectBullet.Classes;
-using ProjectBullet.Core.Node.Description;
+using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
 using ProjectBullet.Player;
