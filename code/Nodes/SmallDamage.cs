@@ -47,19 +47,3 @@ public class MoreDamage : WeaponNodeEntity, IGoalNode
 		return 0.0f;
 	}
 }
-
-[ShopItem( 300 )]
-[Energy( 12.0f, Estimated = true )]
-[Connector( "on_one", Order = 0, EnergyOutPercentage = 0.5f, DisplayName = "One" )]
-[Connector( "on_two", Order = 1, EnergyOutPercentage = 0.5f, DisplayName = "Two" )]
-[Node( DisplayName = "Splitter", Description = "Cheap and simple splitter" )]
-public class BasicSplitter : WeaponNodeEntity
-{
-	public override float Execute( float energy, ExecuteInfo info )
-	{
-		ExecuteConnector( "on_one", info );
-		ExecuteConnector( "on_two", info );
-
-		return 0.0f;
-	}
-}

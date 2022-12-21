@@ -71,10 +71,16 @@ public partial class GameManager : Sandbox.GameManager
 		}
 
 		// get all markers
-		var markers = All.OfType<SpawnMarker>().Where( v => v.Team == player.Team );
+		var markers = All.OfType<SpawnMarker>().Where( v => v.Team == player.Team ).Cast<Entity>();
 
+		var enumerable = markers as Entity[] ?? markers.ToArray();
+		if ( !enumerable.Any() )
+		{
+			markers = All.OfType<SpawnPoint>();
+		}
+		
 		// choose random one...
-		var marker = markers.MinBy( _ => Guid.NewGuid() );
+		var marker = enumerable.MinBy( _ => Guid.NewGuid() );
 
 		// if it exists put the pawn down!
 		var transform = marker?.Transform ?? player.Transform;
@@ -108,10 +114,10 @@ public partial class GameManager : Sandbox.GameManager
 	{
 		base.FrameSimulate( cl );
 
-		/*DebugOverlay.ScreenText( "ProjectBullet - Node Design Test", Vector2.One * 20, 0, Color.Orange );
+		DebugOverlay.ScreenText( "ProjectBullet - Node Design Test", Vector2.One * 20, 0, Color.Orange );
 		DebugOverlay.ScreenText( "This test is meant for node balance / design. Any gameplay you see isn't final!",
 			Vector2.One * 20, 1, Color.Orange );
-		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );*/
+		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );
 
 		if ( Input.Pressed( InputButton.View ) )
 		{

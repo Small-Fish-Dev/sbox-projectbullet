@@ -74,7 +74,6 @@ public abstract partial class BasePlayer : AnimatedEntity
 		Velocity = Vector3.Zero;
 
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 72 ) );
-		EnableHitboxes = true;
 
 		GameManager.Current?.MoveToSpawnpoint( this );
 
@@ -114,8 +113,13 @@ public abstract partial class BasePlayer : AnimatedEntity
 
 	protected virtual void ClientRespawn()
 	{
+		if ( !IsLocalPawn )
+		{
+			//var hit = Game.RootPanel.AddChild<OtherHealth>();
+			//hit.BasePlayer = this;
+		}
 	}
-
+	
 	public override void Simulate( IClient cl )
 	{
 		base.Simulate( cl );

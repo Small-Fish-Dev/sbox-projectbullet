@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using System.Linq;
+using Sandbox;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Player;
 
@@ -70,8 +71,8 @@ public partial class Gunner : BasePlayer
 
 			var result = trace.Run();
 
-			DebugOverlay.Circle( result.EndPosition + -ray.Forward, Rotation.LookAt( result.Normal ), 1.0f, Color.White,
-				3.0f );
+			//DebugOverlay.Circle( result.EndPosition + -ray.Forward, Rotation.LookAt( result.Normal ), 1.0f, Color.White,
+			//3.0f );
 
 			(BasePlayer as Gunner).PlaySound( "rust_pistol.shoot" );
 
@@ -131,17 +132,113 @@ public partial class Gunner : BasePlayer
 		}
 	}
 
-	public class UltraShiftController : NodeExecutionEntity
+	public partial class UltraShiftController : NodeExecutionEntity
 	{
 		public override string DisplayName => "Ultra Shift";
-		public override float ActionDelay => 7.0f;
+		public override float ActionDelay => 0.4f;
 		public override InputButton InputButton => InputButton.Run;
+		public override bool AutomaticEnergyGain => true;
+
+		[Net, Predicted] public Projectile Instance { get; set; }
+
+		public class Projectile : BasePhysics
+		{
+			private BasePlayer _player;
+			private UltraShiftController _ctl;
+
+			public Projectile( UltraShiftController ctl )
+			{
+				_player = ctl.BasePlayer;
+				_ctl = ctl;
+
+				Transmit = TransmitType.Always;
+			}
+
+			public Projectile() { }
+
+			public override void Spawn()
+			{
+				base.Spawn();
+
+				PhysicsEnabled = true;
+				UsePhysicsCollision = true;
+				SetupPhysicsFromSphere( PhysicsMotionType.Dynamic, Vector3.Zero, 32.0f );
+			}
+
+			[Event.Client.Frame]
+			private void Frame()
+			{
+				DebugOverlay.Sphere( Position, 32.0f, Color.Magenta, 0.0f, true );
+			}
+
+			protected override void OnPhysicsCollision( CollisionEventData eventData )
+			{
+				if ( eventData.Other.Entity is BasePlayer )
+				{
+					return;
+				}
+
+				
+				
+				base.OnPhysicsCollision( eventData );
+			}
+		}
+
+		[Event.Tick]
+		private void HandlePhysicsTick()
+		{
+			if ( Instance == null )
+			{
+				return;
+			}
+
+			foreach ( var player in All.OfType<BasePlayer>() )
+			{
+				if ( !(player.Position.Distance( Position ) <= 32) )
+				{
+					continue;
+				}
+
+				var info = new ExecuteInfo { ImpactPoint = Instance.Position };
+				ExecuteEntryNode( info
+					.WithAttacker( BasePlayer )
+					.WithForce( 1, BasePlayer.AimRay.Forward ) );
+			}
+		}
 
 		protected override void PerformAction( IClient cl )
 		{
 			base.PerformAction( cl );
 
-			Log.Info( "hello from ultra shift" );
+			if ( Instance != null )
+			{
+				/*var info = new ExecuteInfo { ImpactPoint = Instance.Position };
+				ExecuteEntryNode( info
+					.WithAttacker( BasePlayer )
+					.WithForce( 1, BasePlayer.AimRay.Forward ) );*/
+
+				if ( Game.IsClient )
+				{
+					return;
+				}
+
+				Instance.Delete();
+			}
+			else
+			{
+				if ( Game.IsClient )
+				{
+					return;
+				}
+
+				var forward = BasePlayer.AimRay.Forward;
+				forward = forward.Normal;
+
+				Instance = new Projectile( this )
+				{
+					Position = BasePlayer.EyePosition + forward * 32, Velocity = forward * 444
+				};
+			}
 		}
 	}
 
@@ -169,7 +266,7 @@ public partial class Gunner : BasePlayer
 		base.Spawn();
 
 		PrimaryFire = new PrimaryFireController();
-		SecondaryFire = new SecondaryFireController();
+		//SecondaryFire = new SecondaryFireController();
 		UltraShift = new UltraShiftController();
 
 		RegisterNodeExecutors();

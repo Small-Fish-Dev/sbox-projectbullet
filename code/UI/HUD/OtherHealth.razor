@@ -1,0 +1,124 @@
+﻿@using ProjectBullet.Core.Node
+@using ProjectBullet.Player
+@using Sandbox
+@using Sandbox.UI
+@namespace ProjectBullet.UI.HUD
+@inherits Sandbox.UI.Panel;
+
+<style>
+    OtherHealth {
+        position: absolute;
+    
+        font-family: Inter;
+        font-weight: bold;
+        font-size: 15px;
+    
+        color: black;
+        
+        opacity: 0.0;
+        
+        transform: translateX( -50% );
+        
+        background-color: rgba(255, 255, 255, 0.10);
+        
+        padding: 8px;
+        
+        align-items: center;
+        justify-content: center;
+        
+        
+        border-radius: 10%;
+                
+        flex-direction: row;
+        
+        &:intro {
+            opacity: 0;
+        }
+        
+        &:outro {
+            opacity: 0;
+        }
+        
+        .health-bar {
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 100px;
+            height: 5px;
+            
+            .inner {
+                background-color: rgba(0, 255, 170, 0.5);
+                width: @Health%;
+                height: 100%;
+            }
+        }
+    }
+</style>
+
+@code {
+    public BasePlayer BasePlayer { get; set; }
+    public float Health { get; set; }
+    
+    private void UpdatePosition()
+    {
+        if (BasePlayer == null) return;
+        var pos = BasePlayer.EyePosition;
+        var screen = pos.ToScreen();
+        var transform = new PanelTransform();
+
+        var w = (Box.Rect.Width);
+        w /= 2;
+
+        var x = (screen.x * Screen.Width) - w;
+        x = x.Floor();
+
+        var y = screen.y * Screen.Height;
+        y = y.Floor();
+
+        x += 90;
+
+        transform.AddTranslate(
+            x, y, 0);
+        transform.AddRotation(0, 00, 38);
+        Style.Transform = transform;
+
+        var dist = BasePlayer.Position.Distance(Game.LocalPawn.Position);
+        var opacity = 1 - ((dist - 150) / 200);
+        Style.Opacity = opacity;
+    }
+
+    [Event.Client.Frame]
+    private void OnFrame()
+    {
+        UpdatePosition();
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+        UpdatePosition();
+
+        if (Health != BasePlayer.Health)
+        {
+            Health = BasePlayer.Health;
+
+            if (Health <= 0)
+            {
+                Delete();
+                return;
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+}
+
+<root>
+    @if (BasePlayer == null)
+    {
+        return;
+    }
+
+    <div class="health-bar">
+        <div class="inner"></div>
+    </div>
+</root>

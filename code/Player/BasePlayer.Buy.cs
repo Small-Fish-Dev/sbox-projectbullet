@@ -6,7 +6,7 @@ namespace ProjectBullet.Player;
 
 public abstract partial class BasePlayer
 {
-	[Net, Change] public bool CanUseEditor { get; set; } = false;
+	[Net, Change] public bool CanUseEditor { get; set; } = true;
 
 	private GraphVisualizer _nodeGraph;
 

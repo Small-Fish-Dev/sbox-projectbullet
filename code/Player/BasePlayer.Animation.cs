@@ -14,7 +14,7 @@ public abstract partial class BasePlayer
 		animHelper.WithLookAt( EyePosition + EyeRotation.Forward * 100.0f, 1.0f, 1.0f, 0.5f );
 		animHelper.AimAngle = EyeRotation;
 		animHelper.FootShuffle = 0f;
-		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, 0, Time.Delta * 10.0f );
+		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, Controller.Duck.IsActive ? 1 : 0, Time.Delta * 10.0f );
 		animHelper.IsGrounded = controller.GroundEntity != null;
 
 		animHelper.IsWeaponLowered = false;

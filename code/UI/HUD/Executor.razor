@@ -1,0 +1,78 @@
+﻿@using ProjectBullet.Core.Node
+@using Sandbox
+@namespace ProjectBullet.UI.HUD
+@inherits Sandbox.UI.Panel;
+
+<style>
+    Executor {
+        font-family: Inter;
+        font-weight: bold;
+        font-size: 15px;
+    
+        color: black;
+    
+        padding: 10px;
+
+        background-color: rgba(255, 255, 255, 0.40);
+      
+        min-height: 40px;
+        border-radius: 00px;
+        
+        z-index: 20;
+        
+        align-items: center;
+        justify-content: center;
+        
+        margin-bottom: 5px;
+        
+        flex-direction: column;
+    }
+</style>
+
+@code {
+    public NodeExecutionEntity NodeExecutor { get; set; }
+    private float Energy { get; set; }
+    private float MaxEnergy { get; set; }
+    private float MinimumEnergy { get; set; }
+    private float EnergyFloored => Energy.Floor();
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        if (NodeExecutor == null)
+        {
+            return;
+        }
+
+        if (NodeExecutor.Energy != Energy)
+        {
+            Energy = NodeExecutor.Energy;
+            StateHasChanged();
+        }
+        
+        if (NodeExecutor.MinimumEnergy != MinimumEnergy)
+        {
+            MinimumEnergy = NodeExecutor.MinimumEnergy;
+            StateHasChanged();
+        }
+        
+        if (NodeExecutor.MaxEnergy != MaxEnergy)
+        {
+            MaxEnergy = NodeExecutor.MaxEnergy;
+            StateHasChanged();
+        }
+    }
+
+}
+
+<root>
+    <div style="width: 100%; justify-content: space-between">
+        @NodeExecutor.DisplayName 
+        <div style="color: rgba(0, 0, 0, 0.7)">@EnergyFloored / @MaxEnergy</div>
+        
+    </div>
+    <div style="width: 100%; margin-top: 0px; align-items: flex-start;">
+        <div style="color: rgba(0, 0, 0, 0.7)">minimum loss - @MinimumEnergy</div>
+    </div>
+</root>

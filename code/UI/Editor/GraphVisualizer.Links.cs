@@ -12,7 +12,7 @@ public partial class GraphVisualizer : Panel
 
 	private const float LineStartSize = 14.0f;
 	private const float LineEndSize = 14.0f;
-	private const float OuterLineStartSize = 18.0f;
+	private const float OuterLineStartSize = 14.0f;
 	private const float OuterLineEndSize = 18.0f;
 
 	private static bool CheckHover( Panel target ) => target.Box.Rect.IsInside( Game.RootPanel.MousePosition );
@@ -128,14 +128,13 @@ public partial class GraphVisualizer : Panel
 				lmp.y
 			);
 
-			if ( node.NodeData.Instance != null )
-
+			if ( node.NodeData.Instance == null )
 			{
-				node.NodeData.Instance.LastEditorX = lmp.x;
-				node.NodeData.Instance.LastEditorY = lmp.y;
+				return;
 			}
 
-			return;
+			node.NodeData.Instance.LastEditorX = lmp.x;
+			node.NodeData.Instance.LastEditorY = lmp.y;
 		}
 
 		foreach ( var child in e.This.Descendants )
@@ -170,7 +169,7 @@ public partial class GraphVisualizer : Panel
 		}
 	}
 
-	public Color CalculateOutputColor( GraphNodeOut output )
+	private static Color CalculateOutputColor( GraphNodeOut output )
 	{
 		var h = ((output.Connector.LastEstimatedEnergyOutput ?? 50.0f) * 0.01f) * 150;
 		return new ColorHsv( h, 0.6f, 1 ).ToColor();
@@ -204,7 +203,7 @@ public partial class GraphVisualizer : Panel
 			}
 
 			DrawNodeLine( CalculateOutputColor( output ), output.Box.Rect.Center,
-				MousePosition + this.Box.Rect.TopLeft );
+				MousePosition + Box.Rect.TopLeft );
 		}
 	}
 }

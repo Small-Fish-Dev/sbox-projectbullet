@@ -5,27 +5,15 @@
 @inherits Sandbox.UI.Panel;
 
 <style>
-    Money {
-        font-family: Inter;
-        font-weight: bold;
-        font-size: 15px;
-    
-        color: black;
-    
-        padding: 10px;
-    
+    Executors {
         position: absolute;
         bottom: 10px;
-        left: 10px;
-        background-color: rgba(255, 255, 255, 0.40);
-      
-        height: 40px;
-        border-radius: 20px;
+        right: 10px;
         
-        z-index: 20;
+        min-width: 250px;
+        min-height: 100px;
         
-        align-items: center;
-        justify-content: center;
+        flex-direction: column-reverse;
     }
 </style>
 
@@ -48,21 +36,11 @@
         }
     }
 
-    public override void Tick()
+    [GameEvent.Client.Workshop.EditorAccessChanged]
+    public void OnEditorAccessChanged(bool value)
     {
-        base.Tick();
-
-        if (LocalBasePlayer.CanUseEditor != CanUseEditor)
-        {
-            CanUseEditor = LocalBasePlayer.CanUseEditor;
-            StateHasChanged();
-        }       
-        
-        if (LocalBasePlayer.Inventory.Money != LocalMoney)
-        {
-            LocalMoney = LocalBasePlayer.Inventory.Money;
-            StateHasChanged();
-        }       
+        CanUseEditor = value;
+        StateHasChanged();
     }
 
     [GameEvent.Client.Workshop.MoneyChanged]
@@ -72,16 +50,18 @@
         StateHasChanged();
     }
 
+    public override void Tick()
+    {
+        base.Tick();
+        
+        
+    }
+
 }
 
 <root>
-    <div class="center">
-        <div>🪙 @LocalMoney</div>
-        
-        @if (CanUseEditor)
-        {
-            <div style="width: 8px"></div>
-            <div style="color: rgba(0, 0, 0, 0.7)">@SmallMessage</div> 
-        }
-    </div>
+    @foreach (var nodeExecutor in LocalBasePlayer.NodeExecutors)
+    {
+        <Executor NodeExecutor=@nodeExecutor/>
+    }
 </root>

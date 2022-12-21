@@ -11,7 +11,7 @@ public class StrafeDuck : Duck
 
 	public override void PreTick()
 	{
-		bool wants = Input.Down( InputButton.Duck );
+		var wants = Input.Down( InputButton.Duck );
 
 		if ( wants != IsActive )
 		{
@@ -27,10 +27,10 @@ public class StrafeDuck : Duck
 
 	protected override void TryDuck()
 	{
-		var wasactive = IsActive;
+		var wasActive = IsActive;
 		base.TryDuck();
 
-		if ( !wasactive && IsActive )
+		if ( !wasActive && IsActive )
 		{
 			Controller.Position += Vector3.Up * 14;
 		}
@@ -38,21 +38,19 @@ public class StrafeDuck : Duck
 
 	protected override void TryUnDuck()
 	{
-		var wasactive = IsActive;
+		var wasActive = IsActive;
 		base.TryUnDuck();
 
-		if ( wasactive && !IsActive && Controller.GroundEntity == null )
+		if ( !wasActive || IsActive || Controller.GroundEntity != null )
 		{
-			var distToGround = Controller.TraceBBox( Controller.Position, Controller.Position + Vector3.Down * 1000 )
-				.Distance;
-			var shift = MathF.Min( 14, distToGround );
-			Controller.Position += Vector3.Down * shift;
+			return;
 		}
+
+		var distToGround = Controller.TraceBBox( Controller.Position, Controller.Position + Vector3.Down * 1000 )
+			.Distance;
+		var shift = MathF.Min( 14, distToGround );
+		Controller.Position += Vector3.Down * shift;
 	}
 
-	public override float GetWishSpeed()
-	{
-		if ( !IsActive ) return -1;
-		return 88;
-	}
+	public override float GetWishSpeed() => !IsActive ? -1 : 88;
 }

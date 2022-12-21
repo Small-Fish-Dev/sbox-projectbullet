@@ -61,6 +61,9 @@ public abstract partial class BasePlayer
 		Sound.FromScreen( "hitsound" );
 
 		Game.RootPanel.AddChild<Hitmarker>();
+		var hit = Game.RootPanel.AddChild<HitEffect>();
+		hit.Location = pos;
+		hit.Damage = amount;
 	}
 
 	public override void TakeDamage( DamageInfo info )

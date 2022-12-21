@@ -49,7 +49,7 @@ public partial class PreInstanceGraph
 	public PreInstanceGraph( NodeExecutionEntity nodeExecutor, GraphVisualizer graphVisualizer )
 	{
 		Event.Register( this );
-		
+
 		GraphVisualizer = graphVisualizer;
 
 		// Create entry node
@@ -113,7 +113,7 @@ public partial class PreInstanceGraph
 
 	private readonly List<Action> _actionHistory = new();
 	private int _actionPointer = 0;
-	
+
 	public object PerformAction( Action action, bool addToHistory )
 	{
 		if ( addToHistory )

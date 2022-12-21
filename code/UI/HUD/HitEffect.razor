@@ -1,0 +1,83 @@
+﻿@using ProjectBullet.Core.Node
+@using Sandbox
+@using Sandbox.UI
+@namespace ProjectBullet.UI.HUD
+@inherits Sandbox.UI.Panel;
+
+<style>
+    HitEffect {
+        position: absolute;
+    
+        font-family: Inter;
+        font-weight: bold;
+        font-size: 27px;
+    
+        color: black;
+        
+        opacity: 0.3;
+    
+        padding: 10px;
+        min-width: 20px; min-height: 20px;
+
+        z-index: 20;
+        
+        align-items: center;
+        justify-content: center;
+        
+        margin-bottom: 5px;
+        
+        border-radius: 50%;
+        
+        transition: all 0.05s ease-out;
+        
+        text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+        
+        mix-blend-mode: difference;
+        
+        flex-direction: column;
+        
+        &:outro {
+            opacity: 0;
+        }
+    }
+</style>
+
+@code {
+    public Vector3? Location { get; set; } = null;
+    public Vector2 Offset { get; set; } = Vector2.Zero;
+    public Vector2 Force { get; set; } = Vector2.Random;
+    
+    
+    public float? Damage { get; set; } = null;
+    private readonly TimeUntil _timeUntilDeleted = 2;
+    
+    public override void Tick()
+    {
+        base.Tick();
+
+        if ( _timeUntilDeleted <= 0 )
+        {
+            Delete();
+        }
+        
+        if (Location == null) return;
+        var screen = Location.Value.ToScreen();
+        var transform = new PanelTransform();
+
+        var x = (screen.x * Screen.Width) + Offset.x;
+        x = x.Floor();
+
+        var y = (screen.y * Screen.Height) + Offset.y;
+        y = y.Floor();
+        
+        transform.AddTranslate(
+            x, y, 0);
+        Style.Transform = transform;
+
+        Offset += Force * 2;
+    }
+}
+
+<root>
+    @Damage
+</root>

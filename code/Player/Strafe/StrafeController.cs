@@ -12,7 +12,7 @@ public partial class StrafeController : WalkController
 		Sticky,
 		Floating
 	}
-	
+
 	[Net, Predicted] public bool Momentum { get; set; }
 	[Net, Predicted] public bool Activated { get; set; }
 	[Net, Predicted] public FrictionLevels FrictionLevel { get; set; }

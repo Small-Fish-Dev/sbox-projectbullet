@@ -6,7 +6,7 @@ using Sandbox;
 
 namespace ProjectBullet.Core.Node.Description;
 
-public class WeaponNodeDescription : IStaticDescription
+public class WeaponNodeDescription
 {
 	private static readonly List<WeaponNodeDescription> Instances = new();
 	public static ReadOnlyCollection<WeaponNodeDescription> All => Instances.AsReadOnly();
