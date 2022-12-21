@@ -71,8 +71,12 @@ public class WeaponNodeDescription
 	/// </summary>
 	/// <param name="type">Type / key</param>
 	/// <returns>WeaponNodeDescription</returns>
-	public static WeaponNodeDescription Get( Type type ) => Instances.SingleOrDefault( v => v.TargetType == type ) ??
-	                                                        new WeaponNodeDescription( type );
+	public static WeaponNodeDescription Get( Type type )
+	{
+		System.ArgumentNullException.ThrowIfNull( type );
+		return Instances.SingleOrDefault( v => v.TargetType == type ) ??
+		       new WeaponNodeDescription( type );
+	}
 
 	/// <summary>
 	/// Get stored (or newly created) WeaponNodeDescription by TypeDescription

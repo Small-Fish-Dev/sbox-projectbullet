@@ -10,7 +10,7 @@ namespace ProjectBullet.Core.Shop;
 /// </summary>
 public partial class Inventory : EntityComponent
 {
-	[Net, Change( "OnMoneyChanged" )] public int Money { get; set; } = 3000;
+	[Net, Change( "OnMoneyChanged" )] public int Money { get; private set; } = 3000;
 	[Net] private IList<Entity> ItemsInternal { get; set; } = new List<Entity>();
 
 	private void OnMoneyChanged()
