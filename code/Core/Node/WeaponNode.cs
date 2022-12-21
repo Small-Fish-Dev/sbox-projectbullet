@@ -128,7 +128,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 
 		if ( Game.IsClient )
 		{
-			NodeCmd.SetConnector( this, identifier, weaponNode );
+			NodeServer.SetConnector( this, identifier, weaponNode );
 		}
 
 		var connector = GetConnector( identifier );
@@ -152,7 +152,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	{
 		if ( Game.IsClient )
 		{
-			NodeCmd.DisconnectConnector( this, identifier );
+			NodeServer.DisconnectConnector( this, identifier );
 		}
 
 		var connector = GetConnector( identifier );

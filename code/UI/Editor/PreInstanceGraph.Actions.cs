@@ -36,7 +36,7 @@ public partial class PreInstanceGraph
 
 			root.GraphVisualizer?.AddChild( new GraphNode( node, root.GraphVisualizer ) );
 
-			NodeCmd.AddNodeToExecutor( _entity, root.NodeExecutor );
+			NodeServer.AddNodeToExecutor( _entity, root.NodeExecutor );
 
 			return node;
 		}
@@ -72,7 +72,7 @@ public partial class PreInstanceGraph
 
 			root.GraphInventory.Add( _entity );
 
-			NodeCmd.RemoveNodeFromExecutor( _entity );
+			NodeServer.RemoveNodeFromExecutor( _entity );
 
 			root.GraphVisualizer.InventoryMenu.StateHasChanged();
 
@@ -126,7 +126,7 @@ public partial class PreInstanceGraph
 			connector.Element?.StateHasChanged();
 			connector.ConnectedNode?.InputElement?.StateHasChanged();
 
-			NodeCmd.SetConnector( _main, _identifier, _target );
+			NodeServer.SetConnector( _main, _identifier, _target );
 
 			Log.Info( $"{GetType().Name} connected {connector}->{target}" );
 
@@ -179,7 +179,7 @@ public partial class PreInstanceGraph
 
 			connector.ConnectedNode = null;
 
-			NodeCmd.DisconnectConnector( _main, _identifier );
+			NodeServer.DisconnectConnector( _main, _identifier );
 
 			Log.Info( $"{GetType().Name} disconnected {connector} -/> {_lastTarget}" );
 
@@ -213,7 +213,7 @@ public partial class PreInstanceGraph
 			connector.ConnectedNode = target;
 			target.Previous = connector;
 
-			NodeCmd.SetEntryNode( root.NodeExecutor, _target );
+			NodeServer.SetEntryNode( root.NodeExecutor, _target );
 
 			connector.Element?.StateHasChanged();
 			target.InputElement?.StateHasChanged();
@@ -252,7 +252,7 @@ public partial class PreInstanceGraph
 			connector.Element.StateHasChanged();
 			inputElement?.StateHasChanged();
 
-			NodeCmd.ClearEntryNode( root.NodeExecutor );
+			NodeServer.ClearEntryNode( root.NodeExecutor );
 
 			Log.Info( $"{GetType().Name} disconnected {connector} -/> {_lastTarget}" );
 

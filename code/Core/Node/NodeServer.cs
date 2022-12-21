@@ -6,7 +6,7 @@ namespace ProjectBullet.Core.Node;
 /// <summary>
 /// Client -> server communication for the node system
 /// </summary>
-public static class NodeCmd
+public static class NodeServer
 {
 	private static WeaponNode GetWeaponNodeEntity( int networkIdent )
 	{
