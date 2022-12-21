@@ -11,7 +11,7 @@ namespace ProjectBullet.Nodes;
 [Energy( 8.0f )]
 [Connector( "on_hit", Order = 0, EnergyOutAmount = 8f, DisplayName = "One" )]
 [Node( DisplayName = "Explosion", Description = "Cheap and simple damage" )]
-public partial class Explosion : WeaponNodeEntity
+public partial class Explosion : WeaponNode
 {
 	public partial class ExplosionEntity : Entity
 	{

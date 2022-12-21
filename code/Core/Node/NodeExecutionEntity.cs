@@ -24,7 +24,7 @@ public partial class NodeExecutionEntity : Entity
 	/// First node to run
 	/// </summary>
 	[Net]
-	public WeaponNodeEntity EntryNode { get; set; }
+	public WeaponNode EntryNode { get; set; }
 
 	[Net, Predicted] public float Energy { get; set; } = 0.0f;
 	[Net] public float MinimumEnergy { get; private set; } = 0.0f;
@@ -212,7 +212,7 @@ public partial class NodeExecutionEntity : Entity
 
 		float? result = null;
 
-		void CalcPath( WeaponNodeEntity node, float input )
+		void CalcPath( WeaponNode node, float input )
 		{
 			var hasPopulatedConnector = false;
 			var output = input;
@@ -225,10 +225,10 @@ public partial class NodeExecutionEntity : Entity
 			
 			foreach ( var connector in node.Connectors )
 			{
-				if ( connector.WeaponNodeEntity != null )
+				if ( connector.WeaponNode != null )
 				{
 					hasPopulatedConnector = true;
-					CalcPath( connector.WeaponNodeEntity, output );
+					CalcPath( connector.WeaponNode, output );
 
 					if ( savedResult == null || result > savedResult )
 					{

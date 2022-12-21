@@ -11,7 +11,7 @@ namespace ProjectBullet.Nodes;
 [Energy( 15.0f )]
 [Connector( "on_hit", Order = 0, EnergyOutAmount = 15f, DisplayName = "One" )]
 [Node( DisplayName = "Spike", Description = "Cheap and simple damage" )]
-public partial class Spike : WeaponNodeEntity
+public partial class Spike : WeaponNode
 {
 	public class SpikePart : BasePhysics
 	{

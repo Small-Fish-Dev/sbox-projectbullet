@@ -25,7 +25,7 @@ public partial class PreInstanceGraph
 	/// <summary>
 	/// Node inventory - not always up to date
 	/// </summary>
-	public List<WeaponNodeEntity> GraphInventory { get; set; } = new();
+	public List<WeaponNode> GraphInventory { get; set; } = new();
 
 	/// <summary>
 	/// Read-only list of created nodes
@@ -42,7 +42,7 @@ public partial class PreInstanceGraph
 	/// </summary>
 	/// <param name="entity">WeaponNodeEntity</param>
 	/// <returns>Node or null</returns>
-	public Node GetNodeByEntity( WeaponNodeEntity entity ) => _nodes.SingleOrDefault( v => v.Instance == entity );
+	public Node GetNodeByEntity( WeaponNode entity ) => _nodes.SingleOrDefault( v => v.Instance == entity );
 
 	public EntryNode Entry { get; }
 
@@ -62,7 +62,7 @@ public partial class PreInstanceGraph
 		var inventory = (Game.LocalPawn as BasePlayer)?.Inventory;
 		if ( inventory != null )
 		{
-			foreach ( var weaponNodeEntity in inventory.Items.OfType<WeaponNodeEntity>() )
+			foreach ( var weaponNodeEntity in inventory.Items.OfType<WeaponNode>() )
 			{
 				if ( !weaponNodeEntity.InUse )
 				{
@@ -124,7 +124,7 @@ public partial class PreInstanceGraph
 		return action.Perform( this );
 	}
 
-	public void AddToGraph( WeaponNodeEntity entity )
+	public void AddToGraph( WeaponNode entity )
 	{
 		PerformAction( new AddNodeToGraphAction( entity ), true );
 	}
@@ -166,7 +166,7 @@ public partial class PreInstanceGraph
 	/// </summary>
 	/// <param name="entity">New item entity</param>
 	[Events.Client.Workshop.NewItem]
-	private void OnNewItem( WeaponNodeEntity entity )
+	private void OnNewItem( WeaponNode entity )
 	{
 		GraphInventory.Add( entity );
 		GraphVisualizer.InventoryMenu.StateHasChanged();

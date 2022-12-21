@@ -14,7 +14,7 @@ public partial class PreInstanceGraph
 
 		public Connector Previous;
 		public bool IsConnected => Previous != null;
-		public readonly WeaponNodeEntity Instance = null;
+		public readonly WeaponNode Instance = null;
 
 		public virtual string DisplayName { get; }
 
@@ -38,7 +38,7 @@ public partial class PreInstanceGraph
 			DisplayName = "Unknown";
 		}
 
-		public Node( PreInstanceGraph root, WeaponNodeEntity instance )
+		public Node( PreInstanceGraph root, WeaponNode instance )
 		{
 			Root = root;
 			Instance = instance;

@@ -11,7 +11,7 @@ namespace ProjectBullet.Nodes;
 [Energy( 8.0f )]
 [Connector( "on_hit", Order = 0, EnergyOutAmount = 10f, DisplayName = "One" )]
 [Node( DisplayName = "Mist", Description = "Cheap and simple damage" )]
-public partial class Mist : WeaponNodeEntity
+public partial class Mist : WeaponNode
 {
 	public partial class MistEntity : Entity
 	{

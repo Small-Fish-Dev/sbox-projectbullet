@@ -47,7 +47,7 @@ public class WeaponNodeDescription
 	/// </summary>
 	public static void InitAll()
 	{
-		foreach ( var typeDescription in TypeLibrary.GetTypes<WeaponNodeEntity>() )
+		foreach ( var typeDescription in TypeLibrary.GetTypes<WeaponNode>() )
 		{
 			Instances.Add( new WeaponNodeDescription( typeDescription ) );
 		}

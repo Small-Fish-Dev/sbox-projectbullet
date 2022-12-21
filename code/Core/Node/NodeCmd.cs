@@ -8,9 +8,9 @@ namespace ProjectBullet.Core.Node;
 /// </summary>
 public static class NodeCmd
 {
-	private static WeaponNodeEntity GetWeaponNodeEntity( int networkIdent )
+	private static WeaponNode GetWeaponNodeEntity( int networkIdent )
 	{
-		if ( Entity.FindByIndex( networkIdent ) is WeaponNodeEntity wne )
+		if ( Entity.FindByIndex( networkIdent ) is WeaponNode wne )
 		{
 			return wne;
 		}
@@ -67,7 +67,7 @@ public static class NodeCmd
 	/// <param name="target">WeaponNodeEntity to change connector of</param>
 	/// <param name="identifier">Connector identifier</param>
 	/// <param name="newValue">New value</param>
-	public static void SetConnector( WeaponNodeEntity target, string identifier, WeaponNodeEntity newValue )
+	public static void SetConnector( WeaponNode target, string identifier, WeaponNode newValue )
 	{
 		Game.AssertClient();
 		SetConnector( target.NetworkIdent, identifier, newValue.NetworkIdent );
@@ -101,7 +101,7 @@ public static class NodeCmd
 	/// </summary>
 	/// <param name="target">WeaponNodeEntity to change connector of</param>
 	/// <param name="identifier">Connector identifier</param>
-	public static void DisconnectConnector( WeaponNodeEntity target, string identifier )
+	public static void DisconnectConnector( WeaponNode target, string identifier )
 	{
 		Game.AssertClient();
 		DisconnectConnector( target.NetworkIdent, identifier );
@@ -142,7 +142,7 @@ public static class NodeCmd
 	/// </summary>
 	/// <param name="nodeExecutionEntity">Node execution entity</param>
 	/// <param name="newValue">WeaponNodeEntity value</param>
-	public static void SetEntryNode( NodeExecutionEntity nodeExecutionEntity, WeaponNodeEntity newValue )
+	public static void SetEntryNode( NodeExecutionEntity nodeExecutionEntity, WeaponNode newValue )
 	{
 		Game.AssertClient();
 		SetEntryNode( nodeExecutionEntity.NetworkIdent, newValue.NetworkIdent );
@@ -217,7 +217,7 @@ public static class NodeCmd
 	/// </summary>
 	/// <param name="target">WeaponNodeEntity to change owner of</param>
 	/// <param name="nodeExecutionEntity">New owner</param>
-	public static void AddNodeToExecutor( WeaponNodeEntity target, NodeExecutionEntity nodeExecutionEntity )
+	public static void AddNodeToExecutor( WeaponNode target, NodeExecutionEntity nodeExecutionEntity )
 	{
 		Game.AssertClient();
 		AddNodeToExecutor( target.NetworkIdent, nodeExecutionEntity.NetworkIdent );
@@ -258,7 +258,7 @@ public static class NodeCmd
 	/// Send RemoveNodeFromExecutor request to the server - will set owner of target back to pawn (if possible)
 	/// </summary>
 	/// <param name="target">WeaponNodeEntity to change owner of</param>
-	public static void RemoveNodeFromExecutor( WeaponNodeEntity target )
+	public static void RemoveNodeFromExecutor( WeaponNode target )
 	{
 		Game.AssertClient();
 		RemoveNodeFromExecutor( target.NetworkIdent );

@@ -7,19 +7,19 @@ using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
-public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
+public abstract partial class WeaponNode : Entity, IInventoryItem
 {
 	public partial class Connector : Entity
 	{
 		// TODO: THIS SHOULDN'T NEED TO BE AN ENTITY!!!!!!
-		[Net] public WeaponNodeEntity WeaponNodeEntity { get; set; } = null;
+		[Net] public WeaponNode WeaponNode { get; set; } = null;
 		public ConnectorAttribute ConnectorAttribute { get; private set; }
 		[Net] public string Identifier { get; set; }
 
 		[Net, Change( "OnTypeNameChanged" )]
 		public string TypeName { get; set; } = ""; // hacky fix, we can't network types / attrs
 
-		public Connector( ConnectorAttribute nextAttribute, WeaponNodeEntity entity )
+		public Connector( ConnectorAttribute nextAttribute, WeaponNode entity )
 		{
 			Transmit = TransmitType.Owner;
 			ConnectorAttribute = nextAttribute;
@@ -55,7 +55,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 	[Net] public IList<Connector> Connectors { get; set; } = new List<Connector>();
 
-	[Net] private WeaponNodeEntity Previous { get; set; }
+	[Net] private WeaponNode Previous { get; set; }
 	[Net] private string PreviousConnectorId { get; set; } // this is because BaseNetworkable exchanging sucks
 
 	public float? LastEditorX = null;
@@ -79,13 +79,13 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 		foreach ( var connector in Connectors.Where( connector => connector.Identifier == identifier ) )
 		{
-			var instance = connector.WeaponNodeEntity;
+			var instance = connector.WeaponNode;
 			if ( instance == null )
 			{
 				continue;
 			}
 
-			connector.WeaponNodeEntity?.PostExecuteConnector( this, connector, info );
+			connector.WeaponNode?.PostExecuteConnector( this, connector, info );
 			return;
 		}
 
@@ -100,7 +100,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	{
 		foreach ( var connector in Connectors )
 		{
-			connector.WeaponNodeEntity = null;
+			connector.WeaponNode = null;
 		}
 	}
 
@@ -116,11 +116,11 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// Set connector link
 	/// </summary>
 	/// <param name="identifier">Connector ID</param>
-	/// <param name="weaponNodeEntity">Connector linked entity</param>
+	/// <param name="weaponNode">Connector linked entity</param>
 	/// <exception cref="Exception"></exception>
-	public void SetConnector( string identifier, WeaponNodeEntity weaponNodeEntity )
+	public void SetConnector( string identifier, WeaponNode weaponNode )
 	{
-		if ( weaponNodeEntity == null )
+		if ( weaponNode == null )
 		{
 			DisconnectConnector( identifier );
 			return;
@@ -128,7 +128,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 
 		if ( Game.IsClient )
 		{
-			NodeCmd.SetConnector( this, identifier, weaponNodeEntity );
+			NodeCmd.SetConnector( this, identifier, weaponNode );
 		}
 
 		var connector = GetConnector( identifier );
@@ -139,9 +139,9 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 			throw new Exception( $"Unknown connector {identifier}" );
 		}
 
-		connector.WeaponNodeEntity = weaponNodeEntity;
-		connector.WeaponNodeEntity.Previous = this;
-		connector.WeaponNodeEntity.PreviousConnectorId = identifier;
+		connector.WeaponNode = weaponNode;
+		connector.WeaponNode.Previous = this;
+		connector.WeaponNode.PreviousConnectorId = identifier;
 	}
 
 	/// <summary>
@@ -163,13 +163,13 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 			throw new Exception( $"Unknown connector {identifier}" );
 		}
 
-		if ( connector.WeaponNodeEntity == null )
+		if ( connector.WeaponNode == null )
 		{
 			return;
 		}
 
-		connector.WeaponNodeEntity.Previous = null;
-		connector.WeaponNodeEntity = null;
+		connector.WeaponNode.Previous = null;
+		connector.WeaponNode = null;
 	}
 
 	/// <summary>
@@ -183,7 +183,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 	/// </summary>
 	/// <param name="identifier">Connector ID</param>
 	/// <exception cref="Exception"></exception>
-	public WeaponNodeEntity GetConnectedNode( string identifier ) => GetConnector( identifier )?.WeaponNodeEntity;
+	public WeaponNode GetConnectedNode( string identifier ) => GetConnector( identifier )?.WeaponNode;
 
 	/// <summary>
 	/// Method to be executed when this node runs.
@@ -219,7 +219,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		}
 	}
 
-	private void PostExecuteConnector( WeaponNodeEntity previous, Connector connector, ExecuteInfo info )
+	private void PostExecuteConnector( WeaponNode previous, Connector connector, ExecuteInfo info )
 	{
 		var estimatedEnergy = previous.EstimateConnectorOutput( connector.Identifier ) ??
 		                      NodeExecutor.Energy;
@@ -378,7 +378,7 @@ public abstract partial class WeaponNodeEntity : Entity, IInventoryItem
 		get;
 	}
 
-	protected WeaponNodeEntity()
+	protected WeaponNode()
 	{
 		Transmit = TransmitType.Owner;
 		Description = WeaponNodeDescription.Get( GetType() );

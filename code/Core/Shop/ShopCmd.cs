@@ -41,7 +41,7 @@ public static class ShopCmd
 
 		if ( item.Description is WeaponNodeDescription wnd )
 		{
-			var instance = wnd.TypeDescription.Create<WeaponNodeEntity>();
+			var instance = wnd.TypeDescription.Create<WeaponNode>();
 			instance.Owner = (Entity)ConsoleSystem.Caller.Pawn;
 			inventory.Add( instance );
 		}

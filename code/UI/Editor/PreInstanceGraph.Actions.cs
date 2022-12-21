@@ -20,9 +20,9 @@ public partial class PreInstanceGraph
 	{
 		public override string DisplayName => "Node added";
 
-		private readonly WeaponNodeEntity _entity;
+		private readonly WeaponNode _entity;
 
-		public AddNodeToGraphAction( WeaponNodeEntity entity ) => _entity = entity;
+		public AddNodeToGraphAction( WeaponNode entity ) => _entity = entity;
 
 		public override object Perform( PreInstanceGraph root )
 		{
@@ -48,9 +48,9 @@ public partial class PreInstanceGraph
 	{
 		public override string DisplayName => "Node removed";
 
-		private readonly WeaponNodeEntity _entity;
+		private readonly WeaponNode _entity;
 
-		public RemoveNodeFromGraphAction( WeaponNodeEntity entity ) => _entity = entity;
+		public RemoveNodeFromGraphAction( WeaponNode entity ) => _entity = entity;
 
 		public override object Perform( PreInstanceGraph root )
 		{
@@ -86,11 +86,11 @@ public partial class PreInstanceGraph
 	{
 		public override string DisplayName => "Connector connected";
 
-		private readonly WeaponNodeEntity _main;
-		private readonly WeaponNodeEntity _target;
+		private readonly WeaponNode _main;
+		private readonly WeaponNode _target;
 		private readonly string _identifier;
 
-		public ConnectConnectorToNodeAction( WeaponNodeEntity main, string identifier, WeaponNodeEntity target )
+		public ConnectConnectorToNodeAction( WeaponNode main, string identifier, WeaponNode target )
 		{
 			_main = main;
 			_identifier = identifier;
@@ -140,11 +140,11 @@ public partial class PreInstanceGraph
 	{
 		public override string DisplayName => "Connector cleared";
 
-		private readonly WeaponNodeEntity _main;
+		private readonly WeaponNode _main;
 		private readonly string _identifier;
-		private WeaponNodeEntity _lastTarget;
+		private WeaponNode _lastTarget;
 
-		public ClearNodeConnectorAction( WeaponNodeEntity main, string identifier )
+		public ClearNodeConnectorAction( WeaponNode main, string identifier )
 		{
 			_main = main;
 			_identifier = identifier;
@@ -193,9 +193,9 @@ public partial class PreInstanceGraph
 	{
 		public override string DisplayName => "Entry node connected";
 
-		private readonly WeaponNodeEntity _target;
+		private readonly WeaponNode _target;
 
-		public ConnectEntryNodeAction( WeaponNodeEntity target )
+		public ConnectEntryNodeAction( WeaponNode target )
 		{
 			_target = target;
 		}
@@ -230,7 +230,7 @@ public partial class PreInstanceGraph
 	{
 		public override string DisplayName => "Entry node disconnected";
 
-		private WeaponNodeEntity _lastTarget;
+		private WeaponNode _lastTarget;
 
 		public DisconnectEntryNodeAction()
 		{

@@ -8,7 +8,7 @@ namespace ProjectBullet.Nodes;
 [Connector( "on_one", Order = 0, EnergyOutPercentage = 0.2f, DisplayName = "One" )]
 [Connector( "on_two", Order = 1, EnergyOutPercentage = 0.2f, DisplayName = "Two" )]
 [Node( DisplayName = "Mini Splitter", Description = "Cheap and simple splitter" )]
-public class MiniSplitter : WeaponNodeEntity
+public class MiniSplitter : WeaponNode
 {
 	protected override float Execute( float energy, ExecuteInfo info )
 	{
