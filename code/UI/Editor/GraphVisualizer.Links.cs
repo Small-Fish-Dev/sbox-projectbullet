@@ -23,7 +23,7 @@ public partial class GraphVisualizer : Panel
 			ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
 
 		//GraphicsX.Line( color,
-			//ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
+		//ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
 	}
 
 	private Vector2 GetStyleMousePosition() => new Vector2(
@@ -82,9 +82,9 @@ public partial class GraphVisualizer : Panel
 				{
 					if ( input.IsInvalidHover )
 					{
-						input.NodeData.Previous?.Disconnect(  );
+						input.NodeData.Previous?.Disconnect();
 					}
-					
+
 					output.Connector.ConnectTo( input.GraphNode.NodeData );
 					input.GraphNode.StateHasChanged();
 				}
@@ -152,7 +152,7 @@ public partial class GraphVisualizer : Panel
 				{
 					input.IsInvalidHover = true;
 				}
-				
+
 				child.StateHasChanged();
 			}
 			else
@@ -189,7 +189,6 @@ public partial class GraphVisualizer : Panel
 				{
 					continue;
 				}
-
 
 				var endpoint = output.Connector.ConnectedNode.InputElement;
 				DrawNodeLine( CalculateOutputColor( output ), output.Box.ClipRect.Center, endpoint.Box.Rect.Center );

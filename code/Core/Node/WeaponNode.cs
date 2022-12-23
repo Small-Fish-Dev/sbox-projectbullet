@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ProjectBullet.Core.Shop;
-using ProjectBullet.Player;
 using Sandbox;
 
 namespace ProjectBullet.Core.Node;
@@ -16,8 +15,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 		public ConnectorAttribute ConnectorAttribute { get; private set; }
 		[Net] public string Identifier { get; set; }
 
-		[Net, Change( "OnTypeNameChanged" )]
-		public string TypeName { get; set; } = ""; // hacky fix, we can't network types / attrs
+		[Net, Change( "OnTypeNameChanged" )] private string TypeName { get; set; } = ""; // hacky fix, we can't network types / attrs
 
 		public Connector( ConnectorAttribute nextAttribute, WeaponNode entity )
 		{
@@ -49,9 +47,9 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// </summary>
 	public bool InUse => Owner is NodeExecutor;
 
-	public NodeExecutor NodeExecutor => Owner as NodeExecutor;
+	private NodeExecutor NodeExecutor => Owner as NodeExecutor;
 
-	public BasePlayer BasePlayer => InUse ? (BasePlayer)Owner.Owner : (BasePlayer)Owner;
+	public Player Player => InUse ? (Player)Owner.Owner : (Player)Owner;
 
 	[Net] public IList<Connector> Connectors { get; set; } = new List<Connector>();
 
@@ -71,7 +69,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// <exception cref="Exception"></exception>
 	protected void ExecuteConnector( string identifier, ExecuteInfo info )
 	{
-		if ( Owner is not NodeExecutor nodeExecutor )
+		if ( Owner is not NodeExecutor _ )
 		{
 			Log.Warning( "ExecuteConnector called without NodeExecutionEntity" );
 			return;
@@ -173,12 +171,6 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	}
 
 	/// <summary>
-	/// Get connector that will execute this node
-	/// </summary>
-	/// <returns>Connector or null</returns>
-	private Connector GetPreviousConnector() => Previous?.GetConnector( PreviousConnectorId );
-
-	/// <summary>
 	/// Get connector linked entity
 	/// </summary>
 	/// <param name="identifier">Connector ID</param>
@@ -244,7 +236,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 			return;
 		}
 
-		Owner = nodeExecutor.BasePlayer;
+		Owner = nodeExecutor.Player;
 	}
 
 	/// <summary>
@@ -272,7 +264,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 
 		// this is the entry node
 		float? previousOutput;
-		if ( nodeExecutor?.EntryNode != null && nodeExecutor.EntryNode == this )
+		if ( nodeExecutor.EntryNode != null && nodeExecutor.EntryNode == this )
 		{
 			previousOutput = useMaxEnergy ? nodeExecutor.MaxEnergy : nodeExecutor.Energy;
 		}

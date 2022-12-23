@@ -1,8 +1,8 @@
 ﻿using Sandbox;
 
-namespace ProjectBullet.Player;
+namespace ProjectBullet.Core;
 
-public abstract partial class BasePlayer
+public abstract partial class Player
 {
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
@@ -23,12 +23,9 @@ public abstract partial class BasePlayer
 			look = look.WithYaw( look.yaw * -1f );
 		}
 
-		var viewAngles = ViewAngles;
-		viewAngles += look;
+		var viewAngles = ViewAngles + look;
 		viewAngles.pitch = viewAngles.pitch.Clamp( -89f, 89f );
 		viewAngles.roll = 0f;
 		ViewAngles = viewAngles.Normal;
-		
-		Controller?.BuildInput();
 	}
 }

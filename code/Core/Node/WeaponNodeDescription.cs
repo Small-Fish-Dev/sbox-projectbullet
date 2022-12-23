@@ -53,6 +53,7 @@ public class WeaponNodeDescription
 		}
 	}
 
+	// ReSharper disable once UnusedMember.Local
 	private void OnHotload() => UseNewTypeDescription
 		( TypeLibrary.GetType( _name ) );
 
@@ -73,7 +74,7 @@ public class WeaponNodeDescription
 	/// <returns>WeaponNodeDescription</returns>
 	public static WeaponNodeDescription Get( Type type )
 	{
-		System.ArgumentNullException.ThrowIfNull( type );
+		ArgumentNullException.ThrowIfNull( type );
 		return Instances.SingleOrDefault( v => v.TargetType == type ) ??
 		       new WeaponNodeDescription( type );
 	}

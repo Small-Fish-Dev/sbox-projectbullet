@@ -20,24 +20,26 @@ public partial class GraphNode : Panel
 	{
 		base.Tick();
 
-		if ( _waitingForInit && NodeData.Instance != null )
+		if ( !_waitingForInit || NodeData.Instance == null )
 		{
-			if ( NodeData.Instance.LastEditorX != null )
-			{
-				Style.Left = Length.Pixels(
-					NodeData.Instance.LastEditorX.Value
-				);
-			}
-
-			if ( NodeData.Instance.LastEditorY != null )
-			{
-				Style.Top = Length.Pixels(
-					NodeData.Instance.LastEditorY.Value
-				);
-			}
-
-			_waitingForInit = false;
+			return;
 		}
+
+		if ( NodeData.Instance.LastEditorX != null )
+		{
+			Style.Left = Length.Pixels(
+				NodeData.Instance.LastEditorX.Value
+			);
+		}
+
+		if ( NodeData.Instance.LastEditorY != null )
+		{
+			Style.Top = Length.Pixels(
+				NodeData.Instance.LastEditorY.Value
+			);
+		}
+
+		_waitingForInit = false;
 	}
 
 	protected override void OnRightClick( MousePanelEvent e )

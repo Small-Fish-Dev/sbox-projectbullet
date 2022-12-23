@@ -34,13 +34,12 @@ public partial class GraphNodeIn : Panel
 		{
 			NodeData.Previous.Disconnect();
 		}
-		
+
 		e.StopPropagation();
 	}
 
 	public bool Hovered { get; set; } = false;
 	public bool IsInvalidHover { get; set; } = false;
-	public bool MakingLink { get; set; } = false;
 
 	public bool InvalidEstimatedEnergy
 	{
@@ -61,5 +60,5 @@ public partial class GraphNodeIn : Panel
 	public bool IsConnected => GraphNode.NodeData.IsConnected;
 
 	public string RootClasses =>
-		$"{(InvalidEstimatedEnergy ? "estimation-low" : "")} {(IsConnected ? "connected" : "")} {(MakingLink ? "linking" : "")} {(IsInvalidHover ? "invalid-link" : "")}";
+		$"{(InvalidEstimatedEnergy ? "estimation-low" : "")} {(IsConnected ? "connected" : "")} {(IsInvalidHover ? "invalid-link" : "")}";
 }

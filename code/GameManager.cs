@@ -1,12 +1,12 @@
-﻿using Sandbox;
-using System;
+﻿using System;
 using System.Linq;
-using ProjectBullet.Classes;
+using ProjectBullet.Characters;
+using ProjectBullet.Core;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
-using ProjectBullet.Player;
 using ProjectBullet.UI.HUD;
+using Sandbox;
 using Sandbox.UI;
 
 namespace ProjectBullet;
@@ -44,7 +44,7 @@ public partial class GameManager : Sandbox.GameManager
 	/// <returns>PlayerTeam</returns>
 	private static PlayerTeam GetDisadvantagedTeam()
 	{
-		var players = All.OfType<BasePlayer>().ToList();
+		var players = All.OfType<Core.Player>().ToList();
 		var teamOneCount = players.Count( v => v.Team == PlayerTeam.TeamOne );
 		var teamTwoCount = players.Count( v => v.Team == PlayerTeam.TeamTwo );
 
@@ -64,7 +64,7 @@ public partial class GameManager : Sandbox.GameManager
 	/// <param name="pawn">Player</param>
 	public override void MoveToSpawnpoint( Entity pawn )
 	{
-		if ( pawn is not BasePlayer player )
+		if ( pawn is not Core.Player player )
 		{
 			base.MoveToSpawnpoint( pawn );
 			return;
@@ -118,10 +118,5 @@ public partial class GameManager : Sandbox.GameManager
 		DebugOverlay.ScreenText( "This test is meant for node balance / design. Any gameplay you see isn't final!",
 			Vector2.One * 20, 1, Color.Orange );
 		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );
-
-		if ( Input.Pressed( InputButton.View ) )
-		{
-			BasePlayer.ToggleEditor();
-		}
 	}
 }

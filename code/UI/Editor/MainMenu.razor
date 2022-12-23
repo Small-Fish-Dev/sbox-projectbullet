@@ -1,9 +1,7 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
 @using ProjectBullet.Core.Node
-@using Sandbox
 @using Sandbox.UI;
-@using ProjectBullet.Player;
 @namespace ProjectBullet.UI.Editor
 @attribute [StyleSheet("/UI/Editor/Menu.scss")]
 
@@ -11,7 +9,7 @@
     public GraphVisualizer GraphVisualizer { get; set; }
 
     public IEnumerable<NodeExecutor> SwitchableExecutors =>
-        (Game.LocalPawn as BasePlayer)?.NodeExecutors.Where(v => v != @GraphVisualizer.NodeExecutor);
+        Util.LocalPlayer.NodeExecutors.Where(v => v != @GraphVisualizer.NodeExecutor);
 
 }
 

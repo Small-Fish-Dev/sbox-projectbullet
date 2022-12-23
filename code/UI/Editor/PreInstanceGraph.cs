@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ProjectBullet.Core;
-using ProjectBullet.Player;
 using ProjectBullet.Core.Node;
-using ProjectBullet.Core.Shop;
 using Sandbox;
 
 namespace ProjectBullet.UI.Editor;
@@ -59,7 +57,7 @@ public partial class PreInstanceGraph
 		NodeExecutor = nodeExecutor;
 
 		// Add nodes from inventory
-		var inventory = (Game.LocalPawn as BasePlayer)?.Inventory;
+		var inventory = (Game.LocalPawn as Core.Player)?.Inventory;
 		if ( inventory != null )
 		{
 			foreach ( var weaponNodeEntity in inventory.Items.OfType<WeaponNode>() )

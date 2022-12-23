@@ -2,7 +2,7 @@
 using System.Linq;
 using Sandbox;
 
-namespace ProjectBullet.Player;
+namespace ProjectBullet.Core;
 
 public enum PlayerTeam
 {
@@ -11,7 +11,7 @@ public enum PlayerTeam
 	TeamTwo
 }
 
-public abstract partial class BasePlayer
+public abstract partial class Player
 {
 	private readonly List<KeyValuePair<PlayerTeam, string>> _teamTagPairs = new()
 	{
@@ -56,7 +56,7 @@ public abstract partial class BasePlayer
 				return false;
 			}
 
-			var localTeam = (Game.LocalPawn as BasePlayer)?.GetTeam();
+			var localTeam = (Game.LocalPawn as Player)?.GetTeam();
 			return Team != localTeam;
 		}
 	}

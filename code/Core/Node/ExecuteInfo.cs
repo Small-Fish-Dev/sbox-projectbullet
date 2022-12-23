@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sandbox;
-using ProjectBullet.Player;
 
 namespace ProjectBullet.Core.Node;
 
@@ -52,9 +51,9 @@ public struct ExecuteInfo
 	public Vector3? Force { get; set; }
 
 	/// <summary>
-	/// The BasePlayer that is attacking
+	/// The Player that is attacking
 	/// </summary>
-	public BasePlayer Attacker { get; set; }
+	public Player Attacker { get; set; }
 
 	/// <summary>Damage tags, extra information about this attack</summary>
 	public HashSet<string> Tags { get; set; }
@@ -82,7 +81,7 @@ public struct ExecuteInfo
 	/// </summary>
 	/// <param name="attacker">New attacker</param>
 	/// <returns>Self</returns>
-	public ExecuteInfo WithAttacker( BasePlayer attacker )
+	public ExecuteInfo WithAttacker( Player attacker )
 	{
 		Attacker = attacker;
 		return this;

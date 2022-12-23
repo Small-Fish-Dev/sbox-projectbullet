@@ -1,5 +1,4 @@
-﻿using ProjectBullet.Player;
-using Sandbox;
+﻿using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
@@ -28,7 +27,7 @@ public static class NodeServer
 		return null;
 	}
 
-	private static BasePlayer GetCallerPlayer() => ConsoleSystem.Caller.Pawn as BasePlayer;
+	private static Player GetCallerPlayer() => ConsoleSystem.Caller.Pawn as Player;
 
 	[ConCmd.Server]
 	private static void SetConnector( int targetNetworkIdent, string identifier, int newValueNetworkIdent )
@@ -58,7 +57,7 @@ public static class NodeServer
 		Log.Info( $"~~ SetConnector: {identifier}, {newValue}" );
 		target.SetConnector( identifier, newValue );
 
-		Events.Shared.Node.RunConnectorChanged( target.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( target.Player );
 	}
 
 	/// <summary>
@@ -93,7 +92,7 @@ public static class NodeServer
 
 		target.DisconnectConnector( identifier );
 
-		Events.Shared.Node.RunConnectorChanged( target.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( target.Player );
 	}
 
 	/// <summary>
@@ -134,7 +133,7 @@ public static class NodeServer
 
 		executor.EntryNode = newValue;
 
-		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
@@ -168,7 +167,7 @@ public static class NodeServer
 
 		executor.EntryNode = null;
 
-		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
@@ -209,7 +208,7 @@ public static class NodeServer
 		target.Owner = executor;
 		target.Parent = executor;
 
-		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
@@ -242,16 +241,16 @@ public static class NodeServer
 		}
 
 		// find the pawn...
-		if ( target.Owner is not NodeExecutor { Owner: BasePlayer } executor )
+		if ( target.Owner is not NodeExecutor { Owner: Player } executor )
 		{
-			Log.Error( "RemoveNodeFromExecutor failed: Owner.Owner not a BasePlayer" );
+			Log.Error( "RemoveNodeFromExecutor failed: Owner.Owner not a Player" );
 			return;
 		}
 
 		target.Owner = executor.Owner;
 		target.Parent = executor.Owner;
 
-		Events.Shared.Node.RunConnectorChanged( executor.BasePlayer );
+		Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>

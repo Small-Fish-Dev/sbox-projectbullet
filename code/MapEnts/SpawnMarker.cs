@@ -1,5 +1,5 @@
 ﻿using Editor;
-using ProjectBullet.Player;
+using ProjectBullet.Core;
 using Sandbox;
 
 namespace ProjectBullet.MapEnts;
