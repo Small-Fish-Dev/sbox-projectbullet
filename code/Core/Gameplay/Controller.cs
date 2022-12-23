@@ -1,11 +1,13 @@
-﻿using Sandbox;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Sandbox;
 
 namespace ProjectBullet.Core.Gameplay;
 
 /// <summary>
-/// Player movement controller - inspired by / using code from DevulTj's sbox-template.fps
+/// Player movement controller - this is mostly from DevulTj's (sbox-template.fps) PlayerController
 /// </summary>
-public partial class Controller : PlayerComponent
+public partial class Controller : EntityComponent<Player>, ISingletonComponent
 {
 	public Vector3 LastVelocity { get; set; }
 	public Entity LastGroundEntity { get; set; }
@@ -15,6 +17,11 @@ public partial class Controller : PlayerComponent
 	public float CurrentGroundAngle { get; set; }
 
 	public Player Player => Entity;
+
+	/// <summary>
+	/// A list of mechanics used by the player controller.
+	/// </summary>
+	private IEnumerable<PlayerMechanic> Mechanics => Entity.Components.GetAll<PlayerMechanic>();
 
 	/// <summary>
 	/// Position accessor for the Player.
@@ -31,13 +38,29 @@ public partial class Controller : PlayerComponent
 		set => Player.Velocity = value;
 	}
 
-	protected virtual float BodyGirth => 32f;
-	[Net, Predicted] protected float CurrentEyeHeight { get; set; } = 64f;
+	/// <summary>
+	/// This will set LocalEyePosition when we Simulate.
+	/// </summary>
+	private float EyeHeight => BestMechanic?.EyeHeight ?? 64f;
+
+	[Net, Predicted] private float CurrentEyeHeight { get; set; } = 64f;
+
+	private Vector3 MoveInputScale => BestMechanic?.MoveInputScale ?? Vector3.One;
+
+	private float WishSpeed => BestMechanic?.WishSpeed ?? 180f;
+
+	/// <summary>
+	/// The "best" mechanic is the mechanic with the highest priority, defined by SortOrder.
+	/// </summary>
+	private PlayerMechanic BestMechanic =>
+		Mechanics.OrderByDescending( x => x.SortOrder ).FirstOrDefault( x => x.IsActive );
+
+	private static float BodyGirth => 32f;
 
 	/// <summary>
 	/// The player's hull, we'll use this to calculate stuff like collision.
 	/// </summary>
-	public BBox Hull
+	private BBox Hull
 	{
 		get
 		{
@@ -51,39 +74,115 @@ public partial class Controller : PlayerComponent
 		}
 	}
 
-	/// <summary>
-	/// Apply friction to the player controller / velocity
-	/// </summary>
-	public void ApplyFriction( float stopSpeed, float frictionAmount = 1.0f )
+	public T GetMechanic<T>() where T : PlayerMechanic
 	{
-		var speed = Velocity.Length;
-		if ( speed.AlmostEqual( 0f ) )
+		foreach ( var mechanic in Mechanics )
 		{
-			return;
+			if ( mechanic is T val ) return val;
 		}
 
-		var control = speed < stopSpeed ? stopSpeed : speed;
-		var drop = control * Time.Delta * frictionAmount;
+		return null;
+	}
 
-		// scale the velocity...
-		var newSpeed = speed - drop;
-		if ( newSpeed < 0 )
+	public bool IsMechanicActive<T>() where T : PlayerMechanic
+	{
+		return GetMechanic<T>()?.IsActive ?? false;
+	}
+
+	private void SimulateEyes()
+	{
+		Player.EyeRotation = Player.ViewAngles.ToRotation();
+		Player.EyeLocalPosition = Vector3.Up * CurrentEyeHeight;
+	}
+
+	private void SimulateMechanics()
+	{
+		foreach ( var mechanic in Mechanics )
 		{
-			newSpeed = 0;
+			mechanic.TrySimulate( this );
 		}
 
-		if ( newSpeed == speed )
+		// Adjust eye height
+		var target = EyeHeight;
+		var trace = TraceBBox( Position, Position, 0, 10f );
+		if ( !trace.Hit || !(target > CurrentEyeHeight) )
 		{
-			return;
+			CurrentEyeHeight = CurrentEyeHeight.LerpTo( target, Time.Delta * 10f );
 		}
+	}
 
-		// set velocity ->
-		Velocity *= newSpeed / speed;
+	public virtual void Simulate( IClient cl )
+	{
+		SimulateEyes();
+		SimulateMechanics();
+	}
+
+	public virtual void FrameSimulate( IClient cl )
+	{
+		SimulateEyes();
 	}
 
 	/// <summary>
-	/// Accelerate player controller / velocity
+	/// Traces the bbox and returns the trace result.
+	/// LiftFeet will move the start position up by this amount, while keeping the top of the bbox at the same 
+	/// position. This is good when tracing down because you won't be tracing through the ceiling above.
 	/// </summary>
+	protected virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs,
+		float liftFeet = 0.0f,
+		float liftHead = 0.0f )
+	{
+		if ( liftFeet > 0 )
+		{
+			start += Vector3.Up * liftFeet;
+			maxs = maxs.WithZ( maxs.z - liftFeet );
+		}
+
+		if ( liftHead > 0 )
+		{
+			end += Vector3.Up * liftHead;
+		}
+
+		var tr = Trace.Ray( start, end )
+			.Size( mins, maxs )
+			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
+			.WithoutTags( "prop" )
+			.Ignore( Player )
+			.Run();
+
+		return tr;
+	}
+
+	/// <summary>
+	/// This calls TraceBBox with the right sized bbox. You should derive this in your controller if you 
+	/// want to use the built in functions
+	/// </summary>
+	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, float liftFeet = 0.0f, float liftHead = 0.0f )
+	{
+		var hull = Hull;
+		return TraceBBox( start, end, hull.Mins, hull.Maxs, liftFeet, liftHead );
+	}
+
+	public Vector3 GetWishVelocity( bool zeroPitch = false )
+	{
+		var result = new Vector3( Player.InputDirection.x, Player.InputDirection.y, 0 );
+		result *= MoveInputScale;
+
+		var inSpeed = result.Length.Clamp( 0, 1 );
+		result *= Player.ViewAngles.WithPitch( 0f ).ToRotation();
+
+		if ( zeroPitch )
+		{
+			result.z = 0;
+		}
+
+		result = result.Normal * inSpeed;
+		result *= WishSpeed;
+		var ang = CurrentGroundAngle.Remap( 0, 45, 1, 0.6f );
+		result *= ang;
+
+		return result;
+	}
+
 	public void Accelerate( Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
 	{
 		if ( speedLimit > 0 && wishSpeed > speedLimit )
@@ -109,73 +208,60 @@ public partial class Controller : PlayerComponent
 		Velocity += wishDir * accelSpeed;
 	}
 
-	public void Move()
+	public void ApplyFriction( float stopSpeed, float frictionAmount = 1.0f )
 	{
-		// build MoveHelper...
-		var helper = new MoveHelper( Position, Velocity ) { MaxStandableAngle = 46.0f };
+		var speed = Velocity.Length;
+		if ( speed.AlmostEqual( 0f ) )
+		{
+			return;
+		}
 
-		helper.Trace = helper.Trace.Size( Hull )
+		if ( BestMechanic?.FrictionOverride != null )
+		{
+			frictionAmount = BestMechanic.FrictionOverride.Value;
+		}
+
+		var control = speed < stopSpeed ? stopSpeed : speed;
+		var drop = control * Time.Delta * frictionAmount;
+
+		// Scale the velocity
+		var newSpeed = speed - drop;
+		if ( newSpeed < 0 ) newSpeed = 0;
+
+		if ( newSpeed == speed )
+		{
+			return;
+		}
+
+		newSpeed /= speed;
+		Velocity *= newSpeed;
+	}
+
+	public void StepMove( float groundAngle = 46f, float stepSize = 18f )
+	{
+		var mover = new MoveHelper( Position, Velocity );
+		mover.Trace = mover.Trace.Size( Hull )
 			.Ignore( Player )
-			.IncludeClientside()
 			.WithoutTags( "player" );
+		mover.MaxStandableAngle = groundAngle;
 
-		helper.TryUnstuck();
+		mover.TryMoveWithStep( Time.Delta, stepSize );
 
-		// attempt movement ->
-		var result = helper.TryMoveWithStep( Time.Delta, 18.0f );
-
-		// move to new pos / vel!
-		Position = helper.Position;
-		Velocity = helper.Velocity;
+		Position = mover.Position;
+		Velocity = mover.Velocity;
 	}
 
-	public Vector3 GetWishVelocity( bool zeroPitch = false )
+	public void Move( float groundAngle = 46f )
 	{
-		var result = new Vector3( Player.InputDirection.x, Player.InputDirection.y, 0 );
-
-		var inSpeed = result.Length.Clamp( 0, 1 );
-
-		result *= Player.ViewAngles.WithPitch( 0f ).ToRotation();
-
-		if ( zeroPitch )
-		{
-			result.z = 0;
-		}
-
-		result = result.Normal * inSpeed * 180.0f;
-
-		result *= CurrentGroundAngle.Remap( 0, 45, 1, 0.6f );
-
-		return result;
-	}
-
-	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs, float liftFeet = 0.0f,
-		float liftHead = 0.0f )
-	{
-		if ( liftFeet > 0 )
-		{
-			start += Vector3.Up * liftFeet;
-			maxs = maxs.WithZ( maxs.z - liftFeet );
-		}
-
-		if ( liftHead > 0 )
-		{
-			end += Vector3.Up * liftHead;
-		}
-
-		var tr = Trace.Ray( start, end )
-			.Size( mins, maxs )
-			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
-			.WithoutTags( "prop" )
+		var mover = new MoveHelper( Position, Velocity );
+		mover.Trace = mover.Trace.Size( Hull )
 			.Ignore( Player )
-			.Run();
+			.WithoutTags( "player" );
+		mover.MaxStandableAngle = groundAngle;
 
-		return tr;
-	}
+		mover.TryMove( Time.Delta );
 
-	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, float liftFeet = 0.0f, float liftHead = 0.0f )
-	{
-		var hull = Hull;
-		return TraceBBox( start, end, hull.Mins, hull.Maxs, liftFeet, liftHead );
+		Position = mover.Position;
+		Velocity = mover.Velocity;
 	}
 }

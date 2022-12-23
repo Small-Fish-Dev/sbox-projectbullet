@@ -2,35 +2,31 @@
 
 namespace ProjectBullet.Core.Gameplay;
 
-public class Walking : PlayerComponent
+public class Walking : PlayerMechanic
 {
-	public float StopSpeed => 150f;
-	public float StepSize => 18.0f;
-	public float GroundAngle => 46.0f;
-	public float DefaultSpeed => 280f;
-	public float WalkSpeed => 140f;
-	public float GroundFriction => 4.0f;
-	public float MaxNonJumpVelocity => 140.0f;
-	public float SurfaceFriction { get; set; } = 1f;
-	public float Acceleration => 6f;
-	public float DuckAcceleration => 5f;
-	public float WishSpeed => 200f;
+	private static float StopSpeed => 150f;
+	private static float StepSize => 18.0f;
+	private static float GroundAngle => 46.0f;
+	private static float GroundFriction => 4.0f;
+	private static float MaxNonJumpVelocity => 140.0f;
+	private float SurfaceFriction { get; set; } = 1f;
+	private static float Acceleration => 6f;
 
-	// todo(lotuspar): OPTIMIZE!!!
-	private Controller Controller => Entity.Controller;
-
-	public void Simulate( IClient cl )
+	protected override bool ShouldStart()
 	{
-		if ( Controller.GroundEntity != null )
+		return true;
+	}
+
+	public override float? WishSpeed => 200f;
+
+	protected override void Simulate()
+	{
+		if ( GroundEntity != null )
 		{
 			WalkMove();
 		}
 
 		CategorizePosition( Controller.GroundEntity != null );
-	}
-
-	public void FrameSimulate( IClient cl )
-	{
 	}
 
 	/// <summary>
@@ -48,10 +44,20 @@ public class Walking : PlayerComponent
 		// Now trace down from a known safe position
 		trace = Controller.TraceBBox( start, end );
 
-		if ( trace.Fraction <= 0 ) return;
-		if ( trace.Fraction >= 1 ) return;
-		if ( trace.StartedSolid ) return;
-		if ( Vector3.GetAngle( Vector3.Up, trace.Normal ) > GroundAngle ) return;
+		if ( trace.Fraction is <= 0 or >= 1 )
+		{
+			return;
+		}
+
+		if ( trace.StartedSolid )
+		{
+			return;
+		}
+
+		if ( Vector3.GetAngle( Vector3.Up, trace.Normal ) > GroundAngle )
+		{
+			return;
+		}
 
 		Controller.Position = trace.EndPosition;
 	}
@@ -66,10 +72,8 @@ public class Walking : PlayerComponent
 		ctrl.Velocity = ctrl.Velocity.WithZ( 0 );
 		ctrl.ApplyFriction( StopSpeed, friction );
 
-		var accel = Acceleration;
-
 		ctrl.Velocity = ctrl.Velocity.WithZ( 0 );
-		ctrl.Accelerate( wishVel.Normal, wishVel.Length, 0, accel );
+		ctrl.Accelerate( wishVel.Normal, wishVel.Length, 0, Acceleration );
 		ctrl.Velocity = ctrl.Velocity.WithZ( 0 );
 
 		// Add in any base velocity to the current velocity.
@@ -93,7 +97,7 @@ public class Walking : PlayerComponent
 				return;
 			}
 
-			ctrl.Move();
+			ctrl.StepMove();
 		}
 		finally
 		{
@@ -108,57 +112,56 @@ public class Walking : PlayerComponent
 	/// </summary>
 	public void ClearGroundEntity()
 	{
-		if ( Controller.GroundEntity == null )
+		if ( GroundEntity == null ) return;
+
+		LastGroundEntity = GroundEntity;
+		GroundEntity = null;
+		SurfaceFriction = 1.0f;
+	}
+
+	private void SetGroundEntity( Entity entity )
+	{
+		LastGroundEntity = GroundEntity;
+		LastVelocity = Velocity;
+
+		GroundEntity = entity;
+
+		if ( GroundEntity == null )
 		{
 			return;
 		}
 
-		Controller.LastGroundEntity = Controller.GroundEntity;
-		Controller.GroundEntity = null;
-		SurfaceFriction = 1.0f;
+		Velocity = Velocity.WithZ( 0 );
+		Controller.BaseVelocity = GroundEntity.Velocity;
 	}
 
-	public void SetGroundEntity( Entity entity )
-	{
-		Controller.LastGroundEntity = Controller.GroundEntity;
-		Controller.LastVelocity = Controller.Velocity;
-
-		Controller.GroundEntity = entity;
-
-		if ( Controller.GroundEntity != null )
-		{
-			Controller.Velocity = Controller.Velocity.WithZ( 0 );
-			Controller.BaseVelocity = Controller.GroundEntity.Velocity;
-		}
-	}
-
-	public void CategorizePosition( bool bStayOnGround )
+	private void CategorizePosition( bool bStayOnGround )
 	{
 		SurfaceFriction = 1.0f;
 
-		var point = Controller.Position - Vector3.Up * 2;
-		var vBumpOrigin = Controller.Position;
-		bool bMovingUpRapidly = Controller.Velocity.z > MaxNonJumpVelocity;
-		bool bMoveToEndPos = false;
+		var point = Position - Vector3.Up * 2;
+		var bumpOrigin = Position;
+		var isMovingUpRapidly = Velocity.z > MaxNonJumpVelocity;
+		var shouldMoveToEndPos = false;
 
-		if ( Controller.GroundEntity != null )
+		if ( GroundEntity != null )
 		{
-			bMoveToEndPos = true;
+			shouldMoveToEndPos = true;
 			point.z -= StepSize;
 		}
 		else if ( bStayOnGround )
 		{
-			bMoveToEndPos = true;
+			shouldMoveToEndPos = true;
 			point.z -= StepSize;
 		}
 
-		if ( bMovingUpRapidly )
+		if ( isMovingUpRapidly )
 		{
 			ClearGroundEntity();
 			return;
 		}
 
-		var pm = Controller.TraceBBox( vBumpOrigin, point, 4.0f );
+		var pm = Controller.TraceBBox( bumpOrigin, point, 4.0f );
 
 		var angle = Vector3.GetAngle( Vector3.Up, pm.Normal );
 		Controller.CurrentGroundAngle = angle;
@@ -166,9 +169,9 @@ public class Walking : PlayerComponent
 		if ( pm.Entity == null || Vector3.GetAngle( Vector3.Up, pm.Normal ) > GroundAngle )
 		{
 			ClearGroundEntity();
-			bMoveToEndPos = false;
+			shouldMoveToEndPos = false;
 
-			if ( Controller.Velocity.z > 0 )
+			if ( Velocity.z > 0 )
 				SurfaceFriction = 0.25f;
 		}
 		else
@@ -176,9 +179,9 @@ public class Walking : PlayerComponent
 			UpdateGroundEntity( pm );
 		}
 
-		if ( bMoveToEndPos && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f )
+		if ( shouldMoveToEndPos && pm is { StartedSolid: false, Fraction: > 0.0f and < 1.0f } )
 		{
-			Controller.Position = pm.EndPosition;
+			Position = pm.EndPosition;
 		}
 	}
 

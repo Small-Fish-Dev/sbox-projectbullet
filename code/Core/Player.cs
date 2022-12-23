@@ -27,7 +27,7 @@ public abstract partial class Player : AnimatedEntity
 		EnableLagCompensation = true;
 
 		Tags.Add( "player" );
-		
+
 		base.Spawn();
 	}
 
@@ -47,9 +47,13 @@ public abstract partial class Player : AnimatedEntity
 
 		SetModel( "models/citizen/citizen.vmdl" );
 
-		Components.RemoveAny<PlayerComponent>();
+		Components.RemoveAny<PlayerMechanic>();
 		Components.Create<Gameplay.Controller>();
 		Components.Create<Gameplay.Walking>();
+		Components.Create<Gameplay.Ducking>();
+		Components.Create<Gameplay.Jumping>();
+		Components.Create<Gameplay.Sneaking>();
+		Components.Create<Gameplay.AirMovement>();
 
 		GameManager.Current?.MoveToSpawnpoint( this );
 		ResetInterpolation();
@@ -90,16 +94,6 @@ public abstract partial class Player : AnimatedEntity
 
 		Controller?.Simulate( cl );
 
-		foreach ( var component in Components.GetAll<PlayerComponent>() )
-		{
-			if ( component is Gameplay.Controller )
-			{
-				continue;
-			}
-
-			component.Simulate( cl );
-		}
-
 		foreach ( var nodeExecutor in NodeExecutors )
 		{
 			nodeExecutor.Simulate( cl );
@@ -117,20 +111,17 @@ public abstract partial class Player : AnimatedEntity
 
 		Controller?.FrameSimulate( cl );
 
-		foreach ( var component in Components.GetAll<PlayerComponent>() )
-		{
-			if ( component is Gameplay.Controller )
-			{
-				continue;
-			}
-
-			component.FrameSimulate( cl );
-		}
-
 		foreach ( var nodeExecutor in NodeExecutors )
 		{
 			nodeExecutor.FrameSimulate( cl );
 		}
+
+		// Camera
+		Camera.Position = EyePosition;
+		Camera.Rotation = EyeRotation;
+		Camera.FieldOfView = 103.0f;
+		Camera.FirstPersonViewer = this;
+		Camera.ZNear = 0.5f;
 	}
 
 	/// <summary>
