@@ -2,7 +2,7 @@
 using Sandbox.Component;
 using Sandbox.UI;
 
-namespace ProjectBullet.UI.Editor;
+namespace ProjectBullet.UI.Workshop;
 
 public partial class GraphVisualizer : Panel
 {

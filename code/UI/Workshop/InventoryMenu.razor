@@ -2,15 +2,13 @@
 @using System.Linq
 @using ProjectBullet.Core.Node
 @using Sandbox.UI;
-@namespace ProjectBullet.UI.Editor
+@inherits Sandbox.UI.Panel
+@namespace ProjectBullet.UI.Workshop
 @attribute [StyleSheet("/UI/Editor/Menu.scss")]
 
 @code {
     public GraphVisualizer GraphVisualizer { get; set; }
-
-    public IEnumerable<NodeExecutor> SwitchableExecutors =>
-        Util.LocalPlayer.NodeExecutors.Where(v => v != @GraphVisualizer.NodeExecutor);
-
+    public List<WeaponNode> GraphInventory => GraphVisualizer.Graph.GraphInventory;
 }
 
 <root class="menu">
@@ -22,18 +20,17 @@
     <div class="group">
         <div class="title">
             <div class="center-text-container">
-                <div class="info-text">editing @GraphVisualizer.NodeExecutor.DisplayName</div>
+                <div class="info-text">inventory @(!GraphInventory.Any() ? "empty" : "")</div>
             </div>
         </div>
-
-        @foreach (var executor in SwitchableExecutors)
+        @foreach (var weaponNodeEntity in GraphInventory)
         {
-            <div class="item" @onclick=@(() => { @GraphVisualizer.SwitchNodeExecutor(executor); })>
+            <div class="item" @onclick=@(() => { GraphVisualizer.Graph.AddToGraph(weaponNodeEntity); })>
                 <div class="center-text-container">
                     <div style="justify-content: space-between; width: 100%">
-                        <div class="info-text">switch...</div>
+                        <div class="info-text">add...</div>
                         <div>
-                            @executor.DisplayName
+                            @weaponNodeEntity.Description.NodeAttribute.DisplayName
                         </div>
                     </div>
                 </div>

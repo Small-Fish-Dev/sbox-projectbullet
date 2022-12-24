@@ -1,7 +1,7 @@
 ﻿using ProjectBullet.Core.Node;
 using Sandbox.UI;
 
-namespace ProjectBullet.UI.Editor;
+namespace ProjectBullet.UI.Workshop;
 
 public partial class GraphNodeIn : Panel
 {

@@ -1,6 +1,6 @@
 ﻿using ProjectBullet.Core.Node;
 
-namespace ProjectBullet.UI.Editor;
+namespace ProjectBullet.UI.Workshop;
 
 public partial class PreInstanceGraph
 {

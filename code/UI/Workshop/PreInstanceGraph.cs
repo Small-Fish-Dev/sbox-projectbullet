@@ -4,7 +4,7 @@ using ProjectBullet.Core;
 using ProjectBullet.Core.Node;
 using Sandbox;
 
-namespace ProjectBullet.UI.Editor;
+namespace ProjectBullet.UI.Workshop;
 
 public partial class PreInstanceGraph
 {
