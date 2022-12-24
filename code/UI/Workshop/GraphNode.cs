@@ -1,5 +1,4 @@
-﻿using ProjectBullet.Core.Node;
-using Sandbox.UI;
+﻿using Sandbox.UI;
 
 namespace ProjectBullet.UI.Workshop;
 

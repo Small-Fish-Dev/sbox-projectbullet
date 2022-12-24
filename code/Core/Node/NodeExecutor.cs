@@ -1,5 +1,4 @@
-﻿using ProjectBullet.Player;
-using Sandbox;
+﻿using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
@@ -18,7 +17,7 @@ public partial class NodeExecutor : Entity
 
 	public virtual InputButton InputButton => InputButton.PrimaryAttack;
 
-	public BasePlayer BasePlayer => Owner as BasePlayer;
+	public Player Player => Owner as Player;
 
 	/// <summary>
 	/// First node to run
@@ -118,12 +117,12 @@ public partial class NodeExecutor : Entity
 	{
 		Energy = 0;
 
-		BasePlayer.SetAnimParameter( "b_reload", true );
+		Player.SetAnimParameter( "b_reload", true );
 	}
 
 	protected virtual void EndReload()
 	{
-		BasePlayer.SetAnimParameter( "b_reload", false );
+		Player.SetAnimParameter( "b_reload", false );
 	}
 
 	protected void ExecuteEntryNode( ExecuteInfo info )
@@ -258,7 +257,7 @@ public partial class NodeExecutor : Entity
 	[Events.Server.Node.ConnectorChanged]
 	public void OnConnectorChanged( Entity player )
 	{
-		if ( player == BasePlayer )
+		if ( player == Player )
 		{
 			Log.Info( "estimating" );
 			MinimumEnergy = EstimateMinimumEnergy() ?? 0.0f;
