@@ -44,6 +44,18 @@ public partial class Gunner
 
 			Player.PlaySound( "rust_pistol.shoot" );
 
+			if ( Game.IsClient )
+			{
+				var pos = Player.HoldableWeapon.EffectEntity.GetAttachment( "muzzle" );
+				if ( pos != null )
+				{
+					var system = Particles.Create( "particles/tracer.standard.vpcf" );
+					system?.SetPosition( 0, pos.Value.Position );
+					system?.SetPosition( 1, result.EndPosition );
+				}
+				Player.HoldableWeapon.ViewModelEntity.SetAnimParameter( "fire", true );
+			}
+
 			ExecuteEntryNode( new ExecuteInfo()
 				.UsingTraceResult( result )
 				.WithAttacker( Player )
