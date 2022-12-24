@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using ProjectBullet.Player;
+using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
@@ -17,7 +18,7 @@ public partial class NodeExecutor : Entity
 
 	public virtual InputButton InputButton => InputButton.PrimaryAttack;
 
-	public Player Player => Owner as Player;
+	public BasePlayer BasePlayer => Owner as BasePlayer;
 
 	/// <summary>
 	/// First node to run
@@ -94,35 +95,35 @@ public partial class NodeExecutor : Entity
 		BeginReloadClient();
 		BeginReload();
 	}
-	
+
 	[ClientRpc]
 	public void BeginReloadClient()
 	{
 		BeginReload();
 	}
-	
+
 	public void EndReloadShared()
 	{
 		EndReloadClient();
 		EndReload();
 	}
-	
+
 	[ClientRpc]
 	public void EndReloadClient()
 	{
 		EndReload();
 	}
-	
+
 	protected virtual void BeginReload()
 	{
 		Energy = 0;
-		
-		Player.SetAnimParameter( "b_reload", true );
+
+		BasePlayer.SetAnimParameter( "b_reload", true );
 	}
 
 	protected virtual void EndReload()
 	{
-		Player.SetAnimParameter( "b_reload", false );
+		BasePlayer.SetAnimParameter( "b_reload", false );
 	}
 
 	protected void ExecuteEntryNode( ExecuteInfo info )
@@ -221,7 +222,7 @@ public partial class NodeExecutor : Entity
 			Log.Info( $"CalcPath ({node.GetType().Name}) - input {input}, output {output}" );
 
 			float? savedResult = result;
-			
+
 			foreach ( var connector in node.Connectors )
 			{
 				if ( connector.WeaponNode != null )
@@ -238,7 +239,7 @@ public partial class NodeExecutor : Entity
 			}
 
 			result = savedResult;
-			
+
 			if ( !hasPopulatedConnector && node is IGoalNode )
 			{
 				// This node has no connectors and it's a goal node!
@@ -257,7 +258,7 @@ public partial class NodeExecutor : Entity
 	[Events.Server.Node.ConnectorChanged]
 	public void OnConnectorChanged( Entity player )
 	{
-		if ( player == Player )
+		if ( player == BasePlayer )
 		{
 			Log.Info( "estimating" );
 			MinimumEnergy = EstimateMinimumEnergy() ?? 0.0f;
