@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ProjectBullet.Core.CharacterTools;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using Sandbox;
@@ -8,8 +9,23 @@ namespace ProjectBullet.Core;
 
 public abstract partial class Player : AnimatedEntity
 {
-	[BindComponent] public Gameplay.Controller Controller { get; }
-	[BindComponent] public Inventory Inventory { get; }
+	/// <summary>
+	/// The controller is responsible for player movement and setting up EyePosition / EyeRotation.
+	/// </summary>
+	[BindComponent]
+	public Gameplay.Controller Controller { get; }
+
+	/// <summary>
+	/// The animator is responsible for animating the player's current model.
+	/// </summary>
+	[BindComponent]
+	public PlayerAnimator Animator { get; }
+
+	/// <summary>
+	/// The inventory contains player items for a match
+	/// </summary>
+	[BindComponent]
+	public Inventory Inventory { get; }
 
 	[Net] public IList<NodeExecutor> NodeExecutors { get; private set; } = new List<NodeExecutor>();
 
@@ -19,6 +35,8 @@ public abstract partial class Player : AnimatedEntity
 	public bool IsDead => LifeState == LifeState.Dead;
 	public bool CanUseEditor => Tags.Has( "can_workshop" );
 	[Net, Predicted] protected TimeUntil TimeUntilRespawn { get; set; }
+
+	[Net] public HoldableWeapon HoldableWeapon { get; protected set; }
 
 	public override void Spawn()
 	{
@@ -55,15 +73,20 @@ public abstract partial class Player : AnimatedEntity
 		Components.Create<Gameplay.Sneaking>();
 		Components.Create<Gameplay.AirMovement>();
 
+		Components.Create<CitizenAnimator>();
+
 		GameManager.Current?.MoveToSpawnpoint( this );
 		ResetInterpolation();
 
-		ClientRespawn( To.Single( Client ) );
+		ClientRpcRespawn( To.Single( Client ) );
+
+		CreateHoldableWeapon();
 
 		Clothing ??= new ClothingContainer();
 		if ( OutfitJson == null )
 		{
 			Clothing.LoadFromClient( Client );
+			Log.Info( $"Player custom outfit: {Clothing.Serialize()}" );
 		}
 		else
 		{
@@ -74,7 +97,16 @@ public abstract partial class Player : AnimatedEntity
 	}
 
 	[ClientRpc]
-	public void ClientRespawn()
+	public void ClientRpcRespawn()
+	{
+		ClientRespawn();
+	}
+
+	protected virtual void ClientRespawn()
+	{
+	}
+
+	protected virtual void CreateHoldableWeapon()
 	{
 	}
 
@@ -98,6 +130,8 @@ public abstract partial class Player : AnimatedEntity
 		{
 			nodeExecutor.Simulate( cl );
 		}
+
+		Animator?.Simulate( cl );
 	}
 
 	public override void FrameSimulate( IClient cl )
@@ -116,7 +150,8 @@ public abstract partial class Player : AnimatedEntity
 			nodeExecutor.FrameSimulate( cl );
 		}
 
-		// Camera
+		Animator?.Simulate( cl );
+
 		Camera.Position = EyePosition;
 		Camera.Rotation = EyeRotation;
 		Camera.FieldOfView = 103.0f;

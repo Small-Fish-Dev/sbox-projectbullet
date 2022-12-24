@@ -43,7 +43,7 @@ public partial class Controller : EntityComponent<Player>, ISingletonComponent
 	/// </summary>
 	private float EyeHeight => BestMechanic?.EyeHeight ?? 64f;
 
-	[Net, Predicted] private float CurrentEyeHeight { get; set; } = 64f;
+	[Net, Predicted] public float CurrentEyeHeight { get; set; } = 64f;
 
 	private Vector3 MoveInputScale => BestMechanic?.MoveInputScale ?? Vector3.One;
 
