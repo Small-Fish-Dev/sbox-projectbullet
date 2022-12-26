@@ -1,9 +1,9 @@
 {
   "Title": "ProjectBullet",
   "Type": "game",
-  "Org": "local",
+  "Org": "teamsnail",
   "Ident": "projectbullet",
-  "Tags": null,
+  "Tags": "",
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
