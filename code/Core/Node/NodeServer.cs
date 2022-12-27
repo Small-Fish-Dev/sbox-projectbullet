@@ -27,14 +27,14 @@ public static class NodeServer
 		return null;
 	}
 
-	private static Player GetCallerPlayer() => ConsoleSystem.Caller.Pawn as Player;
+	private static Player CallerPlayer => ConsoleSystem.Caller.Pawn as Player;
 
 	[ConCmd.Server]
 	private static void SetConnector( int targetNetworkIdent, string identifier, int newValueNetworkIdent )
 	{
 		Game.AssertServer();
 
-		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseEditor ?? false )
 		{
 			Log.Info( "SetConnector failed: target not allowed to use editor" );
 			return;
@@ -54,7 +54,6 @@ public static class NodeServer
 			return;
 		}
 
-		Log.Info( $"~~ SetConnector: {identifier}, {newValue}" );
 		target.SetConnector( identifier, newValue );
 
 		Events.Shared.Node.RunConnectorChanged( target.Player );
@@ -77,7 +76,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseEditor ?? false )
 		{
 			Log.Info( "DisconnectConnector failed: target not allowed to use editor" );
 			return;
@@ -111,7 +110,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseEditor ?? false )
 		{
 			Log.Info( "SetEntryNode failed: target not allowed to use editor" );
 			return;
@@ -152,7 +151,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseEditor ?? false )
 		{
 			Log.Info( "ClearEntryNode failed: target not allowed to use editor" );
 			return;
@@ -185,7 +184,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseEditor ?? false )
 		{
 			Log.Info( "AddNodeToExecutor failed: target not allowed to use editor" );
 			return;
@@ -227,7 +226,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !GetCallerPlayer()?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseEditor ?? false )
 		{
 			Log.Info( "RemoveNodeFromExecutor failed: target not allowed to use editor" );
 			return;
