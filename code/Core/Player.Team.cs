@@ -56,6 +56,11 @@ public abstract partial class Player
 				return false;
 			}
 
+			if ( Util.MapConfig.IsFreeForAll )
+			{
+				return true;
+			}
+
 			var localTeam = (Game.LocalPawn as Player)?.GetTeam();
 			return Team != localTeam;
 		}

@@ -1,0 +1,62 @@
+﻿@using System.Linq
+@using ProjectBullet.MapEnts
+@using ProjectBullet.UI.HUD
+@using Sandbox
+@namespace ProjectBullet.UI 
+
+<style>
+    HudView {
+        width: 100%; height: 100%;
+        position: absolute;
+    
+        /* Font styling */
+        font-family: Inter;
+        font-weight: bold;
+        color: white;
+    
+        .player-bar {
+            width: 100%;
+            position: absolute;
+    
+            padding: 20px;
+    
+            justify-content: space-between;
+            
+            bottom: 0;
+        }
+    }
+</style>
+
+<root>
+    <Crosshair/>
+
+    <div class="player-bar">
+        <div class="left">
+            <!-- Player icon / currency -->
+            <div style="flex-direction: column">
+                <div></div>
+                <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
+                    <div style="font-size: 30px">🐌</div>
+                </Corner>
+            </div>
+
+            <!-- Player health / health bar -->
+            <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
+                <Health/>
+            </Corner>
+
+            <!-- Player health / health bar -->
+            <div style="flex-direction: column">
+                <div></div>
+                <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
+                    <div style="font-size: 25px">🪙@Util.LocalPersistent.Money</div>
+                </Corner>
+            </div>
+        </div>
+    </div>
+
+    @foreach (var moneyArea in Entity.All.OfType<MoneyArea>())
+    {
+        <MoneyAreaMarker MoneyArea=@moneyArea/>
+    }
+</root>

@@ -57,23 +57,19 @@ public partial class PreInstanceGraph
 		NodeExecutor = nodeExecutor;
 
 		// Add nodes from inventory
-		var inventory = (Game.LocalPawn as Core.Player)?.Inventory;
-		if ( inventory != null )
+		foreach ( var weaponNodeEntity in Util.LocalPersistent.Items.OfType<WeaponNode>() )
 		{
-			foreach ( var weaponNodeEntity in inventory.Items.OfType<WeaponNode>() )
+			if ( !weaponNodeEntity.InUse )
 			{
-				if ( !weaponNodeEntity.InUse )
+				// Add inactive nodes to GraphInventory
+				GraphInventory.Add( weaponNodeEntity );
+			}
+			else
+			{
+				// Add active nodes to the graph!
+				if ( weaponNodeEntity.Owner == NodeExecutor )
 				{
-					// Add inactive nodes to GraphInventory
-					GraphInventory.Add( weaponNodeEntity );
-				}
-				else
-				{
-					// Add active nodes to the graph!
-					if ( weaponNodeEntity.Owner == NodeExecutor )
-					{
-						PerformAction( new AddNodeToGraphAction( weaponNodeEntity ), false );
-					}
+					PerformAction( new AddNodeToGraphAction( weaponNodeEntity ), false );
 				}
 			}
 		}

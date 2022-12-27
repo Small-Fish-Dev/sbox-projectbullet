@@ -17,23 +17,14 @@ public static class GraphicsX
 
 	public static void AddVertex( in Vector2 position, in Color color )
 	{
-		var vertex = new Vertex
-		{
-			Position = position,
-			Color = color
-		};
+		var vertex = new Vertex { Position = position, Color = color };
 
 		AddVertex( in vertex );
 	}
 
 	public static void AddVertex( in Vector2 position, in Color color, in Vector2 uv )
 	{
-		var vertex = new Vertex
-		{
-			Position = position,
-			Color = color,
-			TexCoord0 = uv
-		};
+		var vertex = new Vertex { Position = position, Color = color, TexCoord0 = uv };
 
 		AddVertex( in vertex );
 	}
@@ -63,7 +54,8 @@ public static class GraphicsX
 		Circle( in center, radius, holeRadius, in color, points );
 	}
 
-	public static void Circle( in Vector2 center, float outerRadius, float innerRadius, in Color color, int pointCount = 32, float startAngle = 0f, float endAngle = 360f, float uv = 0f )
+	public static void Circle( in Vector2 center, float outerRadius, float innerRadius, in Color color,
+		int pointCount = 32, float startAngle = 0f, float endAngle = 360f, float uv = 0f )
 	{
 		MeshStart();
 
@@ -130,7 +122,8 @@ public static class GraphicsX
 		MeshEnd();
 	}
 
-	public static void Line( in Color color, in float startThickness, in Vector2 startPosition, in float endThickness, in Vector2 endPosition )
+	public static void Line( in Color color, in float startThickness, in Vector2 startPosition, in float endThickness,
+		in Vector2 endPosition )
 	{
 		MeshStart();
 
@@ -166,5 +159,24 @@ public static class GraphicsX
 	public static void Line( in Color color, in float thickness, in Vector2 startPosition, in Vector2 endPosition )
 	{
 		Line( in color, in thickness, in startPosition, in thickness, in endPosition );
+	}
+
+	public static void CornerBorder( in Color color, in Rect rect, in float thickness, in float size )
+	{
+		// Draw top left border
+		Line( color, thickness, rect.TopLeft, new Vector2( rect.Left, rect.Top + size ) );
+		Line( color, thickness, rect.TopLeft, new Vector2( rect.Left + size, rect.Top ) );
+
+		// Draw bottom left border
+		Line( color, thickness, rect.BottomLeft, new Vector2( rect.Left, rect.Bottom - size ) );
+		Line( color, thickness, rect.BottomLeft, new Vector2( rect.Left + size, rect.Bottom ) );
+
+		// Draw top right border
+		Line( color, thickness, rect.TopRight, new Vector2( rect.Right, rect.Top + size ) );
+		Line( color, thickness, rect.TopRight, new Vector2( rect.Right - size, rect.Top ) );
+
+		// Draw bottom right border
+		Line( color, thickness, rect.BottomRight, new Vector2( rect.Right, rect.Bottom - size ) );
+		Line( color, thickness, rect.BottomRight, new Vector2( rect.Right - size, rect.Bottom ) );
 	}
 }

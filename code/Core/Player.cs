@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ProjectBullet.Core.CharacterTools;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
@@ -21,11 +22,29 @@ public abstract partial class Player : AnimatedEntity
 	[BindComponent]
 	public PlayerAnimator Animator { get; }
 
-	/// <summary>
-	/// The inventory contains player items for a match
-	/// </summary>
-	[BindComponent]
-	public Inventory Inventory { get; }
+	private PersistentData _persistent;
+
+	public PersistentData Persistent
+	{
+		get
+		{
+			if ( _persistent != null )
+			{
+				return _persistent;
+			}
+
+			_persistent = PersistentData.Get( Client );
+
+			if ( Game.IsServer && _persistent == null )
+			{
+				// This shouldn't have to be called, this should be done by the GameManager
+				Log.Warning( "PersistentData was created by the Player, why didn't the GameManager do it?" );
+				_persistent = new PersistentData( Client );
+			}
+
+			return _persistent;
+		}
+	}
 
 	[Net] public IList<NodeExecutor> NodeExecutors { get; private set; } = new List<NodeExecutor>();
 
@@ -34,14 +53,13 @@ public abstract partial class Player : AnimatedEntity
 	public bool IsAlive => LifeState == LifeState.Alive;
 	public bool IsDead => LifeState == LifeState.Dead;
 	public bool CanUseEditor => Tags.Has( "can_workshop" );
+	public bool InMoneyArea => Tags.Has( "in_money_area" );
 	[Net, Predicted] protected TimeUntil TimeUntilRespawn { get; set; }
 
 	[Net] public HoldableWeapon HoldableWeapon { get; protected set; }
 
 	public override void Spawn()
 	{
-		Components.Create<Inventory>();
-
 		EnableLagCompensation = true;
 
 		Tags.Add( "player" );
@@ -140,6 +158,12 @@ public abstract partial class Player : AnimatedEntity
 
 		if ( IsDead )
 		{
+			if ( _lastRagdoll != null )
+			{
+				Camera.Rotation = Rotation.Lerp( Camera.Rotation,
+					Rotation.LookAt( _lastRagdoll.Position - Camera.Position ), 5.0f * Time.Delta );
+			}
+
 			return;
 		}
 

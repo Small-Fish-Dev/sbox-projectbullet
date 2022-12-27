@@ -5,7 +5,7 @@ using ProjectBullet.Core;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
-using ProjectBullet.UI.HUD;
+using ProjectBullet.UI;
 using Sandbox;
 using Sandbox.UI;
 
@@ -28,7 +28,7 @@ public partial class GameManager : Sandbox.GameManager
 		if ( Game.IsClient )
 		{
 			Game.RootPanel = new RootPanel();
-			Game.RootPanel.AddChild<HUD>();
+			Game.RootPanel.AddChild<HudView>();
 		}
 		else
 		{
@@ -73,14 +73,8 @@ public partial class GameManager : Sandbox.GameManager
 		// get all markers
 		var markers = All.OfType<SpawnMarker>().Where( v => v.Team == player.Team ).Cast<Entity>();
 
-		var enumerable = markers as Entity[] ?? markers.ToArray();
-		if ( !enumerable.Any() )
-		{
-			markers = All.OfType<SpawnPoint>();
-		}
-		
 		// choose random one...
-		var marker = enumerable.MinBy( _ => Guid.NewGuid() );
+		var marker = markers.MinBy( _ => Guid.NewGuid() );
 
 		// if it exists put the pawn down!
 		var transform = marker?.Transform ?? player.Transform;
@@ -96,18 +90,32 @@ public partial class GameManager : Sandbox.GameManager
 	{
 		base.ClientJoined( client );
 
-		// Create a pawn for this client to play with
-		var pawn = new Gunner();
-		client.Pawn = pawn;
+		// Update all persistent data clients...
+		PersistentData.UpdateAll();
+
+		// Check if this client already has data...
+		var persistent = PersistentData.Get( client );
+		persistent ??= new PersistentData( client );
+
+		var pawn = persistent.CreateClientPawn<Gunner>();
 
 		// Give the pawn a team
-		pawn.Team = GetDisadvantagedTeam();
+		var config = Util.MapConfig;
+		pawn.Team = config.IsFreeForAll ? PlayerTeam.TeamOne : GetDisadvantagedTeam();
 
 		// Say which team
 		Log.Info( $"Put {client.Name} on {pawn.Team}" );
 
 		// Respawn pawn
 		pawn.Respawn();
+	}
+
+	public override void ClientDisconnect( IClient cl, NetworkDisconnectionReason reason )
+	{
+		base.ClientDisconnect( cl, reason );
+
+		// Update all persistent data clients...
+		PersistentData.UpdateAll();
 	}
 
 	public override void FrameSimulate( IClient cl )

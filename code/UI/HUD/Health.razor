@@ -1,0 +1,38 @@
+﻿@namespace ProjectBullet.UI.HUD
+@inherits Sandbox.UI.Panel;
+
+<style>
+    Health {
+        font-size: 30px;
+        
+        .health-bar {
+            width: 300px; height: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+
+            .inner {
+                width: @LocalHealth%; height: 100%;
+                background-color: white;
+            }
+        }
+    }
+</style>
+
+<root>
+    <div style="flex-direction: column">
+        <div class="health-bar">
+            <div class="inner"></div>
+        </div>
+        @LocalHealth/@LocalHealth
+    </div>
+</root>
+
+@code {
+
+    public int LocalHealth => (int)(Util.LocalPlayer.IsAlive ? Util.LocalPlayer.Health : 0);
+    
+    protected override int BuildHash()
+    {
+        return (int)Util.LocalPlayer.Health;
+    }
+
+}

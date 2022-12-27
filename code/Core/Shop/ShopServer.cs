@@ -7,21 +7,23 @@ namespace ProjectBullet.Core.Shop;
 /// <summary>
 /// Client -> server communication for the shop system
 /// </summary>
-public static class ShopCmd
+public static class ShopServer
 {
+	private static Player CallerPlayer => ConsoleSystem.Caller.Pawn as Player;
+
 	[ConCmd.Server]
 	private static void BuyItem( int stockedItemNetworkIndex )
 	{
 		Game.AssertServer();
 
 		var shopHost = ShopHostEntity.Instance;
-		var inventory = ConsoleSystem.Caller.Pawn?.Components?.Get<Inventory>();
+		var persistent = CallerPlayer.Persistent;
 		var item = shopHost.Stock.SingleOrDefault( v => v.NetworkIdent == stockedItemNetworkIndex );
 
-		if ( inventory == null )
+		if ( persistent == null )
 		{
 			Log.Warning(
-				$"{ConsoleSystem.Caller.Name} tried to buy an item but they have no inventory" );
+				$"{ConsoleSystem.Caller.Name} tried to buy an item but they have no persistent data" );
 			return;
 		}
 
@@ -32,7 +34,7 @@ public static class ShopCmd
 			return;
 		}
 
-		if ( !inventory.UseMoney( item.ShopItemAttribute.Price ) )
+		if ( !persistent.UseMoney( item.ShopItemAttribute.Price ) )
 		{
 			Log.Info(
 				$"{ConsoleSystem.Caller.Name} tried to buy {item.GetDisplayName()} but they don't have the funds" );
@@ -43,7 +45,7 @@ public static class ShopCmd
 		{
 			var instance = wnd.TypeDescription.Create<WeaponNode>();
 			instance.Owner = (Entity)ConsoleSystem.Caller.Pawn;
-			inventory.Add( instance );
+			persistent.AddItem( instance );
 		}
 
 		else

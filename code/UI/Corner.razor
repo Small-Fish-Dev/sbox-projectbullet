@@ -1,0 +1,59 @@
+﻿@namespace ProjectBullet.UI
+@using System
+@using Sandbox.UI
+@inherits Sandbox.UI.Panel
+@attribute [StyleSheet("/UI/Shared.scss")]
+
+<style>
+    Corner {
+        padding: 10px;
+        flex-grow: 0;
+    }
+</style>
+
+<root></root>
+
+@code {
+
+    private float Thickness { get; set; } = 3;
+    private float Length { get; set; } = 25;
+
+    public override void SetProperty(string name, string value)
+    {
+        base.SetProperty(name, value);
+
+        float result;
+
+        switch (name)
+        {
+            case "thickness":
+                if (float.TryParse(value, out result))
+                {
+                    Thickness = result;
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid thickness {value}");
+                }
+                break;
+            case "length":
+                if (float.TryParse(value, out result))
+                {
+                    Length = result;
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid length {value}");
+                }
+                break;
+        }
+    }
+
+    public override void DrawBackground(ref RenderState state)
+    {
+        base.DrawBackground(ref state);
+
+        GraphicsX.CornerBorder(Color.White, Box.Rect, Thickness * ScaleToScreen, Length * ScaleToScreen);
+    }
+
+}

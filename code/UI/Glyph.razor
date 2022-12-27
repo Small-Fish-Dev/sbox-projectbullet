@@ -1,7 +1,7 @@
 ﻿@using System
 @using Sandbox
 @using Sandbox.UI
-@namespace ProjectBullet.UI.HUD
+@namespace ProjectBullet.UI
 @inherits Sandbox.UI.Panel;
 
 @code {
@@ -50,7 +50,7 @@
 
         Image.Texture = Input.GetGlyph(Button, ButtonSize, GlyphStyle.Knockout);
         Image.Style.Height = Image.ComputedStyle != null ? Image.ComputedStyle.FontSize ?? Image.Texture.Height : Image.Texture.Height;
-        Image.Style.AspectRatio = (float)Image.Texture.Width / Image.Texture.Height;
+        Image.Style.AspectRatio = (float)Image.Texture.Width / (Image.Texture.Height * 1.01f);
     }
 
 }

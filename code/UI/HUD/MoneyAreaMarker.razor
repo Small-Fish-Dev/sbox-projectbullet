@@ -1,0 +1,65 @@
+﻿@namespace ProjectBullet.UI.HUD
+@using ProjectBullet.MapEnts
+@using Sandbox
+@using Sandbox.UI
+@inherits Sandbox.UI.Panel;
+
+<style>
+    MoneyAreaMarker {
+        position: absolute;
+        
+        /*transform: translate( -50% ); */
+    }
+</style>
+
+<root class="outside-area">
+    @if (MoneyArea == null)
+    {
+        return;
+    }
+
+    <Corner thickness="2" length="15">
+        <div style="font-size: 20px">🪙</div>
+    </Corner>
+</root>
+
+@code {
+    public MoneyArea MoneyArea { get; set; }
+    public float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
+
+    private void UpdatePosition()
+    {
+        if (MoneyArea == null)
+        {
+            return;
+        }
+
+        var worldPosition = MoneyArea.Position;
+
+        worldPosition.z += 64;
+
+        var screenPosition = worldPosition.ToScreen();
+
+        screenPosition.x *= Screen.Width;
+        screenPosition.y *= Screen.Height;
+
+        screenPosition.x -= Box.Rect.Width / 2;
+        screenPosition.y -= Box.Rect.Height / 2;
+        
+        screenPosition.x *= RootScaleFromScreen; // screen position -> panel position
+        screenPosition.y *= RootScaleFromScreen;
+
+        Style.Left = Length.Pixels(screenPosition.x); // set panel position!
+        Style.Top = Length.Pixels(screenPosition.y);
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        UpdatePosition();
+
+        StateHasChanged();
+    }
+
+}

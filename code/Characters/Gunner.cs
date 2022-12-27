@@ -11,6 +11,8 @@ public partial class Gunner : Core.Player
 	protected override string OutfitJson =>
 		"[{\"id\":-1293797531},{\"id\":853300482},{\"id\":-691668871},{\"id\":-2069474809},{\"id\":-1696290982},{\"id\":1240466157},{\"id\":105676996},{\"id\":-100519886}]";
 
+	public override string DisplayTitle => "Gunner";
+
 	public class PistolWeapon : HoldableWeapon
 	{
 		protected override string ModelPath => "weapons/rust_pistol/rust_pistol.vmdl";
