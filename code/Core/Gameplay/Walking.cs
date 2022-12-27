@@ -135,7 +135,7 @@ public class Walking : PlayerMechanic
 		Controller.BaseVelocity = GroundEntity.Velocity;
 	}
 
-	private void CategorizePosition( bool bStayOnGround )
+	public void CategorizePosition( bool bStayOnGround )
 	{
 		SurfaceFriction = 1.0f;
 
