@@ -140,7 +140,7 @@ public partial class PersistentData : Entity
 
 		if ( IsConnected )
 		{
-			Events.Shared.Workshop.RunNewItem( To.Single( Client ), item as Entity );
+			// Events.Shared.Workshop.RunNewItem( To.Single( Client ), item as Entity );
 		}
 	}
 

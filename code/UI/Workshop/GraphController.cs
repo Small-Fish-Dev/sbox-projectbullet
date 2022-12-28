@@ -140,7 +140,7 @@ public partial class GraphController
 		PerformAction( new RemoveNodeFromGraphAction( node.Instance ), true );
 	}
 
-	[Events.Client.Node.ConnectorChanged]
+	// [Events.Client.Node.ConnectorChanged]
 	public void EstimateAllEnergyOutputs()
 	{
 		foreach ( var connector in Connectors )
@@ -159,7 +159,7 @@ public partial class GraphController
 	/// Update on new inventory item event
 	/// </summary>
 	/// <param name="entity">New item entity</param>
-	[Events.Client.Workshop.NewItem]
+	// [Events.Client.Workshop.NewItem]
 	private void OnNewItem( WeaponNode entity )
 	{
 		GraphInventory.Add( entity );

@@ -56,7 +56,7 @@ public static class NodeServer
 
 		target.SetConnector( identifier, newValue );
 
-		Events.Shared.Node.RunConnectorChanged( target.Player );
+		// Events.Shared.Node.RunConnectorChanged( target.Player );
 	}
 
 	/// <summary>
@@ -91,7 +91,7 @@ public static class NodeServer
 
 		target.DisconnectConnector( identifier );
 
-		Events.Shared.Node.RunConnectorChanged( target.Player );
+		// Events.Shared.Node.RunConnectorChanged( target.Player );
 	}
 
 	/// <summary>
@@ -132,7 +132,7 @@ public static class NodeServer
 
 		executor.EntryNode = newValue;
 
-		Events.Shared.Node.RunConnectorChanged( executor.Player );
+		// Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
@@ -166,7 +166,7 @@ public static class NodeServer
 
 		executor.EntryNode = null;
 
-		Events.Shared.Node.RunConnectorChanged( executor.Player );
+		// Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
@@ -207,7 +207,7 @@ public static class NodeServer
 		target.Owner = executor;
 		target.Parent = executor;
 
-		Events.Shared.Node.RunConnectorChanged( executor.Player );
+		// Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
@@ -249,7 +249,7 @@ public static class NodeServer
 		target.Owner = executor.Owner;
 		target.Parent = executor.Owner;
 
-		Events.Shared.Node.RunConnectorChanged( executor.Player );
+		// Events.Shared.Node.RunConnectorChanged( executor.Player );
 	}
 
 	/// <summary>
