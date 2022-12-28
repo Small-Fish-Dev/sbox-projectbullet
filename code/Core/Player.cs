@@ -52,9 +52,9 @@ public abstract partial class Player : AnimatedEntity
 
 	public bool IsAlive => LifeState == LifeState.Alive;
 	public bool IsDead => LifeState == LifeState.Dead;
-	public bool CanUseEditor => Tags.Has( "can_workshop" );
+	public bool CanUseEditor => Tags.Has( "can_workshop" ) || Util.MapConfig.EnableWorkshopAnywhere;
 	public bool InMoneyArea => Tags.Has( "in_money_area" );
-	[Net, Predicted] protected TimeUntil TimeUntilRespawn { get; set; }
+	[Net, Predicted] public TimeUntil TimeUntilRespawn { get; protected set; }
 
 	[Net] public HoldableWeapon HoldableWeapon { get; protected set; }
 
@@ -161,7 +161,7 @@ public abstract partial class Player : AnimatedEntity
 			if ( _lastRagdoll != null )
 			{
 				Camera.Rotation = Rotation.Lerp( Camera.Rotation,
-					Rotation.LookAt( _lastRagdoll.Position - Camera.Position ), 5.0f * Time.Delta );
+					Rotation.LookAt( _lastRagdoll.PhysicsBody.Position - Camera.Position ), 5.0f * Time.Delta );
 			}
 
 			return;

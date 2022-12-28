@@ -6,7 +6,7 @@ namespace ProjectBullet.Core;
 public abstract partial class Player
 {
 	private ModelEntity _lastRagdoll;
-	
+
 	[ClientRpc]
 	private void CreateRagdoll( Vector3 velocity, Vector3 forcePos, Vector3 force, int bone, bool bullet, bool blast )
 	{
