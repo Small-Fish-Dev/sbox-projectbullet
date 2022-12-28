@@ -100,9 +100,27 @@ public partial class Controller : EntityComponent<Player>, ISingletonComponent
 		foreach ( var mechanic in Mechanics )
 		{
 			mechanic.TrySimulate( this );
+
+			if ( Entity == null )
+			{
+				return;
+			}
+
+			if ( !Entity.IsDead )
+			{
+				continue;
+			}
+
+			AdjustEyeHeight();
+			return;
 		}
 
 		// Adjust eye height
+		AdjustEyeHeight();
+	}
+
+	private void AdjustEyeHeight()
+	{
 		var target = EyeHeight;
 		var trace = TraceBBox( Position, Position, 0, 10f );
 		if ( !trace.Hit || !(target > CurrentEyeHeight) )
