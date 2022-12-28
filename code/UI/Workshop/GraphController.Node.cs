@@ -5,7 +5,7 @@ using ProjectBullet.Core.Node;
 
 namespace ProjectBullet.UI.Workshop;
 
-public partial class PreInstanceGraph
+public partial class GraphController
 {
 	public class Node
 	{
@@ -18,7 +18,7 @@ public partial class PreInstanceGraph
 
 		public virtual string DisplayName { get; }
 
-		public PreInstanceGraph Root { get; }
+		public GraphController Root { get; }
 
 		protected readonly List<Connector> _connectors = new();
 		public IEnumerable<Connector> Connectors => _connectors.AsReadOnly();
@@ -31,14 +31,14 @@ public partial class PreInstanceGraph
 		public Connector GetConnector( string identifier ) =>
 			_connectors.SingleOrDefault( v => v.Attribute.Identifier == identifier );
 
-		protected Node( PreInstanceGraph root )
+		protected Node( GraphController root )
 		{
 			Root = root;
 
 			DisplayName = "Unknown";
 		}
 
-		public Node( PreInstanceGraph root, WeaponNode instance )
+		public Node( GraphController root, WeaponNode instance )
 		{
 			Root = root;
 			Instance = instance;
@@ -62,7 +62,7 @@ public partial class PreInstanceGraph
 		public override string DisplayName => "Entry";
 		public EntryConnector Connector { get; init; }
 
-		public EntryNode( PreInstanceGraph root ) : base( root )
+		public EntryNode( GraphController root ) : base( root )
 		{
 			Connector = new EntryConnector( this );
 			_connectors.Add( Connector );

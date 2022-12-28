@@ -4,11 +4,11 @@ namespace ProjectBullet.UI.Workshop;
 
 public partial class GraphNode : Panel
 {
-	public PreInstanceGraph.Node NodeData { get; set; }
+	public GraphController.Node NodeData { get; set; }
 	public GraphVisualizer GraphVisualizer { get; set; }
 	private bool _waitingForInit = true;
 
-	public GraphNode( PreInstanceGraph.Node nodeData, GraphVisualizer graphVisualizer )
+	public GraphNode( GraphController.Node nodeData, GraphVisualizer graphVisualizer )
 	{
 		NodeData = nodeData;
 		GraphVisualizer = graphVisualizer;

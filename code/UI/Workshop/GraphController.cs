@@ -6,7 +6,7 @@ using Sandbox;
 
 namespace ProjectBullet.UI.Workshop;
 
-public partial class PreInstanceGraph
+public partial class GraphController
 {
 	private readonly List<Node> _nodes = new();
 
@@ -44,7 +44,7 @@ public partial class PreInstanceGraph
 
 	public EntryNode Entry { get; }
 
-	public PreInstanceGraph( NodeExecutor nodeExecutor, GraphVisualizer graphVisualizer )
+	public GraphController( NodeExecutor nodeExecutor, GraphVisualizer graphVisualizer )
 	{
 		Event.Register( this );
 
@@ -100,7 +100,7 @@ public partial class PreInstanceGraph
 		PerformAction( new ConnectEntryNodeAction( nodeExecutor.EntryNode ), false );
 	}
 
-	~PreInstanceGraph()
+	~GraphController()
 	{
 		Event.Unregister( this );
 	}

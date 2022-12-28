@@ -2,7 +2,7 @@
 
 namespace ProjectBullet.UI.Workshop;
 
-public partial class PreInstanceGraph
+public partial class GraphController
 {
 	public abstract class Action
 	{
@@ -12,7 +12,7 @@ public partial class PreInstanceGraph
 		public bool IsSubAction = false;
 
 		public virtual string DisplayName => "";
-		public abstract object Perform( PreInstanceGraph root );
+		public abstract object Perform( GraphController root );
 		public abstract Action CreateOpposite();
 	}
 
@@ -24,7 +24,7 @@ public partial class PreInstanceGraph
 
 		public AddNodeToGraphAction( WeaponNode entity ) => _entity = entity;
 
-		public override object Perform( PreInstanceGraph root )
+		public override object Perform( GraphController root )
 		{
 			if ( root.GraphInventory.Contains( _entity ) )
 			{
@@ -52,7 +52,7 @@ public partial class PreInstanceGraph
 
 		public RemoveNodeFromGraphAction( WeaponNode entity ) => _entity = entity;
 
-		public override object Perform( PreInstanceGraph root )
+		public override object Perform( GraphController root )
 		{
 			var node = root.GetNodeByEntity( _entity );
 			if ( node == null )
@@ -97,7 +97,7 @@ public partial class PreInstanceGraph
 			_target = target;
 		}
 
-		public override object Perform( PreInstanceGraph root )
+		public override object Perform( GraphController root )
 		{
 			var main = root.GetNodeByEntity( _main );
 			if ( main == null )
@@ -150,7 +150,7 @@ public partial class PreInstanceGraph
 			_identifier = identifier;
 		}
 
-		public override object Perform( PreInstanceGraph root )
+		public override object Perform( GraphController root )
 		{
 			var main = root.GetNodeByEntity( _main );
 			if ( main == null )
@@ -200,7 +200,7 @@ public partial class PreInstanceGraph
 			_target = target;
 		}
 
-		public override object Perform( PreInstanceGraph root )
+		public override object Perform( GraphController root )
 		{
 			var target = root.GetNodeByEntity( _target );
 			if ( target == null )
@@ -236,7 +236,7 @@ public partial class PreInstanceGraph
 		{
 		}
 
-		public override object Perform( PreInstanceGraph root )
+		public override object Perform( GraphController root )
 		{
 			var connector = root.Entry.Connector;
 			var inputElement = connector.ConnectedNode?.InputElement;

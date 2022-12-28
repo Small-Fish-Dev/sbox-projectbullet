@@ -6,8 +6,8 @@ namespace ProjectBullet.UI.Workshop;
 public partial class GraphNodeIn : Panel
 {
 	public GraphNode GraphNode { get; set; }
-	public PreInstanceGraph.Node NodeData => GraphNode.NodeData;
-	public PreInstanceGraph Graph => GraphNode.NodeData.Root;
+	public GraphController.Node NodeData => GraphNode.NodeData;
+	public GraphController GraphController => GraphNode.NodeData.Root;
 
 	protected override void OnAfterTreeRender( bool firstTime )
 	{

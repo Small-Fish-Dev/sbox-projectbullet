@@ -5,7 +5,7 @@ namespace ProjectBullet.UI.Workshop;
 
 public partial class GraphNodeOut : Panel
 {
-	public PreInstanceGraph.Connector Connector { get; set; }
+	public GraphController.Connector Connector { get; set; }
 
 	protected override void OnAfterTreeRender( bool firstTime )
 	{

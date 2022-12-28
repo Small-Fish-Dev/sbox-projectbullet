@@ -2,7 +2,7 @@
 
 namespace ProjectBullet.UI.Workshop;
 
-public partial class PreInstanceGraph
+public partial class GraphController
 {
 	public class Connector
 	{
@@ -18,7 +18,7 @@ public partial class PreInstanceGraph
 
 		public float? LastEstimatedEnergyOutput;
 
-		public PreInstanceGraph Root => Parent.Root;
+		public GraphController Root => Parent.Root;
 
 		/// <summary>
 		/// The node that this connector is connected to

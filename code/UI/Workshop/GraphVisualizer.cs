@@ -9,7 +9,7 @@ public partial class GraphVisualizer : Panel
 	private bool _waitingForInit = true;
 	public NodeExecutor NodeExecutor { get; private set; }
 
-	public PreInstanceGraph Graph { get; private set; }
+	public GraphController GraphController { get; private set; }
 
 	public GraphVisualizer( NodeExecutor nodeExecutor ) => NodeExecutor = nodeExecutor;
 
@@ -17,7 +17,7 @@ public partial class GraphVisualizer : Panel
 	{
 		base.Tick();
 
-		if ( !_waitingForInit || Graph != null || NodeExecutor == null )
+		if ( !_waitingForInit || GraphController != null || NodeExecutor == null )
 		{
 			return;
 		}
@@ -35,18 +35,18 @@ public partial class GraphVisualizer : Panel
 		Log.Info( "SWITCH WEAPON!!!!!!!" );
 
 		// Clean up UI nodes
-		if ( Graph != null )
+		if ( GraphController != null )
 		{
-			foreach ( var node in Graph.Nodes )
+			foreach ( var node in GraphController.Nodes )
 			{
 				node.Element.Delete();
 			}
 		}
 
-		Graph = new PreInstanceGraph( nodeExecutor, this );
+		GraphController = new GraphController( nodeExecutor, this );
 
 		// Add fake entry node
-		var graphNode = new GraphNode( Graph.Entry, this );
+		var graphNode = new GraphNode( GraphController.Entry, this );
 		graphNode.AddClass( "entry-node" );
 		AddChild( graphNode );
 
