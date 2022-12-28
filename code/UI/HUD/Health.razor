@@ -1,16 +1,19 @@
 ﻿@namespace ProjectBullet.UI.HUD
+@using System
+@using Sandbox.UI
 @inherits Sandbox.UI.Panel;
 
 <style>
     Health {
+        width: 270px; height: 50px;
         font-size: 30px;
         
         .health-bar {
-            width: 300px; height: 20px;
+            width: 270px; height: 20px;
             background-color: rgba(255, 255, 255, 0.2);
 
             .inner {
-                width: @LocalHealth%; height: 100%;
+                width: @Util.LocalPlayer.Health%; height: 100%;
                 background-color: white;
             }
         }
@@ -19,20 +22,25 @@
 
 <root>
     <div style="flex-direction: column">
-        <div class="health-bar">
-            <div class="inner"></div>
-        </div>
-        @LocalHealth/@LocalHealth
+        @if (Util.LocalPlayer.IsAlive)
+        {
+            <div class="health-bar">
+                <div class="inner"></div>
+            </div>
+            <div>@Util.LocalPlayer.Health/@Util.LocalPlayer.MaxHealth</div>
+        }
+        else
+        {
+            <div style="font-size: 25px;">respawning in @($"{(float)Util.LocalPlayer.TimeUntilRespawn:.#}") ...</div>
+        }
     </div>
 </root>
 
 @code {
 
-    public int LocalHealth => (int)(Util.LocalPlayer.IsAlive ? Util.LocalPlayer.Health : 0);
-    
     protected override int BuildHash()
     {
-        return (int)Util.LocalPlayer.Health;
+        return HashCode.Combine(Util.LocalPlayer.Health, (float)Util.LocalPlayer.TimeUntilRespawn, Util.LocalPlayer.IsAlive);
     }
 
 }

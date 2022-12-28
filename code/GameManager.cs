@@ -6,7 +6,9 @@ using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
 using ProjectBullet.UI;
+using ProjectBullet.UI.Workshop;
 using Sandbox;
+using Sandbox.Diagnostics;
 using Sandbox.UI;
 
 namespace ProjectBullet;
@@ -28,7 +30,7 @@ public partial class GameManager : Sandbox.GameManager
 		if ( Game.IsClient )
 		{
 			Game.RootPanel = new RootPanel();
-			Game.RootPanel.AddChild<HudView>();
+			Util.CreateHud( Game.RootPanel );
 		}
 		else
 		{
@@ -126,5 +128,21 @@ public partial class GameManager : Sandbox.GameManager
 		DebugOverlay.ScreenText( "This test is meant for node balance / design. Any gameplay you see isn't final!",
 			Vector2.One * 20, 1, Color.Orange );
 		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );
+	}
+
+	/// <summary>
+	/// An entity, which is a pawn, and has a client, has been killed.
+	/// </summary>
+	public override void OnKilled( IClient client, Entity pawn )
+	{
+		Game.AssertServer();
+
+		OnDeathFeed( pawn, pawn.LastAttacker );
+	}
+
+	[ClientRpc]
+	public virtual void OnDeathFeed( Entity victim, Entity attacker )
+	{
+		Util.Hud.DeathFeed.AddEntry( victim, attacker );
 	}
 }

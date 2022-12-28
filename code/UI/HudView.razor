@@ -7,56 +7,114 @@
 <style>
     HudView {
         width: 100%; height: 100%;
-        position: absolute;
-    
-        /* Font styling */
+        position: relative;
+
+        /* Default font styling */
         font-family: Inter;
         font-weight: bold;
-        color: white;
-    
+        color: white;       
+        
+        /* background-color: red; */
+        
+        bottom: 0;
+        
         .player-bar {
             width: 100%;
-            position: absolute;
+            position: relative;
     
             padding: 20px;
     
             justify-content: space-between;
+            flex-grow: 0;
+
+            .item-wrapper {
+                width: 33%;
+                
+                flex-direction: column-reverse;    
+                
+                /* background-color: black; */
+            }
             
-            bottom: 0;
+            .left {
+                justify-content: flex-start;
+            }
+
+            .middle {
+                justify-content: center;
+            }
+            
+            .right {
+                justify-content: flex-start;
+            }
         }
     }
 </style>
 
 <root>
     <Crosshair/>
-
-    <div class="player-bar">
-        <div class="left">
-            <!-- Player icon / currency -->
-            <div style="flex-direction: column">
-                <div></div>
-                <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
-                    <div style="font-size: 30px">🐌</div>
-                </Corner>
-            </div>
-
-            <!-- Player health / health bar -->
-            <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
-                <Health/>
-            </Corner>
-
-            <!-- Player health / health bar -->
-            <div style="flex-direction: column">
-                <div></div>
-                <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
-                    <div style="font-size: 25px">🪙@Util.LocalPersistent.Money</div>
-                </Corner>
-            </div>
-        </div>
-    </div>
-
+    
     @foreach (var moneyArea in Entity.All.OfType<MoneyArea>())
     {
         <MoneyAreaMarker MoneyArea=@moneyArea/>
     }
+
+    <div class="player-bar">
+        <div class="item-wrapper">
+            <div></div>
+            <div class="left">
+                <!-- Player icon / currency -->
+                <div style="flex-direction: column-reverse; margin-top: 10px; margin-right: 10px">
+                    <div></div>
+                    <Corner thickness="2" length="15">
+                        <div style="width: 50px; height: 50px; font-size: 30px; justify-content: center">🐌</div>
+                    </Corner>
+                </div>
+
+                <!-- Player health / health bar -->
+                <div style="flex-direction: column">
+                    <div style="flex-direction: row">
+                        <div></div>
+                        <Corner thickness="2" length="15">
+                            <div style="font-size: 25px">🪙@Util.LocalPersistent.Money</div>
+                        </Corner>
+                    </div>
+                    <Corner thickness="2" length="15" style="margin-top: 10px">
+                        <Health @ref=Health/>
+                    </Corner>
+                </div>
+            </div>
+        </div>
+
+        <div class="item-wrapper">
+            <div></div>
+            <div class="middle">
+                <!-- Workshop info -->
+                @if (Util.LocalPlayer.CanUseEditor)
+                {
+                    <Corner thickness="2" length="15" style="flex-grow: 0; margin-top: 10px; margin-right: 10px">
+                        <div style="font-size: 25px">
+                            <div style="flex-direction: column">
+                                <Glyph style="font-size: 30px" input="view" size="medium"/>
+                                workshop available!
+                            </div>
+                        </div>
+                    </Corner>
+                }
+            </div>
+        </div>
+
+        <div class="item-wrapper">
+            <div></div>
+            <div class="right"></div>
+        </div>
+    </div>
+
+    <DeathFeed @ref=DeathFeed/>
 </root>
+
+@code {
+
+    public Health Health { get; set; }
+    public DeathFeed DeathFeed { get; set; }
+
+}

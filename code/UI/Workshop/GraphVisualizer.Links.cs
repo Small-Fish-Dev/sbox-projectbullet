@@ -49,7 +49,6 @@ public partial class GraphVisualizer : Panel
 		{
 			case GraphNodeOut { IsConnected: false } output:
 				_mouseDownTarget = output;
-				output.MakingLink = true;
 				return;
 			case GraphNodeIn { IsConnected: false }:
 				return;
@@ -78,22 +77,22 @@ public partial class GraphVisualizer : Panel
 					continue;
 				}
 
-				if ( input.Hovered )
+				if ( input.IsHovered )
 				{
-					if ( input.IsInvalidHover )
+					if ( input.IsHoveredIncorrectly )
 					{
 						input.NodeData.Previous?.Disconnect();
 					}
 
-					output.Connector.ConnectTo( input.GraphNode.NodeData );
-					input.GraphNode.StateHasChanged();
+					output.Connector.ConnectTo( input.NodeData );
+					input.Node.StateHasChanged();
 				}
 
-				input.Hovered = false;
-				input.IsInvalidHover = false;
+				input.IsHovered = false;
+				input.IsHoveredIncorrectly = false;
 			}
 
-			output.MakingLink = false;
+			output.IsLinking = false;
 		}
 
 		_makingInvalidConnection = false;
@@ -107,34 +106,12 @@ public partial class GraphVisualizer : Panel
 
 		if ( _mouseDownTarget is GraphNode node )
 		{
-			node.Style.Position = PositionMode.Absolute;
+			var mousePosition = Game.RootPanel.MousePosition;
 
-			var lmp = GetStyleMousePosition();
+			mousePosition.x -= _holdPoint.x;
+			mousePosition.y -= _holdPoint.y;
 
-			if ( lmp.x < 0 )
-			{
-				lmp.x = 0;
-			}
-
-			if ( lmp.y < 0 )
-			{
-				lmp.y = 0;
-			}
-
-			node.Style.Left = Length.Pixels(
-				lmp.x
-			);
-			node.Style.Top = Length.Pixels(
-				lmp.y
-			);
-
-			if ( node.NodeData.Instance == null )
-			{
-				return;
-			}
-
-			node.NodeData.Instance.LastEditorX = lmp.x;
-			node.NodeData.Instance.LastEditorY = lmp.y;
+			node.SetScreenPosition( mousePosition );
 		}
 
 		foreach ( var child in e.This.Descendants )
@@ -146,24 +123,22 @@ public partial class GraphVisualizer : Panel
 
 			if ( CheckHover( child ) )
 			{
-				input.Hovered = true;
+				input.IsHovered = true;
 
 				if ( input.IsConnected && _mouseDownTarget != null )
 				{
-					input.IsInvalidHover = true;
+					input.IsHoveredIncorrectly = true;
 				}
 
 				child.StateHasChanged();
 			}
 			else
 			{
-				if ( !input.Hovered )
+				if ( !input.IsHovered )
 				{
 					continue;
 				}
-
-				input.Hovered = false;
-				input.IsInvalidHover = false;
+				
 				child.StateHasChanged();
 			}
 		}

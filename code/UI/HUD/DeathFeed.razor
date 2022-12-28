@@ -1,0 +1,27 @@
+﻿@namespace ProjectBullet.UI.HUD
+@using Sandbox
+@inherits Sandbox.UI.Panel;
+
+<style>
+    DeathFeed {
+        position: absolute;
+    
+        /* background-color: #00ffaa; */
+        
+        top: 20px;
+        right: 20px;
+        
+        flex-direction: column;
+    }
+</style>
+
+<root>
+</root>
+
+@code {
+
+    public void AddEntry(Entity victim, Entity attacker)
+    {
+        AddChild(new DeathFeedEntry(victim, attacker));
+    }
+}

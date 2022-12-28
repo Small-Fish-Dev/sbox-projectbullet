@@ -1,0 +1,75 @@
+﻿@namespace ProjectBullet.UI.HUD
+@using Sandbox
+@inherits Sandbox.UI.Panel;
+
+<style>
+    DeathFeedEntry {
+        font-size: 17px;
+        
+        color: black;    
+
+        transition: all 0.5s ease-in-out;
+        opacity: 1.0;
+        
+        margin-bottom: 3px;
+        
+        &:intro {
+            opacity: 0.0;
+        }
+        
+        &:outro {
+            opacity: 0.0;
+            height: 0;
+            /*font-size: 0;*/
+            padding: 0;
+            margin-bottom: 0;
+        }
+        
+        .message {
+            padding: 5px 15px 5px 15px;
+            background-color: white;
+        }
+    }
+</style>
+
+<root style="flex-direction: row-reverse">
+    <div></div>
+    <div class="message">@Message</div>
+</root>
+
+@code
+{
+    public string Message { get; set; }
+
+    private readonly TimeUntil _timeUntilDelete = 5;
+
+    public DeathFeedEntry(Entity victim, Entity attacker)
+    {
+        var victimName = victim.Client.Name;
+
+        if (attacker is WorldEntity)
+        {
+            Message = $"{victimName} fell too hard";
+            return;
+        }
+
+        if (attacker != null && attacker.Client != null)
+        {
+            var attackerName = attacker.Client.Name;
+            Message = $"{victimName} was killed by {attackerName}";
+            return;
+        }
+
+        Message = $"{victimName} died of natural causes";
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        if (_timeUntilDelete)
+        {
+            Delete();
+        }
+    }
+}

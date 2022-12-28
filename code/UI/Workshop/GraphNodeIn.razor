@@ -30,4 +30,45 @@
     }
 </style>
 
-<root class="@RootClasses"></root>
+<root></root>
+
+@code {
+
+    public GraphNode Node { get; set; }
+    public GraphController.Node NodeData => Node.Data;
+    public GraphController Controller => NodeData.Root;
+
+    public bool IsConnected => NodeData.IsConnected;
+    public bool IsHovered;
+    public bool IsHoveredIncorrectly;
+    
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (firstTime)
+        {
+            NodeData.InputElement = this;
+        }
+    }
+
+    public override void Delete(bool immediate = false)
+    {
+        base.Delete(immediate);
+
+        NodeData.InputElement = null;
+    }
+
+    protected override void OnRightClick(MousePanelEvent e)
+    {
+        base.OnRightClick(e);
+
+        if (NodeData.IsConnected)
+        {
+            NodeData.Previous.Disconnect();
+        }
+
+        e.StopPropagation();
+    }
+
+}
