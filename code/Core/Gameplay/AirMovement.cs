@@ -36,7 +36,9 @@ public class AirMovement : PlayerMechanic
 		// check if we just landed....
 		if ( GroundEntity.IsValid() && airVelocity.Abs().z > 600 )
 		{
-			Player.Health -= 10.0f;
+			var info = new DamageInfo().WithForce( airVelocity );
+			info.Damage = 10.0f;
+			Player.TakeDamage( info );
 		}
 	}
 
