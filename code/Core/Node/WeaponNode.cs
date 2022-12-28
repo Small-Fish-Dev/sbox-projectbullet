@@ -71,7 +71,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	{
 		if ( Owner is not NodeExecutor _ )
 		{
-			Log.Warning( "ExecuteConnector called without NodeExecutionEntity" );
+			Log.Warning( "ExecuteConnector called without NodeExecutor" );
 			return;
 		}
 
@@ -243,7 +243,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// Estimate the output energy of the provided connector
 	/// </summary>
 	/// <param name="providedConnector">Connector</param>
-	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
+	/// <param name="otherNodeExecutor">Provided NodeExecutor if the owner is not one</param>
 	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
 	private float? EstimateConnectorOutput( Connector providedConnector, NodeExecutor otherNodeExecutor = null,
@@ -255,7 +255,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 		{
 			if ( Owner is not NodeExecutor ownerNodeExecutor )
 			{
-				Log.Error( "Can't estimate WeaponNodeEntity that's not owned by a NodeExecutionEntity" );
+				Log.Error( "Can't estimate WeaponNode that's not owned by a NodeExecutor" );
 				return null;
 			}
 
@@ -343,7 +343,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	/// Estimate the output energy of the provided connector
 	/// </summary>
 	/// <param name="identifier">Connector ID</param>
-	/// <param name="otherNodeExecutor">Provided NodeExecutionEntity if the owner is not one</param>
+	/// <param name="otherNodeExecutor">Provided NodeExecutor if the owner is not one</param>
 	/// <param name="useMaxEnergy">Whether or not to estimate using the NodeExecutor MaxEnergy</param>
 	/// <returns>Output energy (or null for unknown identifier / inestimable energy)</returns>
 	public float? EstimateConnectorOutput( string identifier, NodeExecutor otherNodeExecutor = null,

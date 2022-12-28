@@ -5,7 +5,7 @@ using Sandbox;
 namespace ProjectBullet.Core.Node;
 
 /// <summary>
-/// Execution info passed to WeaponNodeEntity - similar to <see cref="DamageInfo"/>
+/// Execution info passed to WeaponNode - similar to <see cref="DamageInfo"/>
 /// </summary>
 public struct ExecuteInfo
 {

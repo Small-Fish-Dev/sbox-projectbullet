@@ -7,7 +7,7 @@ namespace ProjectBullet.Core.Node;
 /// </summary>
 public static class NodeServer
 {
-	private static WeaponNode GetWeaponNodeEntity( int networkIdent )
+	private static WeaponNode GetWeaponNode( int networkIdent )
 	{
 		if ( Entity.FindByIndex( networkIdent ) is WeaponNode wne )
 		{
@@ -40,14 +40,14 @@ public static class NodeServer
 			return;
 		}
 
-		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		var target = GetWeaponNode( targetNetworkIdent );
 		if ( target == null )
 		{
 			Log.Error( $"SetConnector failed: target not found - index {targetNetworkIdent}" );
 			return;
 		}
 
-		var newValue = GetWeaponNodeEntity( newValueNetworkIdent );
+		var newValue = GetWeaponNode( newValueNetworkIdent );
 		if ( newValue == null )
 		{
 			Log.Error( $"SetConnector failed: newValue not found - index {targetNetworkIdent}" );
@@ -62,7 +62,7 @@ public static class NodeServer
 	/// <summary>
 	/// Send SetConnector request to the server - will connect the provided connector of target to newValue
 	/// </summary>
-	/// <param name="target">WeaponNodeEntity to change connector of</param>
+	/// <param name="target">WeaponNode to change connector of</param>
 	/// <param name="identifier">Connector identifier</param>
 	/// <param name="newValue">New value</param>
 	public static void SetConnector( WeaponNode target, string identifier, WeaponNode newValue )
@@ -82,7 +82,7 @@ public static class NodeServer
 			return;
 		}
 
-		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		var target = GetWeaponNode( targetNetworkIdent );
 		if ( target == null )
 		{
 			Log.Error( $"DisconnectConnector failed: target not found - index {targetNetworkIdent}" );
@@ -97,7 +97,7 @@ public static class NodeServer
 	/// <summary>
 	/// Send DisconnectConnector request to the server - will clear the connections of the provided node
 	/// </summary>
-	/// <param name="target">WeaponNodeEntity to change connector of</param>
+	/// <param name="target">WeaponNode to change connector of</param>
 	/// <param name="identifier">Connector identifier</param>
 	public static void DisconnectConnector( WeaponNode target, string identifier )
 	{
@@ -123,7 +123,7 @@ public static class NodeServer
 			return;
 		}
 
-		var newValue = GetWeaponNodeEntity( newValueNetworkIdent );
+		var newValue = GetWeaponNode( newValueNetworkIdent );
 		if ( newValue == null )
 		{
 			Log.Error( $"SetEntryNode failed: newValue not found - index {newValueNetworkIdent}" );
@@ -139,7 +139,7 @@ public static class NodeServer
 	/// Send SetEntryNode request to the server - will set the entry node of provided node executor to provided value
 	/// </summary>
 	/// <param name="nodeExecutor">Node execution entity</param>
-	/// <param name="newValue">WeaponNodeEntity value</param>
+	/// <param name="newValue">WeaponNode value</param>
 	public static void SetEntryNode( NodeExecutor nodeExecutor, WeaponNode newValue )
 	{
 		Game.AssertClient();
@@ -190,7 +190,7 @@ public static class NodeServer
 			return;
 		}
 
-		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		var target = GetWeaponNode( targetNetworkIdent );
 		if ( target == null )
 		{
 			Log.Error( $"AddNodeToExecutor failed: target not found - index {targetNetworkIdent}" );
@@ -213,7 +213,7 @@ public static class NodeServer
 	/// <summary>
 	/// Send AddNodeToExecutor request to the server - will set owner of target to the executor
 	/// </summary>
-	/// <param name="target">WeaponNodeEntity to change owner of</param>
+	/// <param name="target">WeaponNode to change owner of</param>
 	/// <param name="nodeExecutor">New owner</param>
 	public static void AddNodeToExecutor( WeaponNode target, NodeExecutor nodeExecutor )
 	{
@@ -232,7 +232,7 @@ public static class NodeServer
 			return;
 		}
 
-		var target = GetWeaponNodeEntity( targetNetworkIdent );
+		var target = GetWeaponNode( targetNetworkIdent );
 		if ( target == null )
 		{
 			Log.Error( $"RemoveNodeFromExecutor failed: target not found - index {targetNetworkIdent}" );
@@ -255,7 +255,7 @@ public static class NodeServer
 	/// <summary>
 	/// Send RemoveNodeFromExecutor request to the server - will set owner of target back to pawn (if possible)
 	/// </summary>
-	/// <param name="target">WeaponNodeEntity to change owner of</param>
+	/// <param name="target">WeaponNode to change owner of</param>
 	public static void RemoveNodeFromExecutor( WeaponNode target )
 	{
 		Game.AssertClient();

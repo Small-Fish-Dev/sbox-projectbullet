@@ -43,7 +43,7 @@ public class WeaponNodeDescription
 	~WeaponNodeDescription() => Event.Unregister( this );
 
 	/// <summary>
-	/// Register all WeaponNodeEntities
+	/// Register all WeaponNodes
 	/// </summary>
 	public static void InitAll()
 	{

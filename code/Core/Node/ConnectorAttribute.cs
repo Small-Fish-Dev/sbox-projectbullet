@@ -3,7 +3,7 @@
 namespace ProjectBullet.Core.Node;
 
 /// <summary>
-/// Add connector / "next node" to WeaponNodeEntity class 
+/// Add connector / "next node" to WeaponNode class 
 /// </summary>
 [AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
 public sealed class ConnectorAttribute : Attribute

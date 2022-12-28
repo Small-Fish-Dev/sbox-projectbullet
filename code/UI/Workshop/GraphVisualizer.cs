@@ -27,9 +27,9 @@ public partial class GraphVisualizer : Panel
 	}
 
 	/// <summary>
-	/// Visualize a different NodeExecutionEntity
+	/// Visualize a different NodeExecutor
 	/// </summary>
-	/// <param name="nodeExecutor">New NodeExecutionEntity</param>
+	/// <param name="nodeExecutor">New NodeExecutor</param>
 	public void SwitchNodeExecutor( NodeExecutor nodeExecutor )
 	{
 		Log.Info( "SWITCH WEAPON!!!!!!!" );

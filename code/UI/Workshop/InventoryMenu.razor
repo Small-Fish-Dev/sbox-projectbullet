@@ -23,14 +23,14 @@
                 <div class="info-text">inventory @(!GraphInventory.Any() ? "empty" : "")</div>
             </div>
         </div>
-        @foreach (var weaponNodeEntity in GraphInventory)
+        @foreach (var weaponNode in GraphInventory)
         {
-            <div class="item" @onclick=@(() => { GraphVisualizer.GraphController.AddToGraph(weaponNodeEntity); })>
+            <div class="item" @onclick=@(() => { GraphVisualizer.GraphController.AddToGraph(weaponNode); })>
                 <div class="center-text-container">
                     <div style="justify-content: space-between; width: 100%">
                         <div class="info-text">add...</div>
                         <div>
-                            @weaponNodeEntity.Description.NodeAttribute.DisplayName
+                            @weaponNode.Description.NodeAttribute.DisplayName
                         </div>
                     </div>
                 </div>

@@ -36,9 +36,9 @@ public partial class GraphController
 	public IEnumerable<Connector> Connectors => Nodes.SelectMany( v => v.Connectors );
 
 	/// <summary>
-	/// Find node by WeaponNodeEntity instance
+	/// Find node by WeaponNode instance
 	/// </summary>
-	/// <param name="entity">WeaponNodeEntity</param>
+	/// <param name="entity">WeaponNode</param>
 	/// <returns>Node or null</returns>
 	public Node GetNodeByEntity( WeaponNode entity ) => _nodes.SingleOrDefault( v => v.Instance == entity );
 
@@ -57,19 +57,19 @@ public partial class GraphController
 		NodeExecutor = nodeExecutor;
 
 		// Add nodes from inventory
-		foreach ( var weaponNodeEntity in Util.LocalPersistent.Items.OfType<WeaponNode>() )
+		foreach ( var weaponNode in Util.LocalPersistent.Items.OfType<WeaponNode>() )
 		{
-			if ( !weaponNodeEntity.InUse )
+			if ( !weaponNode.InUse )
 			{
 				// Add inactive nodes to GraphInventory
-				GraphInventory.Add( weaponNodeEntity );
+				GraphInventory.Add( weaponNode );
 			}
 			else
 			{
 				// Add active nodes to the graph!
-				if ( weaponNodeEntity.Owner == NodeExecutor )
+				if ( weaponNode.Owner == NodeExecutor )
 				{
-					PerformAction( new AddNodeToGraphAction( weaponNodeEntity ), false );
+					PerformAction( new AddNodeToGraphAction( weaponNode ), false );
 				}
 			}
 		}
@@ -91,7 +91,7 @@ public partial class GraphController
 		// Set entry node if possible
 		if ( nodeExecutor?.EntryNode == null )
 		{
-			Log.Warning( "Provided NodeExecutionEntity has no entry node" );
+			Log.Warning( "Provided NodeExecutor has no entry node" );
 			return;
 		}
 

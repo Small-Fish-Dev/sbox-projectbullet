@@ -3,7 +3,7 @@
 namespace ProjectBullet.Core.Node;
 
 /// <summary>
-/// Mark WeaponNodeEntity as energy user 
+/// Mark WeaponNode as energy user 
 /// </summary>
 [AttributeUsage( AttributeTargets.Class )]
 public sealed class EnergyAttribute : Attribute
