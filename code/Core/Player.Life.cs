@@ -48,13 +48,25 @@ public abstract partial class Player
 
 		if ( info.Attacker is Player player )
 		{
-			
+			if ( player != this )
+			{
+				if ( !player.IsOnOppositeTeam && !Util.MapConfig.IsFreeForAll )
+				{
+					// not FFA and the player is on our team, return
+					return;
+				}
+			}
 		}
 
 		LastDamage = info;
 
 		this.ProceduralHitReaction( info, 0.05f );
-		
+
 		base.TakeDamage( info );
+
+		if ( Health <= 0 )
+		{
+			OnKilled();
+		}
 	}
 }
