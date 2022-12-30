@@ -1,0 +1,57 @@
+﻿@using Sandbox
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.WorkshopElements
+@inherits Sandbox.UI.Panel
+
+@code {
+    private Vector2 _velocity = Vector2.Zero;
+    private Vector2 _lastPosition = Vector2.Zero;
+    private Vector2 _holdPoint = Vector2.Zero;
+    private bool _held;
+    
+    private static float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
+
+    protected override void OnMouseUp(MousePanelEvent e)
+    {
+        base.OnMouseUp(e);
+
+        _held = false;
+    }
+
+    public virtual void UpdateHold(Vector2 position, Vector2 holdPoint)
+    {
+        _holdPoint = holdPoint;
+        
+        if (_held)
+        {
+            _velocity += (position - _lastPosition) * Time.Delta * 1.6f;
+        }
+        
+        _velocity = _velocity.Clamp(-10, 10);
+        
+        Style.Left = Length.Pixels(position.x * RootScaleFromScreen); // set panel position!
+        Style.Top = Length.Pixels(position.y * RootScaleFromScreen);
+
+        _lastPosition = position;
+
+        _held = true;
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        _velocity = Vector2.Lerp(_velocity, Vector2.Zero, Time.Delta * 10.0f);
+
+        Style.TransformOriginX = Length.Percent(_holdPoint.x / Box.Rect.Width * 100);
+        Style.TransformOriginY = Length.Percent(_holdPoint.y / Box.Rect.Height * 100);
+        
+        var transform = new PanelTransform();
+        transform.AddRotation( 0, 0, -_velocity.x);
+        
+        Style.Transform = transform;
+
+        StateHasChanged();
+    }
+
+}

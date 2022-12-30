@@ -1,0 +1,22 @@
+﻿@import "/UI/Constants.scss";
+
+Person {
+    position: absolute;
+    left: 0; bottom: 0;
+
+    font-size: 30px;
+    font-family: $generic-font-family;
+    font-weight: bold;
+    color: white;
+
+    Corner {
+        padding: 20px;
+        transition: all $hide-transition-time ease-in-out;
+
+        left: 20px; bottom: 20px;
+        
+        &.workshop-open {
+            left: -100px;
+        }
+    }
+}

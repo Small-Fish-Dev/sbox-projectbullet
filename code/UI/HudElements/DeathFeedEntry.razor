@@ -1,0 +1,47 @@
+﻿@namespace ProjectBullet.UI.HudElements
+@using Sandbox
+@using Sandbox.UI
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet("/UI/HudElements/DeathFeedEntry.scss")]
+
+<root style="flex-direction: row-reverse">
+    <div></div>
+    <div class="message">@_message</div>
+</root>
+
+@code
+{
+    private readonly string _message;
+
+    private readonly TimeUntil _timeUntilDelete = 5;
+
+    public DeathFeedEntry(Entity victim, Entity attacker)
+    {
+        var victimName = victim.Client.Name;
+
+        if (attacker is WorldEntity)
+        {
+            _message = $"{victimName} fell too hard";
+            return;
+        }
+
+        if (attacker != null && attacker.Client != null)
+        {
+            var attackerName = attacker.Client.Name;
+            _message = $"{victimName} was killed by {attackerName}";
+            return;
+        }
+
+        _message = $"{victimName} died of natural causes";
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        if (_timeUntilDelete)
+        {
+            Delete();
+        }
+    }
+}

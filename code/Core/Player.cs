@@ -122,6 +122,7 @@ public abstract partial class Player : AnimatedEntity
 
 	protected virtual void ClientRespawn()
 	{
+		ViewAngles = ViewAngles.WithPitch( 0 );
 	}
 
 	protected virtual void CreateHoldableWeapon()

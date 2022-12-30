@@ -1,17 +1,9 @@
-﻿@namespace ProjectBullet.UI
+﻿@namespace ProjectBullet.UI.Helpers
 @using System
 @using Sandbox.UI
 @inherits Sandbox.UI.Panel
-@attribute [StyleSheet("/UI/Shared.scss")]
 
-<style>
-    Corner {
-        /* background-color: green; */
-        padding: 10px;
-        flex-grow: 0;
-    }
-</style>
-
+<style> Corner { flex-grow: 0; } </style>
 <root></root>
 
 @code {
@@ -54,7 +46,9 @@
     {
         base.DrawBackground(ref state);
 
-        GraphicsX.CornerBorder(Color.White, Box.Rect, Thickness * ScaleToScreen, Length * ScaleToScreen);
+        var color = Color.White.WithAlpha(ComputedStyle.Opacity ?? 1);
+
+        GraphicsX.CornerBorder(color, Box.Rect, Thickness * ScaleToScreen, Length * ScaleToScreen);
     }
 
 }

@@ -1,6 +1,6 @@
 ﻿using ProjectBullet.Core.Node;
 
-namespace ProjectBullet.UI.Workshop;
+namespace ProjectBullet.UI.WorkshopElements;
 
 public partial class GraphController
 {
@@ -55,15 +55,13 @@ public partial class GraphController
 		public override object Perform( GraphController root )
 		{
 			var node = root.GetNodeByEntity( _entity );
-			if ( node == null )
+			switch (node)
 			{
-				Log.Warning( $"Failed {GetType().Name} action! Node not found" );
-				return null;
-			}
-
-			if ( node is EntryNode )
-			{
-				return null;
+				case null:
+					Log.Warning( $"Failed {GetType().Name} action! Node not found" );
+					return null;
+				case EntryNode:
+					return null;
 			}
 
 			node.Element.Delete();
@@ -73,9 +71,7 @@ public partial class GraphController
 			root.GraphInventory.Add( _entity );
 
 			NodeServer.RemoveNodeFromExecutor( _entity );
-
-			root.GraphVisualizer.InventoryMenu.StateHasChanged();
-
+			
 			return null;
 		}
 

@@ -1,6 +1,6 @@
 ﻿@using Sandbox.UI;
 @inherits Sandbox.UI.Panel
-@namespace ProjectBullet.UI.Workshop
+@namespace ProjectBullet.UI.WorkshopElements
 
 <style>
     GraphNodeIn {
@@ -41,7 +41,7 @@
     public bool IsConnected => NodeData.IsConnected;
     public bool IsHovered;
     public bool IsHoveredIncorrectly;
-    
+
     protected override void OnAfterTreeRender(bool firstTime)
     {
         base.OnAfterTreeRender(firstTime);

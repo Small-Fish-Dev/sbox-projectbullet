@@ -1,0 +1,36 @@
+﻿@using ProjectBullet.UI.WorkshopElements
+@using Sandbox.UI
+@inherits Sandbox.UI.Panel
+@namespace ProjectBullet.UI
+@attribute [StyleSheet("/UI/Workshop.scss")]
+
+<root>
+    <!--<Corner>-->
+    <GraphVisualizer @ref=Visualizer></GraphVisualizer>
+    <EditMenu></EditMenu>
+    <!--</Corner>-->
+</root>
+
+@code {
+
+    public GraphController Controller;
+    public GraphVisualizer Visualizer { get; set; }
+
+    public Workshop()
+    {
+        
+    }
+    
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (firstTime)
+        {
+            Controller = new GraphController(Util.LocalPlayer.NodeExecutors[0], Visualizer);
+            Visualizer.Controller = Controller;
+            Visualizer.HandleNewController();
+        }
+    }
+
+}

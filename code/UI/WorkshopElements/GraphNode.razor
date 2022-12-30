@@ -1,0 +1,40 @@
+﻿@using Sandbox
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.WorkshopElements
+@inherits Draggable
+
+<style>
+    GraphNode {    
+        width: 300px; height: 100px;
+        
+        position: absolute;
+        left: 50%; top: 50%;
+                
+        background-color: black;
+        color: white;
+        font-size: 30px;
+   }
+</style>
+
+<root>
+    test test test test test test test test test test test test 
+</root>
+
+@code {
+
+    public GraphController.Node Data { get; set; }
+    public GraphVisualizer Visualizer { get; set; }
+
+    public GraphNode(GraphController.Node controllerNode, GraphVisualizer visualizer)
+    {
+        Data = controllerNode;
+        Data.Element = this;
+        Visualizer = visualizer;
+    }
+
+    protected override void OnRightClick(MousePanelEvent e)
+    {
+        base.OnRightClick(e);
+        Data.Root.RemoveFromGraph(Data);
+    }
+}

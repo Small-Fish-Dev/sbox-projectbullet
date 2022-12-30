@@ -1,30 +1,19 @@
-﻿@namespace ProjectBullet.UI.HUD
+﻿@namespace ProjectBullet.UI.HudElements
 @using ProjectBullet.MapEnts
 @using Sandbox
 @using Sandbox.UI
+@using ProjectBullet.UI.Helpers
 @inherits Sandbox.UI.Panel;
+@attribute [StyleSheet("/UI/HudElements/MoneyAreaMarker.scss")]
 
-<style>
-    MoneyAreaMarker {
-        position: absolute;
-        
-        flex-direction: column; 
-        align-items: center;
-        
-        font-family: Inter;
-        font-weight: normal;
-        color: white;      
-    }
-</style>
-
-<root>
+<root class="@Util.WorkshopOpenClass">
     @if (MoneyArea == null)
     {
         return;
     }
 
-    <div>@Distance</div>
-    <Corner thickness="2" length="15" style="margin-top: 5px">
+    <div>@_distance</div>
+    <Corner thickness="2" length="15" style="padding: 7px; margin-top: 5px">
         <div style="font-size: 20px">🪙</div>
     </Corner>
 </root>
@@ -32,7 +21,7 @@
 @code {
     public MoneyArea MoneyArea { get; set; }
     private static float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
-    public float Distance = 0.0f;
+    private float _distance;
 
     private void UpdatePosition()
     {
@@ -66,7 +55,7 @@
 
         UpdatePosition();
 
-        Distance = Util.LocalPlayer.EyePosition.WithZ(0)
+        _distance = Util.LocalPlayer.EyePosition.WithZ(0)
             .Distance(MoneyArea.Position.WithZ(0))
             .Floor();
 

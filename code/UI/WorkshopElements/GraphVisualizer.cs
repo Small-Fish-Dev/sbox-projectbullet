@@ -2,7 +2,7 @@
 using Sandbox;
 using Sandbox.UI;
 
-namespace ProjectBullet.UI.Workshop;
+namespace ProjectBullet.UI.WorkshopElements;
 
 public partial class GraphVisualizer : Panel
 {
@@ -10,26 +10,13 @@ public partial class GraphVisualizer : Panel
 	private Vector2 _holdPoint;
 	private bool _makingInvalidConnection;
 
-	private const float LineStartSize = 14.0f;
-	private const float LineEndSize = 14.0f;
-	private const float OuterLineStartSize = 14.0f;
-	private const float OuterLineEndSize = 18.0f;
-
 	private static bool CheckHover( Panel target ) => target.Box.Rect.IsInside( Game.RootPanel.MousePosition );
 
 	private void DrawNodeLine( Color color, Vector2 start, Vector2 end )
 	{
 		GraphicsX.Line( Color.White,
-			ScaleToScreen * OuterLineStartSize, start, ScaleToScreen * OuterLineEndSize, end );
-
-		//GraphicsX.Line( color,
-		//ScaleToScreen * LineStartSize, start, ScaleToScreen * LineEndSize, end );
+			ScaleToScreen * 6, start, ScaleToScreen * 6, end );
 	}
-
-	private Vector2 GetStyleMousePosition() => new Vector2(
-		(Game.RootPanel.MousePosition.x - _holdPoint.x - Box.Rect.Left) * Game.RootPanel.ScaleFromScreen,
-		(Game.RootPanel.MousePosition.y - _holdPoint.y - Box.Rect.Top) * Game.RootPanel.ScaleFromScreen );
-
 
 	protected override void OnMouseDown( MousePanelEvent e )
 	{
@@ -38,6 +25,16 @@ public partial class GraphVisualizer : Panel
 		if ( _mouseDownTarget != null )
 		{
 			return;
+		}
+
+		if ( ContextMenu != null )
+		{
+			var target = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is ContextMenu );
+			if ( target == null )
+			{
+				ContextMenu.Delete();
+				ContextMenu = null;
+			}
 		}
 
 		if ( e.Button != "mouseleft" )
@@ -49,24 +46,29 @@ public partial class GraphVisualizer : Panel
 		{
 			case GraphNodeOut { IsConnected: false } output:
 				_mouseDownTarget = output;
+				Style.Cursor = "none";
 				return;
 			case GraphNodeIn { IsConnected: false }:
+				Style.Cursor = "none";
 				return;
 		}
 
-		var node = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is GraphNode );
-		if ( node == null || _mouseDownTarget != null )
+		var draggable = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is Draggable );
+		if ( draggable == null || _mouseDownTarget != null )
 		{
 			return;
 		}
 
-		_mouseDownTarget = (GraphNode)node;
-		_holdPoint = Game.RootPanel.MousePosition - node.Box.Rect.TopLeft;
+		Style.Cursor = "none";
+		_mouseDownTarget = (Draggable)draggable;
+		_holdPoint = Util.Workshop.MousePosition - draggable.Box.Rect.TopLeft;
 	}
 
 	protected override void OnMouseUp( MousePanelEvent e )
 	{
 		base.OnMouseUp( e );
+
+		Style.Cursor = "inherit";
 
 		if ( _mouseDownTarget is GraphNodeOut output )
 		{
@@ -104,14 +106,15 @@ public partial class GraphVisualizer : Panel
 	{
 		base.OnMouseMove( e );
 
-		if ( _mouseDownTarget is GraphNode node )
+		if ( _mouseDownTarget is Draggable draggable )
 		{
-			var mousePosition = Game.RootPanel.MousePosition;
+			var mousePosition = Util.Workshop.MousePosition;
 
-			mousePosition.x -= _holdPoint.x;
-			mousePosition.y -= _holdPoint.y;
+			mousePosition -= Box.Rect.TopLeft;
 
-			node.SetScreenPosition( mousePosition );
+			mousePosition -= _holdPoint;
+
+			draggable.UpdateHold( mousePosition, _holdPoint );
 		}
 
 		foreach ( var child in e.This.Descendants )
@@ -138,16 +141,10 @@ public partial class GraphVisualizer : Panel
 				{
 					continue;
 				}
-				
+
 				child.StateHasChanged();
 			}
 		}
-	}
-
-	private static Color CalculateOutputColor( GraphNodeOut output )
-	{
-		var h = ((output.Connector.LastEstimatedEnergyOutput ?? 50.0f) * 0.01f) * 150;
-		return new ColorHsv( h, 0.6f, 1 ).ToColor();
 	}
 
 	public override void DrawBackground( ref RenderState state )
@@ -166,7 +163,7 @@ public partial class GraphVisualizer : Panel
 				}
 
 				var endpoint = output.Connector.ConnectedNode.InputElement;
-				DrawNodeLine( CalculateOutputColor( output ), output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
+				DrawNodeLine( Color.White, output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
 			}
 		}
 
@@ -176,7 +173,7 @@ public partial class GraphVisualizer : Panel
 				return;
 			}
 
-			DrawNodeLine( CalculateOutputColor( output ), output.Box.Rect.Center,
+			DrawNodeLine( Color.White, output.Box.Rect.Center,
 				MousePosition + Box.Rect.TopLeft );
 		}
 	}

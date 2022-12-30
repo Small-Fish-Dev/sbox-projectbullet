@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using ProjectBullet.Core.Node;
 
-namespace ProjectBullet.UI.Workshop;
+namespace ProjectBullet.UI.WorkshopElements;
 
 public partial class GraphController
 {
@@ -14,7 +14,7 @@ public partial class GraphController
 
 		public Connector Previous;
 		public bool IsConnected => Previous != null;
-		public readonly WeaponNode Instance = null;
+		public readonly WeaponNode Instance;
 
 		public virtual string DisplayName { get; }
 
@@ -60,7 +60,7 @@ public partial class GraphController
 	public class EntryNode : Node
 	{
 		public override string DisplayName => "Entry";
-		public EntryConnector Connector { get; init; }
+		public EntryConnector Connector;
 
 		public EntryNode( GraphController root ) : base( root )
 		{

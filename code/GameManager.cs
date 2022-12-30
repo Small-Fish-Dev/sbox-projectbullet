@@ -5,10 +5,7 @@ using ProjectBullet.Core;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
-using ProjectBullet.UI;
-using ProjectBullet.UI.Workshop;
 using Sandbox;
-using Sandbox.Diagnostics;
 using Sandbox.UI;
 
 namespace ProjectBullet;
@@ -124,10 +121,15 @@ public partial class GameManager : Sandbox.GameManager
 	{
 		base.FrameSimulate( cl );
 
-		DebugOverlay.ScreenText( "ProjectBullet - Node Design Test", Vector2.One * 20, 0, Color.Orange );
+		/*DebugOverlay.ScreenText( "ProjectBullet - Node Design Test", Vector2.One * 20, 0, Color.Orange );
 		DebugOverlay.ScreenText( "This test is meant for node balance / design. Any gameplay you see isn't final!",
 			Vector2.One * 20, 1, Color.Orange );
-		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );
+		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );*/
+
+		if ( Input.Pressed( InputButton.View ) )
+		{
+			Util.ToggleWorkshop( Game.RootPanel );
+		}
 	}
 
 	/// <summary>

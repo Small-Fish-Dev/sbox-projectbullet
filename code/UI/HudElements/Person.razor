@@ -1,0 +1,21 @@
+﻿@namespace ProjectBullet.UI.HudElements
+@using System
+@using ProjectBullet.UI.Helpers
+@using Sandbox.UI
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet("/UI/HudElements/Person.scss")]
+
+<root>
+    <Corner class="@Util.WorkshopOpenClass">
+        🐍
+    </Corner>
+</root>
+
+@code {
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Util.LocalPlayer.Health, (float)Util.LocalPlayer.TimeUntilRespawn, Util.LocalPlayer.IsAlive);
+    }
+
+}

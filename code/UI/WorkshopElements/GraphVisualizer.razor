@@ -1,0 +1,80 @@
+﻿@using Sandbox
+@using Sandbox.UI;
+@namespace ProjectBullet.UI.WorkshopElements
+@inherits Sandbox.UI.Panel
+
+<style>
+    GraphVisualizer {
+        width: 100%;
+        height: 100%;
+        
+        pointer-events: all;
+    }
+</style>
+
+<root>
+</root>
+
+@code {
+
+    public GraphController Controller { get; set; }
+
+    public ContextMenu ContextMenu;
+
+    public GraphVisualizer()
+    {
+        // this sucks a bit but it's OK - we need it for Ctrl-Z / Ctrl-Y
+        AcceptsFocus = true;
+        InputFocus.Set(this);
+    }
+
+    public override void Delete(bool immediate = false)
+    {
+        base.Delete(immediate);
+
+        Controller?.Switch(null);
+    }
+
+    protected override void OnRightClick(MousePanelEvent e)
+    {
+        base.OnRightClick(e);
+
+        if (ContextMenu != null)
+        {
+            return;
+        }
+
+        ContextMenu = new ContextMenu();
+        AddChild(ContextMenu);
+    }
+
+    public void HandleNewController()
+    {
+        var graphNode = new GraphNode(Controller.Entry, this);
+        graphNode.AddClass("entry-node");
+        AddChild(graphNode);
+    }
+
+    public override void OnButtonTyped(string button, KeyModifiers km)
+    {
+        base.OnButtonTyped(button, km);
+
+        // we have focus so binds won't do anything, we need to check for toggle button ourselves
+        if (button == Input.GetButtonOrigin(InputButton.View))
+        {
+            Util.ToggleWorkshop(Game.RootPanel);
+            return;
+        }
+
+        switch (button)
+        {
+            case "Z" when km.Ctrl:
+                Controller.PerformUndo();;
+                break;
+            case "Y" when km.Ctrl:
+                Controller.PerformRedo();
+                break;
+        }
+    }
+
+}

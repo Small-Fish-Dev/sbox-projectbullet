@@ -11,7 +11,7 @@ public static class ShopServer
 {
 	private static Player CallerPlayer => ConsoleSystem.Caller.Pawn as Player;
 
-	[ConCmd.Server]
+	[ConCmd.Server( "pb_buy" )]
 	private static void BuyItem( int stockedItemNetworkIndex )
 	{
 		Game.AssertServer();

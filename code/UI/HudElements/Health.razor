@@ -1,0 +1,33 @@
+﻿@namespace ProjectBullet.UI.HudElements
+@using System
+@using Sandbox.UI
+@using ProjectBullet.UI.Helpers
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet("/UI/HudElements/Health.scss")]
+
+<root>
+    <Corner class="@Util.WorkshopOpenClass">
+        <div style="flex-direction: column">
+            @if (Util.LocalPlayer.IsAlive)
+            {
+                <div class="health-bar">
+                    <div class="inner" style="width: @Util.LocalPlayer.Health%"></div>
+                </div>
+                <div>@Util.LocalPlayer.Health/@Util.LocalPlayer.MaxHealth</div>
+            }
+            else
+            {
+                <div style="font-size: 25px;">respawning in @($"{(float)Util.LocalPlayer.TimeUntilRespawn:.#}") ...</div>
+            }
+        </div>
+    </Corner>
+</root>
+
+@code {
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Util.LocalPlayer.Health, (float)Util.LocalPlayer.TimeUntilRespawn, Util.LocalPlayer.IsAlive);
+    }
+
+}

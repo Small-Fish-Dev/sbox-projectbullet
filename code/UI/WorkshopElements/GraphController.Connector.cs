@@ -1,6 +1,6 @@
 ﻿using ProjectBullet.Core.Node;
 
-namespace ProjectBullet.UI.Workshop;
+namespace ProjectBullet.UI.WorkshopElements;
 
 public partial class GraphController
 {
@@ -15,8 +15,6 @@ public partial class GraphController
 		public GraphNodeOut Element;
 		public readonly ConnectorAttribute Attribute;
 		public virtual string Identifier => Attribute.Identifier;
-
-		public float? LastEstimatedEnergyOutput;
 
 		public GraphController Root => Parent.Root;
 
@@ -57,11 +55,8 @@ public partial class GraphController
 			}
 		}
 
-		public virtual float? EstimateEnergyOutput()
-		{
-			LastEstimatedEnergyOutput = Parent.Instance.EstimateConnectorOutput( Identifier, Root.NodeExecutor, true );
-			return LastEstimatedEnergyOutput;
-		}
+		public virtual float? EstimateConnectorOutput() =>
+			Parent.Instance.EstimateConnectorOutput( Identifier, Root.NodeExecutor, true );
 
 		public Connector( Node parent, ConnectorAttribute attribute )
 		{
@@ -82,11 +77,7 @@ public partial class GraphController
 		public override string DisplayName => "On Entry";
 		public override string Identifier => "on_entry";
 
-		public override float? EstimateEnergyOutput()
-		{
-			LastEstimatedEnergyOutput = Root.NodeExecutor.MaxEnergy;
-			return LastEstimatedEnergyOutput;
-		}
+		public override float? EstimateConnectorOutput() => Root.NodeExecutor.MaxEnergy;
 
 		public EntryConnector( Node parent ) : base( parent )
 		{

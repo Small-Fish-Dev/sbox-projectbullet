@@ -1,0 +1,38 @@
+﻿@using System.Linq
+@using ProjectBullet.MapEnts
+@using ProjectBullet.UI.HudElements
+@using Sandbox
+@namespace ProjectBullet.UI 
+@inherits Sandbox.UI.Panel;
+
+<style>
+    Hud {
+        width: 100%; height: 100%;
+        position: absolute;
+
+        z-index: 3;
+        pointer-events: none;   
+    }
+</style>
+
+<root>
+    <Crosshair></Crosshair>
+
+    @foreach (var moneyArea in Entity.All.OfType<MoneyArea>())
+    {
+        <MoneyAreaMarker MoneyArea=@moneyArea></MoneyAreaMarker>
+    }
+
+    <Person></Person>
+
+    <Health></Health>
+
+    <Money></Money>
+    
+    <DeathFeed @ref=DeathFeed></DeathFeed>
+</root>
+
+@code {
+    public Health Health { get; set; }
+    public DeathFeed DeathFeed { get; set; }
+}

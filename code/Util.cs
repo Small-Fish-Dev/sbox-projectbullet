@@ -13,20 +13,20 @@ public static class Util
 	public static Core.PersistentData LocalPersistent => LocalPlayer.Persistent;
 	public static Core.PlayerTeam LocalTeam => LocalPlayer.Team;
 
-	private static HudView _hudView;
+	private static Hud _hud;
 
-	public static HudView Hud
+	public static Hud Hud
 	{
 		get
 		{
-			if ( _hudView != null )
+			if ( _hud != null )
 			{
-				return _hudView;
+				return _hud;
 			}
 
 			CreateHud( Game.RootPanel );
 
-			return _hudView;
+			return _hud;
 		}
 	}
 
@@ -34,15 +34,52 @@ public static class Util
 	{
 		Game.AssertClient();
 
-		if ( _hudView != null )
+		if ( _hud != null )
 		{
 			return;
 		}
 
-		_hudView = rootPanel.AddChild<HudView>();
-		if ( _hudView != null )
+		_hud = rootPanel.AddChild<Hud>();
+		if ( _hud != null )
 		{
 			Log.Info( "Created local HUD" );
+		}
+	}
+
+	public static Workshop Workshop { get; private set; }
+	public static bool IsWorkshopOpen;
+	public static string WorkshopOpenClass => IsWorkshopOpen ? "workshop-open" : "workshop-closed";
+	public static void ToggleWorkshop( RootPanel rootPanel )
+	{
+		Game.AssertClient();
+
+		if ( Workshop != null )
+		{
+			IsWorkshopOpen = false;
+			Hud.StateHasChanged();
+			foreach (var child in Hud.Children)
+			{
+				child.StateHasChanged();
+			}
+			Workshop.Delete();
+			Workshop = null;
+			_hud?.RemoveClass( "workshop-open" );
+			return;
+		}
+
+		Workshop = rootPanel.AddChild<Workshop>();
+		if ( Workshop == null )
+		{
+			return;
+		}
+
+		Log.Info( "Created local workshop" );
+		_hud?.AddClass( "workshop-open" );
+		IsWorkshopOpen = true;
+		Hud.StateHasChanged();
+		foreach (var child in Hud.Children)
+		{
+			child.StateHasChanged();
 		}
 	}
 

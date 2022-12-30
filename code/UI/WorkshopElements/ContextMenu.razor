@@ -1,0 +1,96 @@
+﻿@namespace ProjectBullet.UI.WorkshopElements
+@using ProjectBullet.MapEnts
+@using Sandbox
+@using Sandbox.UI
+@using ProjectBullet.UI.Helpers
+@inherits Draggable;
+
+<style>
+    ContextMenu {
+        position: absolute;
+
+        font-family: Inter;
+        font-weight: normal;
+        color: white;      
+        opacity: 1;
+        
+        transition: transform 0.2s ease-out, opacity 0.2s ease-out, filter 0.23s ease, background-color 0.40s ease-in-out;
+        transform-origin: top left;
+
+        transform: rotateY(0deg) rotateZ(0deg);
+
+        &:outro {
+            opacity: 0;
+        }
+    
+        &:intro {
+            transform: rotateX(-26deg) rotateY(70deg) rotateZ(30deg) translateY(70px) translateZ(40px);
+            filter: blur(5);
+            opacity: 0;
+        }
+        
+        .container {
+            min-width: 850px;
+            min-height: 600px;
+            
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            
+            padding: 20px;
+        }
+    }
+</style>
+
+<root>
+    <Corner thickness="2" length="15" class="list">
+        <div class="container">
+            <div style="font-size: 30px; font-weight: bolder">items</div>
+        </div>
+    </Corner>
+</root>
+
+@code {
+    private static float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
+    private Vector2 _startPosition;
+    private bool _hasBeenMoved;
+
+    public ContextMenu()
+    {
+        _startPosition = Game.RootPanel.MousePosition;
+    }
+
+    private void UpdatePosition()
+    {
+        if (_hasBeenMoved)
+        {
+            return;
+        }
+        
+        var position = _startPosition;
+
+        position.x -= Box.Rect.Width / 2;
+        position.y -= Box.Rect.Height / 2;
+
+        position *= RootScaleFromScreen;
+
+        Style.Left = Length.Pixels(position.x); // set panel position!
+        Style.Top = Length.Pixels(position.y);
+    }
+
+    public override void UpdateHold(Vector2 position, Vector2 holdPoint)
+    {
+        base.UpdateHold(position, holdPoint);
+
+        _hasBeenMoved = true;
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        UpdatePosition();
+
+        StateHasChanged();
+    }
+
+}

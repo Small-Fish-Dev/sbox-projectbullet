@@ -1,0 +1,23 @@
+﻿@import "/UI/Constants.scss";
+
+Money {
+    position: absolute;
+    left: 0; bottom: 0;
+    
+    font-family: $generic-font-family;
+    font-weight: bold;
+    color: white;
+
+    Corner {
+        padding: 20px;
+        transition: all $hide-transition-time ease-in-out;
+
+        font-size: 30px;
+        left: 30px; bottom: 120px;
+        
+        &.workshop-open {
+            font-size: 35px;
+            left: 20px; bottom: 20px;
+        }
+    }
+}

@@ -29,7 +29,7 @@ public class Jumping : PlayerMechanic
 			return;
 		}
 
-		Velocity = Velocity.WithZ( Velocity.z + 250f * 1.0f );
+		Velocity = Velocity.WithZ( Velocity.z + 250f * 3.0f );
 		Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 
 		Controller.GetMechanic<Walking>()

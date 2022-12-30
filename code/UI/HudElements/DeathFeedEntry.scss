@@ -1,0 +1,31 @@
+﻿@import "/UI/Constants.scss";
+
+DeathFeedEntry {
+    font-size: 17px;
+
+    color: black;
+
+    transition: all $death-entry-transition-time ease-in-out;
+    opacity: 1.0;
+
+    font-family: $generic-font-family;
+    font-weight: bold;
+
+    margin-bottom: 3px;
+
+    &:intro {
+        opacity: 0.0;
+    }
+
+    &:outro {
+        opacity: 0.0;
+        height: 0;
+        padding: 0;
+        margin-bottom: 0;
+    }
+
+    .message {
+        padding: 5px 15px 5px 15px;
+        background-color: white;
+    }
+}

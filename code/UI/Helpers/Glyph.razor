@@ -1,14 +1,14 @@
 ﻿@using System
 @using Sandbox
 @using Sandbox.UI
-@namespace ProjectBullet.UI
+@namespace ProjectBullet.UI.Helpers
 @inherits Sandbox.UI.Panel;
 
 @code {
     private Image Image { get; set; }
     private InputGlyphSize ButtonSize { get; set; } = InputGlyphSize.Medium;
     private InputButton Button { get; set; } = 0;
-    public bool HasButton => Button != 0;
+    private bool HasButton => Button != 0;
 
     public override void SetProperty(string name, string value)
     {
@@ -49,12 +49,10 @@
         }
 
         Image.Texture = Input.GetGlyph(Button, ButtonSize, GlyphStyle.Knockout);
-        Image.Style.Height = Image.ComputedStyle != null ? Image.ComputedStyle.FontSize ?? Image.Texture.Height : Image.Texture.Height;
-        Image.Style.AspectRatio = (float)Image.Texture.Width / (Image.Texture.Height * 1.01f);
+        Image.Style.Height = Image.ComputedStyle != null ? Image.ComputedStyle.FontSize ?? Image.Texture.Height : 0;
+        Image.Style.AspectRatio = Image.Texture.Width / (Image.Texture.Height * 1.01f);
     }
 
 }
 
-<root>
-    <image style="align-items: center; justify-content: center;" @ref="Image"/>
-</root>
+<root> <image style="align-items: center; justify-content: center;" @ref="Image"/> </root>
