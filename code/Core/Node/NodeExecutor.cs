@@ -44,8 +44,7 @@ public partial class NodeExecutor : Entity
 	[Net, Predicted] public TimeUntil TimeUntilAction { get; private set; }
 	[Net, Predicted] public bool IsReloading { get; set; }
 	
-	public float? LastEditorX = null;
-	public float? LastEditorY = null;
+	public Vector2? LastEditorPos = null;
 
 	public override void Spawn()
 	{

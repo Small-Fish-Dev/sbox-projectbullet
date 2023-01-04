@@ -57,8 +57,7 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	[Net] private WeaponNode Previous { get; set; }
 	[Net] private string PreviousConnectorId { get; set; } // this is because BaseNetworkable exchanging sucks
 
-	public float? LastEditorX = null;
-	public float? LastEditorY = null;
+	public Vector2? LastEditorPos = null;
 
 	public float EnergyUsage => Description?.EnergyAttribute?.Energy ?? 0;
 

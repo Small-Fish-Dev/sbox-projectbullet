@@ -55,16 +55,6 @@ public partial class GraphVisualizer : Panel
 			return;
 		}
 
-		if ( ContextMenu != null )
-		{
-			var ctx = (ContextMenu)e.Target.AncestorsAndSelf.SingleOrDefault( v => v is ContextMenu );
-			if ( ctx == null || _mouseDownTarget != null )
-			{
-				ContextMenu.Delete();
-				ContextMenu = null;
-			}
-		}
-
 		switch ( e.Target )
 		{
 			case GraphNodeOut { IsConnected: false } output:

@@ -16,25 +16,25 @@
 </style>
 
 <root>
-    <Crosshair></Crosshair>
+	<Crosshair></Crosshair>
 
-    @foreach (var moneyArea in Entity.All.OfType<MoneyArea>())
-    {
-        <MoneyAreaMarker MoneyArea=@moneyArea></MoneyAreaMarker>
-    }
+	@foreach ( var moneyArea in Entity.All.OfType<MoneyArea>() )
+	{
+		<MoneyAreaMarker MoneyArea=@moneyArea></MoneyAreaMarker>
+	}
 
-    <Person></Person>
+	<Person></Person>
 
-    <Health></Health>
+	<Health></Health>
 
-    <Money></Money>
-    
-    <WorkshopIndicator></WorkshopIndicator>
-    
-    <DeathFeed @ref=DeathFeed></DeathFeed>
+	<Money></Money>
+
+	<WorkshopIndicator></WorkshopIndicator>
+
+	<DeathFeed @ref=DeathFeed></DeathFeed>
 </root>
 
 @code {
-    public Health Health { get; set; }
-    public DeathFeed DeathFeed { get; set; }
+	public Health Health { get; set; }
+	public DeathFeed DeathFeed { get; set; }
 }

@@ -37,71 +37,71 @@
 
 @code {
 
-    public GraphNode Node { get; set; }
-    public GraphController.Node NodeData => Node.Data;
-    public GraphController Controller => NodeData.Root;
+	public GraphNode Node { get; set; }
+	public GraphController.Node NodeData => Node.Data;
+	public GraphController Controller => NodeData.Root;
 
-    public bool IsConnected => NodeData.IsConnected;
-    public bool IsHovered;
-    public bool IsHoveredIncorrectly;
-    public bool IsLinking;
+	public bool IsConnected => NodeData.IsConnected;
+	public bool IsHovered;
+	public bool IsHoveredIncorrectly;
+	public bool IsLinking;
 
-    private string ClassString
-    {
-        get
-        {
-            var output = "";
-            if (IsConnected)
-            {
-                output += "connected ";
-            }
-            
-            if (IsHovered)
-            {
-                output += "hovered ";
-            }
-            
-            if (IsHoveredIncorrectly)
-            {
-                output += "hovered-invalid ";
-            }
-            
-            if (IsLinking)
-            {
-                output += "linking ";
-            }
+	private string ClassString
+	{
+		get
+		{
+			var output = "";
+			if ( IsConnected )
+			{
+				output += "connected ";
+			}
 
-            return output;
-        }
-    }
-    
-    protected override void OnAfterTreeRender(bool firstTime)
-    {
-        base.OnAfterTreeRender(firstTime);
+			if ( IsHovered )
+			{
+				output += "hovered ";
+			}
 
-        if (firstTime)
-        {
-            NodeData.InputElement = this;
-        }
-    }
+			if ( IsHoveredIncorrectly )
+			{
+				output += "hovered-invalid ";
+			}
 
-    public override void Delete(bool immediate = false)
-    {
-        base.Delete(immediate);
+			if ( IsLinking )
+			{
+				output += "linking ";
+			}
 
-        NodeData.InputElement = null;
-    }
+			return output;
+		}
+	}
 
-    protected override void OnRightClick(MousePanelEvent e)
-    {
-        base.OnRightClick(e);
+	protected override void OnAfterTreeRender( bool firstTime )
+	{
+		base.OnAfterTreeRender( firstTime );
 
-        if (NodeData.IsConnected)
-        {
-            NodeData.Previous.Disconnect();
-        }
+		if ( firstTime )
+		{
+			NodeData.InputElement = this;
+		}
+	}
 
-        e.StopPropagation();
-    }
+	public override void Delete( bool immediate = false )
+	{
+		base.Delete( immediate );
+
+		NodeData.InputElement = null;
+	}
+
+	protected override void OnRightClick( MousePanelEvent e )
+	{
+		base.OnRightClick( e );
+
+		if ( NodeData.IsConnected )
+		{
+			NodeData.Previous.Disconnect();
+		}
+
+		e.StopPropagation();
+	}
 
 }

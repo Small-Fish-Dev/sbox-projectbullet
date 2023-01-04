@@ -9,77 +9,75 @@
 
 @code {
 
-    public WeaponNode WeaponNode { get; set; }
+	public WeaponNode WeaponNode { get; set; }
 
-    // i don't want this! i want individual labels!
-    private string _contents;
-    
-    protected override void OnAfterTreeRender(bool firstTime)
-    {
-        base.OnAfterTreeRender(firstTime);
+	// i don't want this! i want individual labels!
+	private string _contents;
 
-        if (!firstTime)
-        {
-            return;
-        }
+	protected override void OnAfterTreeRender( bool firstTime )
+	{
+		base.OnAfterTreeRender( firstTime );
 
-        var usageInfo = WeaponNode.Description.NodeAttribute.UsageInfo;
-        var buffer = "";
+		if ( !firstTime )
+		{
+			return;
+		}
 
-        _contents = "";
-        
-        foreach (var c in usageInfo)
-        {
-            switch (c)
-            {
-                case '<':
-                    AddText(buffer);
-                    buffer = "";
-                    continue;
-                case '>':
-                {
-                    var valueAttribute = WeaponNode.Description.ValueAttributes.SingleOrDefault(v => v.Identifier == buffer);
-                    if (valueAttribute == null)
-                    {
-                        Log.Warning($"Value attribute with identifier {buffer} not found");
-                        AddText($"<unknown {buffer}>");
-                    }
-                    else
-                    {
-                        AddValue(valueAttribute);
-                    }
+		var usageInfo = WeaponNode.Description.NodeAttribute.UsageInfo;
+		var buffer = "";
 
-                    buffer = "";
-                    continue;
-                }
-                default:
-                    buffer += c;
-                    break;
-            }
-        }
+		_contents = "";
 
-        AddText(buffer);
+		foreach ( var c in usageInfo )
+		{
+			switch ( c )
+			{
+				case '<':
+					AddText( buffer );
+					buffer = "";
+					continue;
+				case '>':
+					{
+						var valueAttribute = WeaponNode.Description.ValueAttributes.SingleOrDefault( v => v.Identifier == buffer );
+						if ( valueAttribute == null )
+						{
+							Log.Warning( $"Value attribute with identifier {buffer} not found" );
+							AddText( $"<unknown {buffer}>" );
+						}
+						else
+						{
+							AddValue( valueAttribute );
+						}
 
-        Add.Label(_contents);
-    }
+						buffer = "";
+						continue;
+					}
+				default:
+					buffer += c;
+					break;
+			}
+		}
 
-    private void AddText(string text)
-    {
-        _contents += text;
-    }
+		AddText( buffer );
 
-    private void AddValue(ValueAttribute valueAttribute)
-    {
-        if (valueAttribute.IsPercentage)
-        {
-            //Add.Label($"{valueAttribute.Percentage * 100}%", "percentage");
-            _contents += $"{valueAttribute.Percentage * 100}%";
-        }
-        else if (valueAttribute.IsAbsolute)
-        {
-            //Add.Label($"{valueAttribute.Absolute}", "absolute");
-            _contents += $"{valueAttribute.Absolute}";
-        }
-    }
+		Add.Label( _contents );
+	}
+
+	private void AddText( string text )
+	{
+		_contents += text;
+	}
+
+	private void AddValue( ValueAttribute valueAttribute )
+	{
+		if ( valueAttribute.IsPercentage )
+		{
+			_contents += $"{valueAttribute.Percentage * 100}%";
+		}
+		else if ( valueAttribute.IsAbsolute )
+		{
+			_contents += $"{valueAttribute.Absolute}";
+		}
+	}
 
 }

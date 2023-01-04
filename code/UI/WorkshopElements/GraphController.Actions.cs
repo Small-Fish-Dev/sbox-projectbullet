@@ -320,15 +320,13 @@ public partial class GraphController
 			switch ( _target )
 			{
 				case NodeExecutor nodeExecutor:
-					nodeExecutor.LastEditorX = _endPosition.x;
-					nodeExecutor.LastEditorY = _endPosition.y;
+					nodeExecutor.LastEditorPos = _endPosition;
 
 					root.Entry.Element.UpdateHold( _endPosition, Vector2.One );
 					break;
 				case WeaponNode node:
 					{
-						node.LastEditorX = _endPosition.x;
-						node.LastEditorY = _endPosition.y;
+						node.LastEditorPos = _endPosition;
 
 						var nodeData = root.GetNodeByEntity( node );
 						if ( nodeData == null )

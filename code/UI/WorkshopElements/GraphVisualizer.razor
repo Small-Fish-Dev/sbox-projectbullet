@@ -16,56 +16,42 @@
 </root>
 
 @code {
-    public ContextMenu ContextMenu;
+	public GraphController Controller { get; set; }
 
-    public GraphController Controller { get; set; }
+	public GraphVisualizer()
+	{
+		// this sucks a bit but it's OK - we need it for Ctrl-Z / Ctrl-Y
+		AcceptsFocus = true;
+		InputFocus.Set( this );
+	}
 
-    public GraphVisualizer()
-    {
-    // this sucks a bit but it's OK - we need it for Ctrl-Z / Ctrl-Y
-        AcceptsFocus = true;
-        InputFocus.Set(this);
-    }
+	public override void Delete( bool immediate = false )
+	{
+		base.Delete( immediate );
 
-    public override void Delete(bool immediate = false)
-    {
-        base.Delete(immediate);
+		Controller?.Switch( null );
+	}
 
-        Controller?.Switch(null);
-    }
+	public override void OnButtonTyped( string button, KeyModifiers km )
+	{
+		base.OnButtonTyped( button, km );
 
-    protected override void OnRightClick(MousePanelEvent e)
-    {
-        base.OnRightClick(e);
+		// we have focus so binds won't do anything, we need to check for toggle button ourselves
+		if ( button == Input.GetButtonOrigin( InputButton.View ) )
+		{
+			Util.ToggleWorkshop( Game.RootPanel );
+			return;
+		}
 
-        if (ContextMenu == null)
-        {
-            ContextMenu = new ContextMenu();
-            AddChild(ContextMenu);
-        }
-    }
-
-    public override void OnButtonTyped(string button, KeyModifiers km)
-    {
-        base.OnButtonTyped(button, km);
-
-    // we have focus so binds won't do anything, we need to check for toggle button ourselves
-        if (button == Input.GetButtonOrigin(InputButton.View))
-        {
-            Util.ToggleWorkshop(Game.RootPanel);
-            return;
-        }
-
-        switch (button)
-        {
-            case "z" when km.Ctrl:
-                Controller.PerformUndo();
-                ;
-                break;
-            case "y" when km.Ctrl:
-                Controller.PerformRedo();
-                break;
-        }
-    }
+		switch ( button )
+		{
+			case "z" when km.Ctrl:
+				Controller.PerformUndo();
+				break;
+			case "y" when km.Ctrl:
+				Controller.PerformRedo();
+				break;
+		}
+	}
 
 }

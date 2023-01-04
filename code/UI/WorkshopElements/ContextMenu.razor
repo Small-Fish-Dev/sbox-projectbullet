@@ -8,65 +8,64 @@
 @using Sandbox.UI
 @using ProjectBullet.UI.Helpers
 @inherits Sandbox.UI.Panel
-@attribute [StyleSheet("/UI/WorkshopElements/ContextMenu.scss")]
+@attribute [StyleSheet( "/UI/WorkshopElements/ContextMenu.scss" )]
 
 @code {
 
-    static IEnumerable<NodeExecutor> SwitchCandidates => Util.LocalPlayer.NodeExecutors.Where(v => v != Util.Workshop.Controller.NodeExecutor);
-    
+	static IEnumerable<NodeExecutor> SwitchCandidates => Util.LocalPlayer.NodeExecutors.Where( v => v != Util.Workshop.Controller.NodeExecutor );
+
 }
 
 <root>
-    <div class="container">
-        <div class="header">
-            
-        </div>
-    </div>
+	<div class="container">
+		<div class="header">
+
+		</div>
+	</div>
 </root>
 
 @code {
 
-    private Panel NavPanel { get; set; }
-    
-    enum CurrentPage
-    {
-        Inventory = 0,
-        Shop
-    }
+	private Panel NavPanel { get; set; }
 
-    private CurrentPage _currentPage = CurrentPage.Inventory;
+	enum CurrentPage
+	{
+		Inventory = 0,
+		Shop
+	}
 
-    private void ChangePage(object eventObject)
-    {
-        var e = (MousePanelEvent)eventObject;
+	private CurrentPage _currentPage = CurrentPage.Inventory;
 
-        var target = e.This;
+	private void ChangePage( object eventObject )
+	{
+		var e = (MousePanelEvent)eventObject;
 
-        Log.Info(target);
+		var target = e.This;
 
-        var page = GetElementPageValue(target);
+		var page = GetElementPageValue( target );
 
-        if (page == null)
-        {
-            return;
-        }
+		if ( page == null )
+		{
+			return;
+		}
 
-        _currentPage = page.Value;
+		_currentPage = page.Value;
 
-        foreach (var child in NavPanel.Children)
-        {
-            child.SetClass("selected", GetElementPageValue(child) == page);
-        }
-    }
+		foreach ( var child in NavPanel.Children )
+		{
+			child.SetClass( "selected", GetElementPageValue( child ) == page );
+		}
+	}
 
-    private static CurrentPage? GetElementPageValue(Panel panel)
-    {
-        var attribute = panel.GetAttribute("page");
-        if (attribute == null)
-        {
-            return null;
-        }
+	private static CurrentPage? GetElementPageValue( Panel panel )
+	{
+		var attribute = panel.GetAttribute( "page" );
+		if ( attribute == null )
+		{
+			return null;
+		}
 
-        return Enum.Parse<CurrentPage>(attribute, true);
-    }
+		return Enum.Parse<CurrentPage>( attribute, true );
+	}
+
 }

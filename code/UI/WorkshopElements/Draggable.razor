@@ -5,75 +5,75 @@
 @inherits Sandbox.UI.Panel
 
 @code {
-    private Vector2 _velocity = Vector2.Zero;
-    private Vector2 _lastPosition = Vector2.Zero;
-    private Vector2 _holdPoint = Vector2.Zero;
-    private bool _held;
-    protected bool InitialTransitionComplete { get; private set; }
+	private Vector2 _velocity = Vector2.Zero;
+	private Vector2 _lastPosition = Vector2.Zero;
+	private Vector2 _holdPoint = Vector2.Zero;
+	private bool _held;
+	protected bool InitialTransitionComplete { get; private set; }
 
-    protected virtual float XYMultiplier => -3.3f;
-    protected virtual float ZMultiplier => 0.3f;
+	private static float XyMultiplier => -3.3f;
+	private static float ZMultiplier => 0.3f;
 
-    private static float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
+	private static float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
 
-    public virtual bool ShouldDrag(MousePanelEvent e) => true;
+	public virtual bool ShouldDrag( MousePanelEvent e ) => true;
 
-    protected override void OnMouseUp(MousePanelEvent e)
-    {
-        base.OnMouseUp(e);
+	protected override void OnMouseUp( MousePanelEvent e )
+	{
+		base.OnMouseUp( e );
 
-        _held = false;
-    }
+		_held = false;
+	}
 
-    public virtual void UpdateHold(Vector2 position, Vector2 holdPoint)
-    {
-        _holdPoint = holdPoint;
+	public virtual void UpdateHold( Vector2 position, Vector2 holdPoint )
+	{
+		_holdPoint = holdPoint;
 
-        if (_held)
-        {
-            _velocity += (position - _lastPosition) * 0.02f;
-        }
+		if ( _held )
+		{
+			_velocity += (position - _lastPosition) * 0.02f;
+		}
 
-        _velocity = _velocity.Clamp(-10, 10);
+		_velocity = _velocity.Clamp( -10, 10 );
 
-        Style.Left = Length.Pixels(position.x * RootScaleFromScreen); // set panel position!
-        Style.Top = Length.Pixels(position.y * RootScaleFromScreen);
+		Style.Left = Length.Pixels( position.x * RootScaleFromScreen ); // set panel position!
+		Style.Top = Length.Pixels( position.y * RootScaleFromScreen );
 
-        _lastPosition = position;
+		_lastPosition = position;
 
-        _held = true;
-    }
+		_held = true;
+	}
 
-    public override void Tick()
-    {
-        base.Tick();
+	public override void Tick()
+	{
+		base.Tick();
 
-        if (InitialTransitionComplete)
-        {
-            _velocity = Vector2.Lerp(_velocity, Vector2.Zero, Time.Delta * 10.0f);
+		if ( InitialTransitionComplete )
+		{
+			_velocity = Vector2.Lerp( _velocity, Vector2.Zero, Time.Delta * 10.0f );
 
-    /* !! beware !!
+	/* !! beware !!
              * there are a bunch of constants in here and UpdateHold
              * this stuff is just based on what I think feels right as it'd be a pain to actually do the calculations
              */
 
-            Style.TransformOriginX = Length.Fraction(_holdPoint.x / Box.Rect.Width);
-            Style.TransformOriginY = Length.Fraction(_holdPoint.y / Box.Rect.Height);
+			Style.TransformOriginX = Length.Fraction( _holdPoint.x / Box.Rect.Width );
+			Style.TransformOriginY = Length.Fraction( _holdPoint.y / Box.Rect.Height );
 
-            var transform = new PanelTransform();
-            transform.AddRotation(_velocity.y * XYMultiplier, -_velocity.x * XYMultiplier, _velocity.x * _velocity.y * ZMultiplier);
+			var transform = new PanelTransform();
+			transform.AddRotation( _velocity.y * XyMultiplier, -_velocity.x * XyMultiplier, _velocity.x * _velocity.y * ZMultiplier );
 
-            Style.Transform = transform;
+			Style.Transform = transform;
 
-            StateHasChanged();
-        }
-        else
-        {
-            if (!HasActiveTransitions)
-            {
-                InitialTransitionComplete = true;
-            }
-        }
-    }
+			StateHasChanged();
+		}
+		else
+		{
+			if ( !HasActiveTransitions )
+			{
+				InitialTransitionComplete = true;
+			}
+		}
+	}
 
 }
