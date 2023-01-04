@@ -4,11 +4,10 @@
 @using System.Linq
 @using ProjectBullet.Core.Node
 @using ProjectBullet.Core.Shop
-@using ProjectBullet.MapEnts
 @using Sandbox
 @using Sandbox.UI
 @using ProjectBullet.UI.Helpers
-@inherits Draggable;
+@inherits Sandbox.UI.Panel
 @attribute [StyleSheet("/UI/WorkshopElements/ContextMenu.scss")]
 
 @code {
@@ -18,82 +17,17 @@
 }
 
 <root>
-    <!--<Corner thickness="2" length="35" class="list">-->
-    <div class="container" can-drag>
-        <div style="background-color: green; font-size: 20px; margin-bottom: 10px">Debug menu - This menu isn't final.</div>
-        <Corner class="edit" style="margin-bottom: 10px">
-            <div class="heading">edit...</div>
-            <div class="button" style="aspect-ratio: 1" onclick=@(() => Util.Workshop.Controller.PerformUndo())>↶</div>
-            <div class="button" style="aspect-ratio: 1" onclick=@(() => Util.Workshop.Controller.PerformRedo())>↷</div>
-
-            @if (SwitchCandidates.Any())
-            {
-                <div class="heading">switch...</div>
-
-                @foreach (var executor in SwitchCandidates)
-                {
-                    <div class="button" onclick=@(() => { Util.Workshop.Controller.Switch(executor); })>@executor.DisplayName</div>
-                }
-            }
-        </Corner>
-        <div class="nav" @ref=NavPanel onclick=@((object e) => { Log.Info(e); }) can-drag>
-            <div class="button selected" page=@CurrentPage.Inventory onclick=@ChangePage>inventory</div>
-            <div class="button" page=@CurrentPage.Shop onclick=@ChangePage>shop</div>
+    <div class="container">
+        <div class="header">
+            
         </div>
-        <!--<Corner thickness="3" length="15" class="list">-->
-        <div class="content">
-            @switch (_currentPage)
-            {
-                case CurrentPage.Inventory:
-                    <div class="inventory" can-drag>
-                        @foreach (var item in Util.Workshop.Controller.GraphInventory)
-                        {
-                            <div class="item">
-                                <div class="button" onclick=@(() => { Util.Workshop.Controller.PerformAction(new GraphController.AddNodeToGraphAction(item), true); })>
-                                    @item.Description.NodeAttribute.DisplayName
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    break;
-                case CurrentPage.Shop:
-                    <div class="shop" can-drag>
-                        @foreach (var item in ShopHostEntity.Instance.Stock)
-                        {
-                            if (item.Description is not WeaponNodeDescription wnd)
-                            {
-                                continue;
-                            }
-
-                            var expensiveClass = item.Price > Util.LocalPersistent.Money ? "expensive" : "";
-
-                            <div class="item @expensiveClass" onclick=@(() => { Util.Workshop.Controller.PerformAction(new GraphController.BuyItemAction(item), true); })>
-                                <div class="header">@wnd.NodeAttribute.DisplayName</div>
-                                <div class="description">@wnd.NodeAttribute.UsageInfo</div>
-                                <div class="money @expensiveClass">🪙@item.Price</div>
-                            </div>
-                        }
-                    </div>
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        </div>
-        <!--</Corner>-->
     </div>
-    <!--</Corner>-->
 </root>
 
 @code {
 
     private Panel NavPanel { get; set; }
-
-    private readonly Vector2 _startPosition;
-    private bool _hasBeenMoved;
-
-    protected override float XYMultiplier => -1.0f;
-    protected override float ZMultiplier => 0.10f;
-
+    
     enum CurrentPage
     {
         Inventory = 0,
@@ -135,41 +69,4 @@
 
         return Enum.Parse<CurrentPage>(attribute, true);
     }
-
-    public ContextMenu()
-    {
-        _startPosition = Game.RootPanel.MousePosition;
-    }
-
-    public override bool ShouldDrag(MousePanelEvent e)
-    {
-        return e.Target == this || e.Target.GetAttribute("can-drag") != null;
-    }
-
-    public override void UpdateHold(Vector2 position, Vector2 holdPoint)
-    {
-        base.UpdateHold(position, holdPoint);
-        _hasBeenMoved = true;
-    }
-
-    public override void Tick()
-    {
-        base.Tick();
-
-        if (!_hasBeenMoved)
-        {
-            var position = _startPosition;
-
-            position.x -= Box.Rect.Width / 2;
-            position.y -= Box.Rect.Height / 2;
-
-            position *= Game.RootPanel.ScaleFromScreen;
-
-            Style.Left = Length.Pixels(position.x); // set panel position!
-            Style.Top = Length.Pixels(position.y);
-        }
-
-        StateHasChanged();
-    }
-
 }

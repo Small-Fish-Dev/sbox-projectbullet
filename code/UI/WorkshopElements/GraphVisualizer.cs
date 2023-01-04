@@ -9,6 +9,7 @@ public partial class GraphVisualizer : Panel
 {
 	private object _mouseDownTarget;
 	private Vector2 _holdPoint;
+	private Vector2 _holdStartPos;
 	private bool _makingInvalidConnection;
 
 	private static bool CheckHover( Panel target ) => target.Box.Rect.IsInside( Game.RootPanel.MousePosition );
@@ -87,6 +88,7 @@ public partial class GraphVisualizer : Panel
 
 		Style.Cursor = "none";
 		_mouseDownTarget = draggable;
+		_holdStartPos = draggable.Box.Rect.TopLeft;
 		_holdPoint = Util.Workshop.MousePosition - draggable.Box.Rect.TopLeft;
 	}
 
@@ -96,31 +98,47 @@ public partial class GraphVisualizer : Panel
 
 		Style.Cursor = "inherit";
 
-		if ( _mouseDownTarget is GraphNodeOut output )
+		switch (_mouseDownTarget)
 		{
-			foreach ( var child in e.This.Descendants )
-			{
-				if ( child is not GraphNodeIn input )
+			case GraphNode node when node.Data == Controller.Entry:
+				Controller.PerformAction(
+					new GraphController.SetNodeLocationAction( Controller.NodeExecutor, _holdStartPos,
+						node.Box.Rect.TopLeft - Box.Rect.TopLeft ),
+					true );
+				break;
+			case GraphNode node:
+				Controller.PerformAction(
+					new GraphController.SetNodeLocationAction( node.Data.Instance, _holdStartPos,
+						node.Box.Rect.TopLeft - Box.Rect.TopLeft ),
+					true );
+				break;
+			case GraphNodeOut output:
 				{
-					continue;
-				}
-
-				if ( input.IsHovered && !input.IsHoveredIncorrectly )
-				{
-					if ( input.IsConnected )
+					foreach ( var child in e.This.Descendants )
 					{
-						input.NodeData.Previous?.Disconnect();
+						if ( child is not GraphNodeIn input )
+						{
+							continue;
+						}
+
+						if ( input.IsHovered && !input.IsHoveredIncorrectly )
+						{
+							if ( input.IsConnected )
+							{
+								input.NodeData.Previous?.Disconnect();
+							}
+
+							output.Connector.ConnectTo( input.NodeData );
+							input.Node.StateHasChanged();
+						}
+
+						input.IsHovered = false;
+						input.IsHoveredIncorrectly = false;
 					}
 
-					output.Connector.ConnectTo( input.NodeData );
-					input.Node.StateHasChanged();
+					output.IsLinking = false;
+					break;
 				}
-
-				input.IsHovered = false;
-				input.IsHoveredIncorrectly = false;
-			}
-
-			output.IsLinking = false;
 		}
 
 		_makingInvalidConnection = false;

@@ -3,59 +3,47 @@
 
 ContextMenu {
     position: absolute;
+    top: 0; right: 0;
 
+    height: 100%;
+    
     opacity: 1;
 
     z-index: 10;
 
-    transition: transform 0.14s ease-out,
-    opacity 0.2s ease-out,
-    filter 0.23s ease,
-    background-color 0.40s ease-in-out,
-    left 0.12s ease-out, top 0.12s ease-out;
-
-    transform: rotateY(0deg) rotateZ(0deg);
-
-    border: 2px solid white;
-
+    transition: opacity 0.2s ease-out;
+    
     &:outro {
         opacity: 0;
     }
 
     &:intro {
-        transform: rotateX(-26deg) rotateY(70deg) rotateZ(30deg) translateY(70px) translateZ(40px);
-        filter: blur(5);
         opacity: 0;
     }
 
     .container {
-        min-width: 100px;
-        min-height: 100px;
+        min-width: 400px;
 
-        background-color: rgba(0, 0, 0, 0.8);
-        color: #ececec;
+        background-color: black;
 
-        padding: 20px;
-
+        border: 2px solid $generic-font-on-bright-color;
+        
         flex-direction: column;
+      
+        .header {
+            width: 100%;
+            height: 80px;
 
-        .edit {
-            padding: 10px;
-            transition: all $hide-transition-time ease-in-out;
-
-            align-items: center;
-
+            background-color: $generic-font-on-dark-color;
+            color: $generic-font-on-bright-color;
+            
             font-family: $generic-font-family;
-
-            .heading {
-                font-size: 25px;
-
-                margin-right: 7px;
-
-                &:not(:first-child) {
-                    margin-left: 10px;
-                }
-            }
+            font-weight: bold;
+            font-size: 40px;
+            
+            padding: 20px;
+            
+            align-items: center;
         }
 
         .nav {

@@ -1,0 +1,85 @@
+﻿@using System.Linq
+@using ProjectBullet.Core.Node
+@using Sandbox.UI.Construct
+@inherits Sandbox.UI.Panel
+
+<style>
+    GraphNodeUsageInfo {}
+</style>
+
+@code {
+
+    public WeaponNode WeaponNode { get; set; }
+
+    // i don't want this! i want individual labels!
+    private string _contents;
+    
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (!firstTime)
+        {
+            return;
+        }
+
+        var usageInfo = WeaponNode.Description.NodeAttribute.UsageInfo;
+        var buffer = "";
+
+        _contents = "";
+        
+        foreach (var c in usageInfo)
+        {
+            switch (c)
+            {
+                case '<':
+                    AddText(buffer);
+                    buffer = "";
+                    continue;
+                case '>':
+                {
+                    var valueAttribute = WeaponNode.Description.ValueAttributes.SingleOrDefault(v => v.Identifier == buffer);
+                    if (valueAttribute == null)
+                    {
+                        Log.Warning($"Value attribute with identifier {buffer} not found");
+                        AddText($"<unknown {buffer}>");
+                    }
+                    else
+                    {
+                        AddValue(valueAttribute);
+                    }
+
+                    buffer = "";
+                    continue;
+                }
+                default:
+                    buffer += c;
+                    break;
+            }
+        }
+
+        AddText(buffer);
+
+        Add.Label(_contents);
+    }
+
+    private void AddText(string text)
+    {
+        _contents += text;
+    }
+
+    private void AddValue(ValueAttribute valueAttribute)
+    {
+        if (valueAttribute.IsPercentage)
+        {
+            //Add.Label($"{valueAttribute.Percentage * 100}%", "percentage");
+            _contents += $"{valueAttribute.Percentage * 100}%";
+        }
+        else if (valueAttribute.IsAbsolute)
+        {
+            //Add.Label($"{valueAttribute.Absolute}", "absolute");
+            _contents += $"{valueAttribute.Absolute}";
+        }
+    }
+
+}

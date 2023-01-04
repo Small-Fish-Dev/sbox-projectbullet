@@ -1,4 +1,5 @@
-﻿using ProjectBullet.Core.Node;
+﻿using System;
+using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
 
 namespace ProjectBullet.UI.WorkshopElements;
@@ -122,7 +123,7 @@ public partial class GraphController
 				Log.Warning( $"Failed {GetType().Name} action! Main entity == target entity" );
 				return null;
 			}
-			
+
 			connector.ConnectedNode = target;
 			target.Previous = connector;
 
@@ -297,5 +298,57 @@ public partial class GraphController
 		}
 
 		public override Action CreateOpposite() => new BuyItemAction( _item );
+	}
+
+	public class SetNodeLocationAction : Action
+	{
+		public override string DisplayName => "Node moved";
+
+		private readonly object _target;
+		private readonly Vector2 _startPosition;
+		private readonly Vector2 _endPosition;
+
+		public SetNodeLocationAction( object target, Vector2 startPosition, Vector2 endPosition )
+		{
+			_target = target;
+			_startPosition = startPosition;
+			_endPosition = endPosition;
+		}
+
+		public override object Perform( GraphController root )
+		{
+			switch ( _target )
+			{
+				case NodeExecutor nodeExecutor:
+					nodeExecutor.LastEditorX = _endPosition.x;
+					nodeExecutor.LastEditorY = _endPosition.y;
+
+					root.Entry.Element.UpdateHold( _endPosition, Vector2.One );
+					break;
+				case WeaponNode node:
+					{
+						node.LastEditorX = _endPosition.x;
+						node.LastEditorY = _endPosition.y;
+
+						var nodeData = root.GetNodeByEntity( node );
+						if ( nodeData == null )
+						{
+							Log.Warning( $"Failed {GetType().Name} action! Target entity not found" );
+							return null;
+						}
+
+						nodeData.Element.UpdateHold( _endPosition, Vector2.One );
+						break;
+					}
+				default:
+					throw new InvalidOperationException(
+						$"SetNodeLocationAction has invalid target type {_target.GetType().Name}" );
+			}
+
+
+			return null;
+		}
+
+		public override Action CreateOpposite() => new SetNodeLocationAction( _target, _endPosition, _startPosition );
 	}
 }

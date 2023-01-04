@@ -208,6 +208,10 @@ public partial class GraphController
 
 		// Clean up previous entry node
 		Entry = null;
+		
+		// Clean up saved actions
+		_actionHistory.Clear();
+		_actionPointer = -1;
 
 		// Start switching
 		NodeExecutor = executor;

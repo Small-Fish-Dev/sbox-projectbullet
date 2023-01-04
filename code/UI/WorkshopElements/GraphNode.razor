@@ -36,7 +36,14 @@
             <div style="width: 15px"></div>
         }
         <div class="description">
-            @Data.UsageInfo
+            @if (Data is not GraphController.EntryNode)
+            {
+                <GraphNodeUsageInfo WeaponNode=@Data.Instance></GraphNodeUsageInfo>
+            }
+            else
+            {
+                @Data.UsageInfo
+            }
         </div>
         <div style="left: 15px; min-width: 30px; align-items: flex-start">
             <!-- Outputs -->
