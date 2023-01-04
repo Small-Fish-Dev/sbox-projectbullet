@@ -9,5 +9,5 @@ namespace ProjectBullet.Core.Node;
 public sealed class NodeAttribute : Attribute
 {
 	public string DisplayName { get; init; }
-	public string Description { get; init; }
+	public string UsageInfo { get; init; }
 }

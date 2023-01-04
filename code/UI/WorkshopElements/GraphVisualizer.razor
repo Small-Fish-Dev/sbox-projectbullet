@@ -16,14 +16,13 @@
 </root>
 
 @code {
+    public ContextMenu ContextMenu;
 
     public GraphController Controller { get; set; }
 
-    public ContextMenu ContextMenu;
-
     public GraphVisualizer()
     {
-        // this sucks a bit but it's OK - we need it for Ctrl-Z / Ctrl-Y
+    // this sucks a bit but it's OK - we need it for Ctrl-Z / Ctrl-Y
         AcceptsFocus = true;
         InputFocus.Set(this);
     }
@@ -39,27 +38,18 @@
     {
         base.OnRightClick(e);
 
-        if (ContextMenu != null)
+        if (ContextMenu == null)
         {
-            return;
+            ContextMenu = new ContextMenu();
+            AddChild(ContextMenu);
         }
-
-        ContextMenu = new ContextMenu();
-        AddChild(ContextMenu);
-    }
-
-    public void HandleNewController()
-    {
-        var graphNode = new GraphNode(Controller.Entry, this);
-        graphNode.AddClass("entry-node");
-        AddChild(graphNode);
     }
 
     public override void OnButtonTyped(string button, KeyModifiers km)
     {
         base.OnButtonTyped(button, km);
 
-        // we have focus so binds won't do anything, we need to check for toggle button ourselves
+    // we have focus so binds won't do anything, we need to check for toggle button ourselves
         if (button == Input.GetButtonOrigin(InputButton.View))
         {
             Util.ToggleWorkshop(Game.RootPanel);
@@ -68,10 +58,11 @@
 
         switch (button)
         {
-            case "Z" when km.Ctrl:
-                Controller.PerformUndo();;
+            case "z" when km.Ctrl:
+                Controller.PerformUndo();
+                ;
                 break;
-            case "Y" when km.Ctrl:
+            case "y" when km.Ctrl:
                 Controller.PerformRedo();
                 break;
         }

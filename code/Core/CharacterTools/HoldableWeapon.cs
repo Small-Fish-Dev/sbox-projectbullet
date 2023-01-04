@@ -6,16 +6,22 @@ public partial class HoldableWeapon : AnimatedEntity
 {
 	protected virtual string ModelPath => null;
 	protected virtual string ViewModelPath => null;
-	public BaseViewModel ViewModelEntity { get; protected set; }
+
+	public class ExtendedViewModel : BaseViewModel
+	{
+		public override void PlaceViewmodel() { }
+	}
+
+	public ExtendedViewModel ViewModelEntity { get; set; }
 
 	[Net] private Player Player { get; set; }
 
-	public HoldableWeapon( Player player )
+	protected HoldableWeapon( Player player )
 	{
 		Player = player;
 	}
 
-	public HoldableWeapon() => Game.AssertClient();
+	protected HoldableWeapon() => Game.AssertClient();
 
 	public override void Spawn()
 	{
@@ -41,7 +47,7 @@ public partial class HoldableWeapon : AnimatedEntity
 
 		SetParent( Player, true );
 		Owner = Player;
-		
+
 		CreateViewModel();
 	}
 
@@ -49,7 +55,7 @@ public partial class HoldableWeapon : AnimatedEntity
 	/// Create the viewmodel. You can override this in your base classes if you want
 	/// to create a certain viewmodel entity.
 	/// </summary>
-	public virtual void CreateViewModel()
+	protected virtual void CreateViewModel()
 	{
 		Game.AssertClient();
 
@@ -63,14 +69,14 @@ public partial class HoldableWeapon : AnimatedEntity
 			return;
 		}
 
-		ViewModelEntity = new BaseViewModel { Position = Position, Owner = Owner, EnableViewmodelRendering = true };
+		ViewModelEntity = new ExtendedViewModel { Owner = Owner, EnableViewmodelRendering = true };
 		ViewModelEntity.SetModel( ViewModelPath );
 	}
 
 	/// <summary>
 	/// We're done with the viewmodel - delete it
 	/// </summary>
-	public virtual void DestroyViewModel()
+	protected virtual void DestroyViewModel()
 	{
 		if ( !IsLocalPawn )
 		{
@@ -92,7 +98,7 @@ public partial class HoldableWeapon : AnimatedEntity
 	}
 
 	/// <summary>
-	/// Just update the viewmodel positioning.
+	/// Just update the viewmodel positioning
 	/// </summary>
 	public virtual void UpdateViewModel()
 	{
@@ -101,21 +107,8 @@ public partial class HoldableWeapon : AnimatedEntity
 			return;
 		}
 
-		var rotationDistance = Rotation.Distance( Camera.Rotation );
-
-		Position = Camera.Position;
-		Rotation = Rotation.Lerp( Rotation, Camera.Rotation, RealTime.Delta * rotationDistance * 1.1f );
-
-		if ( Game.LocalPawn.LifeState == LifeState.Dead )
-			return;
-
-		var speed = Game.LocalPawn.Velocity.Length.LerpInverse( 0, 400 );
-		var left = Camera.Rotation.Left;
-		var up = Camera.Rotation.Up;
-
-		if ( Game.LocalPawn.GroundEntity != null )
-		{
-		}
+		ViewModelEntity.Position = Camera.Position;
+		ViewModelEntity.Rotation = Camera.Rotation;
 	}
 
 	public virtual void Animate( ref CitizenAnimationHelper animationHelper )
@@ -129,5 +122,5 @@ public partial class HoldableWeapon : AnimatedEntity
 	/// Utility - return the entity we should be spawning particles from etc
 	/// </summary>
 	public virtual ModelEntity EffectEntity =>
-		(ViewModelEntity.IsValid() && IsFirstPersonMode) ? ViewModelEntity : this;
+		ViewModelEntity.IsValid() && IsFirstPersonMode ? ViewModelEntity : this;
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Sandbox;
 using Sandbox.UI;
+using Sandbox.Utility;
 
 namespace ProjectBullet.UI.WorkshopElements;
 
@@ -14,8 +15,29 @@ public partial class GraphVisualizer : Panel
 
 	private void DrawNodeLine( Color color, Vector2 start, Vector2 end )
 	{
-		GraphicsX.Line( Color.White,
-			ScaleToScreen * 6, start, ScaleToScreen * 6, end );
+		/*GraphicsX.Line( Color.Yellow,
+			ScaleToScreen * 3, start, ScaleToScreen * 3, end );*/
+
+		GraphicsX.MeshStart();
+
+		const float step = 0.04f;
+		var delta = end - start;
+		var last = start;
+		var thickness = ScaleToScreen * 3;
+		for ( float i = 0; i < 1.0f; i += step )
+		{
+			var pos = new Vector2(
+				start.x + delta.x * i,
+				start.y + delta.y * Easing.QuadraticInOut( i )
+			);
+
+			GraphicsX.Line( color, thickness, last, thickness, pos );
+			last = pos;
+		}
+
+		GraphicsX.Line( color, thickness, last, thickness, end );
+
+		GraphicsX.MeshEnd();
 	}
 
 	protected override void OnMouseDown( MousePanelEvent e )
@@ -27,40 +49,44 @@ public partial class GraphVisualizer : Panel
 			return;
 		}
 
+		if ( e.Button != "mouseleft" )
+		{
+			return;
+		}
+
 		if ( ContextMenu != null )
 		{
-			var target = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is ContextMenu );
-			if ( target == null )
+			var ctx = (ContextMenu)e.Target.AncestorsAndSelf.SingleOrDefault( v => v is ContextMenu );
+			if ( ctx == null || _mouseDownTarget != null )
 			{
 				ContextMenu.Delete();
 				ContextMenu = null;
 			}
 		}
 
-		if ( e.Button != "mouseleft" )
-		{
-			return;
-		}
-
 		switch ( e.Target )
 		{
 			case GraphNodeOut { IsConnected: false } output:
 				_mouseDownTarget = output;
-				Style.Cursor = "none";
+				output.IsLinking = true;
 				return;
 			case GraphNodeIn { IsConnected: false }:
-				Style.Cursor = "none";
 				return;
 		}
 
-		var draggable = e.Target.AncestorsAndSelf.SingleOrDefault( v => v is Draggable );
+		var draggable = (Draggable)e.Target.AncestorsAndSelf.SingleOrDefault( v => v is Draggable );
 		if ( draggable == null || _mouseDownTarget != null )
 		{
 			return;
 		}
 
+		if ( !draggable.ShouldDrag( e ) )
+		{
+			return;
+		}
+
 		Style.Cursor = "none";
-		_mouseDownTarget = (Draggable)draggable;
+		_mouseDownTarget = draggable;
 		_holdPoint = Util.Workshop.MousePosition - draggable.Box.Rect.TopLeft;
 	}
 
@@ -79,9 +105,9 @@ public partial class GraphVisualizer : Panel
 					continue;
 				}
 
-				if ( input.IsHovered )
+				if ( input.IsHovered && !input.IsHoveredIncorrectly )
 				{
-					if ( input.IsHoveredIncorrectly )
+					if ( input.IsConnected )
 					{
 						input.NodeData.Previous?.Disconnect();
 					}
@@ -128,9 +154,19 @@ public partial class GraphVisualizer : Panel
 			{
 				input.IsHovered = true;
 
-				if ( input.IsConnected && _mouseDownTarget != null )
+				if ( _mouseDownTarget != null )
 				{
-					input.IsHoveredIncorrectly = true;
+					input.IsLinking = true;
+
+					/*if ( input.IsConnected )
+					{
+						input.IsHoveredIncorrectly = true;
+					}*/
+
+					if ( _mouseDownTarget is GraphNodeOut output && input.NodeData == output.Connector.Parent )
+					{
+						input.IsHoveredIncorrectly = true;
+					}
 				}
 
 				child.StateHasChanged();
@@ -141,6 +177,10 @@ public partial class GraphVisualizer : Panel
 				{
 					continue;
 				}
+
+				input.IsHovered = false;
+				input.IsHoveredIncorrectly = false;
+				input.IsLinking = false;
 
 				child.StateHasChanged();
 			}

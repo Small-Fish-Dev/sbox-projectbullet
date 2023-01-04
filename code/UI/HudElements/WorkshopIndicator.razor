@@ -1,0 +1,18 @@
+﻿@namespace ProjectBullet.UI.HudElements
+@using System
+@using Sandbox.UI
+@using ProjectBullet.UI.Helpers
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet("/UI/HudElements/WorkshopIndicator.scss")]
+
+<root>
+    <Corner class="@Util.WorkshopOpenClass">
+        <div style="flex-direction: column">
+            @if (Util.LocalPlayer.CanUseEditor)
+            {
+                <div><Glyph input="view"></Glyph></div>
+                <div>workshop available!</div>
+            }
+        </div>
+    </Corner>
+</root>

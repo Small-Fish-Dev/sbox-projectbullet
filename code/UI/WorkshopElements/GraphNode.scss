@@ -1,0 +1,96 @@
+﻿@import "/UI/Constants.scss";
+@import "/UI/Button.scss";
+
+GraphNode {
+    min-width: 300px;
+    min-height: 100px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    background-color: black;
+    color: white;
+
+    font-family: $generic-font-family;
+    font-size: 30px;
+
+    transition: left 0.11s ease-out, 
+        top 0.11s ease-out,
+        opacity 0.11s ease-out;
+    
+    &:outro {
+        background-color: rgb(50, 0, 0);
+        opacity: 0;
+    }
+    
+    flex-direction: column;
+    
+    .header {
+        width: 100%; min-height: 65px;
+        
+        padding: 5px;
+        
+        background-color: white;
+        color: black;
+        
+        .icon {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            
+            margin-right: 10px;
+            
+            justify-content: center;
+            align-items: center;
+        }
+
+        .info {
+            flex-direction: column;
+            
+            .name {
+                font-size: 25px;
+                font-weight: bold;
+            }
+            
+            .tags {
+                font-size: 15px;
+            }
+            
+            margin-right: 20px;
+        }   
+        
+        .header-right {
+            justify-content: flex-end;
+            
+            flex-grow: 1;
+            
+            .energy {
+                min-width: 80px;
+                
+                color: white;
+                
+                padding: 8px;
+                
+                border-radius: 50%;
+                background-color: black;
+
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+    
+    .content {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        
+        justify-content: space-between;
+        
+        flex-direction: row;
+        
+        .description {
+            font-size: 15px;
+            max-width: 300px;
+        }
+    }
+}

@@ -8,17 +8,20 @@
         width: 100%;
         border-radius: 50%;
         border: #ececec 3px solid;
-        background-color: #3C6CB4;
+        background-color: #000000;
     
         &.connected {
             background-color: #ffffff;
         }
-    
-        /*&.being-hovered:not(.has-connection) {
-            border: #ececec 6px solid;
-            background-color: #ffffff;
-        }*/
-    
+
+        &.linking {
+            background-color: #ececec;
+        }
+        
+        &.hovered-invalid {
+            background-color: #aa0000;
+        }
+
         &.invalid-link {
             border: #ececec 6px solid;
             background-color: #ff0000;
@@ -30,7 +33,7 @@
     }
 </style>
 
-<root></root>
+<root class="@ClassString"></root>
 
 @code {
 
@@ -41,7 +44,37 @@
     public bool IsConnected => NodeData.IsConnected;
     public bool IsHovered;
     public bool IsHoveredIncorrectly;
+    public bool IsLinking;
 
+    private string ClassString
+    {
+        get
+        {
+            var output = "";
+            if (IsConnected)
+            {
+                output += "connected ";
+            }
+            
+            if (IsHovered)
+            {
+                output += "hovered ";
+            }
+            
+            if (IsHoveredIncorrectly)
+            {
+                output += "hovered-invalid ";
+            }
+            
+            if (IsLinking)
+            {
+                output += "linking ";
+            }
+
+            return output;
+        }
+    }
+    
     protected override void OnAfterTreeRender(bool firstTime)
     {
         base.OnAfterTreeRender(firstTime);

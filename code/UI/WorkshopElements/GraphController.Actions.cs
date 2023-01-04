@@ -1,4 +1,5 @@
 ﻿using ProjectBullet.Core.Node;
+using ProjectBullet.Core.Shop;
 
 namespace ProjectBullet.UI.WorkshopElements;
 
@@ -34,7 +35,7 @@ public partial class GraphController
 			var node = new Node( root, _entity );
 			root._nodes.Add( node );
 
-			root.GraphVisualizer?.AddChild( new GraphNode( node, root.GraphVisualizer ) );
+			root.Visualizer?.AddChild( new GraphNode( node ) );
 
 			NodeServer.AddNodeToExecutor( _entity, root.NodeExecutor );
 
@@ -55,7 +56,7 @@ public partial class GraphController
 		public override object Perform( GraphController root )
 		{
 			var node = root.GetNodeByEntity( _entity );
-			switch (node)
+			switch ( node )
 			{
 				case null:
 					Log.Warning( $"Failed {GetType().Name} action! Node not found" );
@@ -71,7 +72,7 @@ public partial class GraphController
 			root.GraphInventory.Add( _entity );
 
 			NodeServer.RemoveNodeFromExecutor( _entity );
-			
+
 			return null;
 		}
 
@@ -116,6 +117,12 @@ public partial class GraphController
 				return null;
 			}
 
+			if ( target == main )
+			{
+				Log.Warning( $"Failed {GetType().Name} action! Main entity == target entity" );
+				return null;
+			}
+			
 			connector.ConnectedNode = target;
 			target.Previous = connector;
 
@@ -170,7 +177,7 @@ public partial class GraphController
 				connector.ConnectedNode.Previous = null;
 			}
 
-			connector.Element.StateHasChanged();
+			connector.Element?.StateHasChanged();
 			inputElement?.StateHasChanged();
 
 			connector.ConnectedNode = null;
@@ -256,5 +263,39 @@ public partial class GraphController
 		}
 
 		public override Action CreateOpposite() => new ConnectEntryNodeAction( _lastTarget );
+	}
+
+	public class BuyItemAction : Action
+	{
+		public override string DisplayName => "Item bought";
+
+		private readonly ShopHostEntity.StockedItem _item;
+
+		public BuyItemAction( ShopHostEntity.StockedItem item ) => _item = item;
+
+		public override object Perform( GraphController root )
+		{
+			ShopServer.BuyItem( _item );
+			return null;
+		}
+
+		public override Action CreateOpposite() => new UndoBuyItemAction( _item );
+	}
+
+	public class UndoBuyItemAction : Action
+	{
+		public override string DisplayName => "Item buy undone";
+
+		private readonly ShopHostEntity.StockedItem _item;
+
+		public UndoBuyItemAction( ShopHostEntity.StockedItem item ) => _item = item;
+
+		public override object Perform( GraphController root )
+		{
+			Log.Warning( "UndoBuyItemAction no impl" );
+			return null;
+		}
+
+		public override Action CreateOpposite() => new BuyItemAction( _item );
 	}
 }

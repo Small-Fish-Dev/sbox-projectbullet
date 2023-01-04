@@ -15,7 +15,8 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 		public ConnectorAttribute ConnectorAttribute { get; private set; }
 		[Net] public string Identifier { get; set; }
 
-		[Net, Change( "OnTypeNameChanged" )] private string TypeName { get; set; } = ""; // hacky fix, we can't network types / attrs
+		[Net, Change( "OnTypeNameChanged" )]
+		private string TypeName { get; set; } = ""; // hacky fix, we can't network types / attrs
 
 		public Connector( ConnectorAttribute nextAttribute, WeaponNode entity )
 		{
@@ -60,6 +61,23 @@ public abstract partial class WeaponNode : Entity, IInventoryItem
 	public float? LastEditorY = null;
 
 	public float EnergyUsage => Description?.EnergyAttribute?.Energy ?? 0;
+
+	/// <summary>
+	/// Get value attribute value from identifier
+	/// </summary>
+	/// <param name="identifier">Value identifier</param>
+	/// <param name="dimension">Dimension (when using percentages)</param>
+	/// <returns>Value or null</returns>
+	public float? GetValue( string identifier, float? dimension )
+	{
+		foreach ( var valueAttribute in Description.ValueAttributes.Where( valueAttribute =>
+			         valueAttribute.Identifier == identifier ) )
+		{
+			return valueAttribute.GetValue( dimension );
+		}
+
+		return null;
+	}
 
 	/// <summary>
 	/// Run <see cref="Execute"/> on connected node with provided connector ID

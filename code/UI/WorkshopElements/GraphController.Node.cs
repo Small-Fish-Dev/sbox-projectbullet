@@ -16,7 +16,8 @@ public partial class GraphController
 		public bool IsConnected => Previous != null;
 		public readonly WeaponNode Instance;
 
-		public virtual string DisplayName { get; }
+		public virtual string DisplayName { get; init; }
+		public virtual string UsageInfo { get; init; }
 
 		public GraphController Root { get; }
 
@@ -49,6 +50,7 @@ public partial class GraphController
 			}
 
 			DisplayName = Instance.Description.NodeAttribute?.DisplayName ?? "Unknown Node";
+			UsageInfo = Instance.Description.NodeAttribute?.UsageInfo ?? "Unknown Node";
 
 			foreach ( var connectorAttribute in Instance.Description.ConnectorAttributes )
 			{
@@ -59,13 +61,15 @@ public partial class GraphController
 
 	public class EntryNode : Node
 	{
-		public override string DisplayName => "Entry";
 		public EntryConnector Connector;
 
 		public EntryNode( GraphController root ) : base( root )
 		{
 			Connector = new EntryConnector( this );
 			_connectors.Add( Connector );
+
+			DisplayName = root.NodeExecutor.DisplayName;
+			UsageInfo = root.NodeExecutor.UsageInfo;
 		}
 	}
 }

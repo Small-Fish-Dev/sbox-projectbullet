@@ -14,6 +14,12 @@ public partial class NodeExecutor : Entity
 	/// todo: should this be done with reflection?
 	/// </summary>
 	public virtual string DisplayName => "Unknown Executor";
+	
+	/// <summary>
+	/// Display description of this execution entity
+	/// todo: should this be done with reflection?
+	/// </summary>
+	public virtual string UsageInfo => "Unknown Description";
 
 	public virtual InputButton InputButton => InputButton.PrimaryAttack;
 

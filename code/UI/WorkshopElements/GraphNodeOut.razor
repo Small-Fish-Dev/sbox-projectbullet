@@ -4,29 +4,40 @@
 
 <style>
     GraphNodeOut {
-        aspect-ratio: 1;
-        width: 100%;
+        flex-grow: 0;
         border-radius: 50%;
         border: #ececec 3px solid;
-        background-color: #3C6CB4;
+        background-color: #000000;
+    
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        font-weight: bold;
+        
+        padding: 7px;
     
         &:hover {
-            background-color: #000000;
+            background-color: #ececec;
+            color: black;
         }
     
         &.connected {
             background-color: #ffffff;
+            color: black;
         }
     
         &.linking {
-            background-color: #ffffff;
+            background-color: #ececec;
+            color: black;
         }
         
-        /* box-shadow: 10px 10px 0px 1px rgba(0,0,0,1); */
+        label {
+            pointer-events: none;
+        }
     }
 </style>
 
-<root></root>
+<root class="@ClassString"></root>
 
 @code {
 
@@ -34,6 +45,25 @@
     
     public bool IsConnected => Connector.IsConnected;
     public bool IsLinking;
+    
+    private string ClassString
+    {
+        get
+        {
+            var output = "";
+            if (IsConnected)
+            {
+                output += "connected ";
+            }
+            
+            if (IsLinking)
+            {
+                output += "linking ";
+            }
+
+            return output;
+        }
+    }
     
     protected override void OnAfterTreeRender(bool firstTime)
     {

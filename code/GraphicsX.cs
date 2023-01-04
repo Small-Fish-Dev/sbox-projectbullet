@@ -123,9 +123,12 @@ public static class GraphicsX
 	}
 
 	public static void Line( in Color color, in float startThickness, in Vector2 startPosition, in float endThickness,
-		in Vector2 endPosition )
+		in Vector2 endPosition, in bool handleMesh = true )
 	{
-		MeshStart();
+		if ( handleMesh )
+		{
+			MeshStart();
+		}
 
 		Vector2 directionVector = endPosition - startPosition;
 		Vector2 perpendicularVector = directionVector.Perpendicular.Normal * -0.5f;
@@ -153,7 +156,10 @@ public static class GraphicsX
 		uv = new Vector2( 0f, 1f );
 		AddVertex( in startCorner2, in color, in uv );
 
-		MeshEnd();
+		if ( handleMesh )
+		{
+			MeshEnd();
+		}
 	}
 
 	public static void Line( in Color color, in float thickness, in Vector2 startPosition, in Vector2 endPosition )

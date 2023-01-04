@@ -5,9 +5,10 @@ namespace ProjectBullet.Characters;
 
 public partial class Gunner
 {
-	public class PrimaryFireController : NodeExecutor
+	public class PrimaryFireExecutor : NodeExecutor
 	{
 		public override string DisplayName => "Primary Fire";
+		public override string UsageInfo => "Shoots a bullet and activates on impact";
 		public override float ActionDelay => 0.13f;
 		public override InputButton InputButton => InputButton.PrimaryAttack;
 

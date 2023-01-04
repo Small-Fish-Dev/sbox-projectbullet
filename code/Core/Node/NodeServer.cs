@@ -54,6 +54,12 @@ public static class NodeServer
 			return;
 		}
 
+		if ( newValue == target )
+		{
+			Log.Error( $"SetConnector failed: newValue == target" );
+			return;
+		}
+		
 		target.SetConnector( identifier, newValue );
 
 		// Events.Shared.Node.RunConnectorChanged( target.Player );

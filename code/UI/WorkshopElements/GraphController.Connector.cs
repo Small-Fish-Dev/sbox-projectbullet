@@ -74,7 +74,7 @@ public partial class GraphController
 
 	public class EntryConnector : Connector
 	{
-		public override string DisplayName => "On Entry";
+		public override string DisplayName => "Start";
 		public override string Identifier => "on_entry";
 
 		public override float? EstimateConnectorOutput() => Root.NodeExecutor.MaxEnergy;

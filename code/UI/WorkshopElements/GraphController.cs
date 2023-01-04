@@ -12,7 +12,7 @@ public partial class GraphController
 	/// <summary>
 	/// Visualizer - this could be null
 	/// </summary>
-	public GraphVisualizer GraphVisualizer { get; set; }
+	public GraphVisualizer Visualizer { get; set; }
 
 	/// <summary>
 	/// Current node executor being visualised
@@ -45,7 +45,7 @@ public partial class GraphController
 
 	public GraphController( NodeExecutor nodeExecutor, GraphVisualizer graphVisualizer )
 	{
-		GraphVisualizer = graphVisualizer;
+		Visualizer = graphVisualizer;
 
 		Switch( nodeExecutor );
 	}
@@ -55,34 +55,122 @@ public partial class GraphController
 		Event.Unregister( this );
 	}
 
+	/// <summary>
+	/// Update graph inventory
+	/// </summary>
+	private void UpdateInventory()
+	{
+		// For each item in our inventory...
+		foreach ( var item in Util.LocalPersistent.Items )
+		{
+			if ( item is not WeaponNode node )
+			{
+				continue;
+			}
+
+			if ( GraphInventory.Contains( item ) )
+			{
+				continue;
+			}
+
+			if ( _nodes.Any( v => v.Instance == item ) )
+			{
+				continue;
+			}
+
+			if ( node.InUse )
+			{
+				// This node is in use - let's check if it's by our NodeExecutor
+				if ( node.Owner != NodeExecutor )
+				{
+					continue;
+				}
+
+				PerformAction( new AddNodeToGraphAction( node ), false );
+			}
+			else
+			{
+				// GraphInventory.Add( node );
+				// Add the item to the screen
+				PerformAction( new AddNodeToGraphAction( node ), false );
+			}
+		}
+	}
+
+	[ClientRpc]
+	public static void OnNewItem()
+	{
+		Util.Workshop.Controller.UpdateInventory();
+	}
+
 	private readonly List<Action> _actionHistory = new();
-	private int _actionPointer = 0;
+	private int _actionPointer = -1;
 
 	public object PerformAction( Action action, bool addToHistory )
 	{
 		if ( addToHistory )
 		{
+			// remove everything in history that comes after the action pointer
+			_actionHistory.RemoveRange( _actionPointer + 1, _actionHistory.Count - (_actionPointer + 1) );
+
 			_actionHistory.Add( action );
+			_actionPointer++;
+
+			return action.Perform( this );
 		}
 
 		return action.Perform( this );
 	}
 
-	public void AddToGraph( WeaponNode entity )
+	private void PrintActionHistory()
 	{
-		PerformAction( new AddNodeToGraphAction( entity ), true );
+		Log.Info( $"action pointer: {_actionPointer}" );
+		for ( var i = 0; i < _actionHistory.Count; i++ )
+		{
+			var extra = i == _actionPointer ? "(actionptr)" : "";
+			Log.Info( $"{i}: {extra} {_actionHistory[i]} " );
+		}
 	}
 
 	public void PerformUndo()
 	{
-		
+		PrintActionHistory();
+
+		if ( _actionPointer == -1 )
+		{
+			Log.Info( "No actions left" );
+			return;
+		}
+
+		var action = _actionHistory[_actionPointer];
+		var opposite = action.CreateOpposite();
+
+		PerformAction( opposite, false );
+
+		_actionHistory[_actionPointer] = opposite;
+		_actionPointer--;
 	}
 
 	public void PerformRedo()
 	{
-		
+		PrintActionHistory();
+
+		if ( _actionPointer + 1 >= _actionHistory.Count )
+		{
+			Log.Info( "No actions to redo" );
+			return;
+		}
+
+		_actionPointer++;
+
+		var action = _actionHistory[_actionPointer];
+		var opposite = action.CreateOpposite();
+
+		PerformAction( opposite, false );
+
+		_actionHistory[_actionPointer] = opposite;
 	}
-	
+
 	public void RemoveFromGraph( Node node )
 	{
 		if ( node is EntryNode )
@@ -135,29 +223,39 @@ public partial class GraphController
 		// Create entry node
 		Entry = new EntryNode( this );
 		_nodes.Add( Entry );
-		
-		// For each item in our inventory...
-		foreach (var item in Util.LocalPersistent.Items)
+
+		// Add entry node to visualizer
+		var graphNode = new GraphNode( Entry );
+		graphNode.AddClass( "entry-node" );
+		Visualizer.AddChild( graphNode );
+
+		// Update inventory
+		UpdateInventory();
+
+		// Resolve node links
+		foreach ( var node in _nodes )
 		{
-			if ( item is not WeaponNode node )
+			foreach ( var connector in node.Connectors )
 			{
-				continue;
-			}
-
-			if ( node.InUse )
-			{
-				// This node is in use - let's check if it's by our NodeExecutor
-				if ( node.Owner != NodeExecutor )
+				var connectedInstance = node.Instance?.GetConnectedNode( connector.Identifier );
+				if ( connectedInstance != null )
 				{
-					continue;
+					PerformAction(
+						new ConnectConnectorToNodeAction( node.Instance, connector.Identifier, connectedInstance ),
+						false
+					);
 				}
+			}
+		}
 
-				PerformAction( new AddNodeToGraphAction( node ), false );
-			}
-			else
-			{
-				GraphInventory.Add( node );
-			}
+		// Set entry node connection
+		if ( NodeExecutor.EntryNode != null )
+		{
+			PerformAction( new ConnectEntryNodeAction( NodeExecutor.EntryNode ), false );
+		}
+		else
+		{
+			Log.Warning( $"NodeExecutor {NodeExecutor} has no entry node." );
 		}
 	}
 }

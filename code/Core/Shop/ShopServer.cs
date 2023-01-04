@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ProjectBullet.Core.Node;
+using ProjectBullet.UI.WorkshopElements;
 using Sandbox;
 
 namespace ProjectBullet.Core.Shop;
@@ -46,6 +47,7 @@ public static class ShopServer
 			var instance = wnd.TypeDescription.Create<WeaponNode>();
 			instance.Owner = (Entity)ConsoleSystem.Caller.Pawn;
 			persistent.AddItem( instance );
+			GraphController.OnNewItem( To.Single( ConsoleSystem.Caller ) );
 		}
 
 		else

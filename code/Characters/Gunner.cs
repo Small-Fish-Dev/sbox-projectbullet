@@ -6,7 +6,8 @@ namespace ProjectBullet.Characters;
 
 public partial class Gunner : Core.Player
 {
-	[Net] public PrimaryFireController PrimaryFire { get; set; }
+	[Net] public PrimaryFireExecutor PrimaryFire { get; set; }
+	[Net] public OrbExecutor Orb { get; set; }
 
 	protected override string OutfitJson =>
 		"[{\"id\":-1293797531},{\"id\":853300482},{\"id\":-691668871},{\"id\":-2069474809},{\"id\":-1696290982},{\"id\":1240466157},{\"id\":105676996},{\"id\":-100519886}]";
@@ -29,7 +30,8 @@ public partial class Gunner : Core.Player
 	{
 		base.Spawn();
 
-		PrimaryFire = new PrimaryFireController();
+		PrimaryFire = new PrimaryFireExecutor();
+		Orb = new OrbExecutor();
 
 		RegisterNodeExecutors();
 	}

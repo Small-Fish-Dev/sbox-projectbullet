@@ -108,7 +108,7 @@ public struct ExecuteInfo
 	/// <returns>Self</returns>
 	public ExecuteInfo WithForce( float multiplier, Vector3 forward )
 	{
-		Force = multiplier * 32 * forward;
+		Force = multiplier * forward;
 		return this;
 	}
 

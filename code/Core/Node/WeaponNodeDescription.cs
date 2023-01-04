@@ -14,6 +14,7 @@ public class WeaponNodeDescription
 	public NodeAttribute NodeAttribute { get; private set; }
 	public EnergyAttribute EnergyAttribute { get; private set; }
 	public List<ConnectorAttribute> ConnectorAttributes { get; private set; }
+	public List<ValueAttribute> ValueAttributes { get; private set; }
 
 	public TypeDescription TypeDescription { get; private set; }
 	public Type TargetType => TypeDescription.TargetType;
@@ -65,6 +66,7 @@ public class WeaponNodeDescription
 		NodeAttribute = TypeLibrary.GetAttribute<NodeAttribute>( TargetType );
 		EnergyAttribute = TypeLibrary.GetAttribute<EnergyAttribute>( TargetType );
 		ConnectorAttributes = TypeLibrary.GetAttributes<ConnectorAttribute>( TargetType ).ToList();
+		ValueAttributes = TypeLibrary.GetAttributes<ValueAttribute>( TargetType ).ToList();
 	}
 
 	/// <summary>

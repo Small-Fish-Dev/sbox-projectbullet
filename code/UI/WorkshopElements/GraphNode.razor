@@ -1,40 +1,115 @@
-﻿@using Sandbox
+﻿@using ProjectBullet.Core.Node
+@using Sandbox
 @using Sandbox.UI;
 @namespace ProjectBullet.UI.WorkshopElements
 @inherits Draggable
-
-<style>
-    GraphNode {    
-        width: 300px; height: 100px;
-        
-        position: absolute;
-        left: 50%; top: 50%;
-                
-        background-color: black;
-        color: white;
-        font-size: 30px;
-   }
-</style>
+@attribute [StyleSheet("/UI/WorkshopElements/GraphNode.scss")]
 
 <root>
-    test test test test test test test test test test test test 
+    <div class="header">
+        <div class="icon">@Icon</div>
+        <div class="info">
+            <div class="name">
+                @Data.DisplayName
+            </div>
+            <div class="tags">
+                @Subtext
+            </div>
+        </div>
+        <!--<div class="header-right">
+            @if (Data.Instance != null)
+            {
+                <div class="energy">@Data.Instance.EnergyUsage</div>
+            }
+        </div>-->
+    </div>
+    <div class="content">
+        @if (Data is not GraphController.EntryNode)
+        {
+            <div style="right: 25px; width: 50px">
+                <!-- Inputs -->
+                <GraphNodeIn Node=@this></GraphNodeIn>
+            </div>
+        }
+        else
+        {
+            <div style="width: 15px"></div>
+        }
+        <div class="description">
+            @Data.UsageInfo
+        </div>
+        <div style="left: 15px; min-width: 30px; align-items: flex-start">
+            <!-- Outputs -->
+            @foreach (var connector in Data.Connectors)
+            {
+                <GraphNodeOut Connector=@connector>@connector.DisplayName</GraphNodeOut>
+            }
+            <div></div>
+        </div>
+    </div>
 </root>
 
 @code {
 
     public GraphController.Node Data { get; set; }
-    public GraphVisualizer Visualizer { get; set; }
 
-    public GraphNode(GraphController.Node controllerNode, GraphVisualizer visualizer)
+    public string Icon => "🐍";
+
+    private float? EnergyUsage { get; }
+
+    public string Subtext
+    {
+        get
+        {
+            var text = "";
+
+            if (EnergyUsage != null)
+            {
+                text += $"{EnergyUsage} energy";
+            }
+
+            if (Data is GraphController.EntryNode)
+            {
+                if (text.Length != 0)
+                {
+                    text += ", ";
+                }
+
+                text += "Start";
+            }
+
+            return text;
+        }
+    }
+
+    public Vector2 InitialPosition;
+    private bool _setInitialPos;
+
+    public GraphNode(GraphController.Node controllerNode)
     {
         Data = controllerNode;
         Data.Element = this;
-        Visualizer = visualizer;
+        InitialPosition = Vector2.One * 20;
+        EnergyUsage = controllerNode.Instance?.EnergyUsage;
     }
 
     protected override void OnRightClick(MousePanelEvent e)
     {
         base.OnRightClick(e);
         Data.Root.RemoveFromGraph(Data);
+
+        e.StopPropagation();
     }
+
+    public override void Tick()
+    {
+        base.Tick();
+        if (InitialTransitionComplete && Box.Rect.Width != 0 && !_setInitialPos) // :(
+        {
+            _setInitialPos = true;
+            Style.Left = Length.Pixels(InitialPosition.x * Game.RootPanel.ScaleFromScreen); // set panel position!
+            Style.Top = Length.Pixels(InitialPosition.y * Game.RootPanel.ScaleFromScreen);
+        }
+    }
+
 }

@@ -7,7 +7,6 @@
 <root>
     <!--<Corner>-->
     <GraphVisualizer @ref=Visualizer></GraphVisualizer>
-    <EditMenu></EditMenu>
     <!--</Corner>-->
 </root>
 
@@ -29,7 +28,6 @@
         {
             Controller = new GraphController(Util.LocalPlayer.NodeExecutors[0], Visualizer);
             Visualizer.Controller = Controller;
-            Visualizer.HandleNewController();
         }
     }
 
