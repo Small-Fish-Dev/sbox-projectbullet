@@ -10,7 +10,7 @@ public partial class Gunner
 		public override string DisplayName => "Primary Fire";
 		public override string UsageInfo => "Shoots a bullet and activates on impact";
 		public override float ActionDelay => 0.13f;
-		public override InputButton InputButton => InputButton.PrimaryAttack;
+		protected override InputButton InputButton => InputButton.PrimaryAttack;
 
 		private float CalculateSpread()
 		{

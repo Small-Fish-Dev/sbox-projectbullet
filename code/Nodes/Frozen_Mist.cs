@@ -11,10 +11,11 @@ namespace ProjectBullet.Nodes;
 // ReSharper disable once InconsistentNaming
 [ShopItem( 1300 )]
 [Energy( 20.0f )]
-[Connector( "tick", Order = 0, EnergyOutAmount = 3f, DisplayName = "Tick" )]
+[Connector( "tick", Order = 0, EnergyOutAbsolute = 3f, DisplayName = "Tick" )]
 [Value( "velocity_removed", Absolute = 1.0f )]
 [Node( DisplayName = "Chilling Mist",
-	UsageInfo = "Creates a translucent sphere that slows players inside it - <velocity_removed> velocity removed a tick" )]
+	UsageInfo =
+		"Creates a translucent sphere that slows players inside it - <velocity_removed> velocity removed a tick" )]
 public partial class Chilling_Mist : WeaponNode
 {
 	// ReSharper disable once InconsistentNaming
@@ -81,13 +82,11 @@ public partial class Chilling_Mist : WeaponNode
 		[ClientRpc]
 		public void ClientEnterSmoke()
 		{
-			
 		}
 
 		[ClientRpc]
 		public void ClientExitSmoke()
 		{
-			
 		}
 	}
 

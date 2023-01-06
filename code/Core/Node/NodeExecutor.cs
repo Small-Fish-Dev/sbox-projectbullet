@@ -14,36 +14,57 @@ public partial class NodeExecutor : Entity
 	/// todo: should this be done with reflection?
 	/// </summary>
 	public virtual string DisplayName => "Unknown Executor";
-	
+
 	/// <summary>
 	/// Display description of this execution entity
 	/// todo: should this be done with reflection?
 	/// </summary>
 	public virtual string UsageInfo => "Unknown Description";
 
-	public virtual InputButton InputButton => InputButton.PrimaryAttack;
+	/// <summary>
+	/// <see cref="InputButton"/> used to activate this executor
+	/// </summary>
+	protected virtual InputButton InputButton => InputButton.PrimaryAttack;
 
 	public Player Player => Owner as Player;
 
 	/// <summary>
-	/// First node to run
+	/// First node to run / execute when this executor activates
 	/// </summary>
 	[Net]
 	public WeaponNode EntryNode { get; set; }
 
-	[Net, Predicted] public float Energy { get; set; } = 0.0f;
-	[Net] public float MinimumEnergy { get; private set; } = 0.0f;
+	/// <summary>
+	/// Current energy value of this executor
+	/// </summary>
+	[Net, Predicted]
+	public float Energy { get; set; }
+
+	/// <summary>
+	/// Minimum energy needed for this executor to execute
+	/// </summary>
+	[Net]
+	private float MinimumEnergy { get; set; }
 
 	/// <summary>
 	/// If this is false the user needs to reload to gain energy
 	/// </summary>
-	public virtual bool AutomaticEnergyGain => false;
+	protected virtual bool AutomaticEnergyGain => false;
 
-	public virtual float EnergyGain => 38f;
-	[Net, Predicted] public bool EnergyGainEnabled { get; set; }
-	[Net, Predicted] public TimeUntil TimeUntilAction { get; private set; }
-	[Net, Predicted] public bool IsReloading { get; set; }
-	
+	protected virtual float EnergyGain => 38f;
+
+	/// <summary>
+	/// Time until this executor can execute again
+	/// </summary>
+	[Net, Predicted]
+	private TimeUntil TimeUntilAction { get; set; }
+
+	/// <summary>
+	/// Whether or not this executor is reloading
+	/// </summary>
+	[Net, Predicted]
+	private bool IsReloading { get; set; }
+
 	public Vector2? LastEditorPos = null;
 
 	public override void Spawn()
@@ -81,11 +102,13 @@ public partial class NodeExecutor : Entity
 
 		if ( !CanPerformAction() )
 		{
-			if ( Energy < MinimumEnergy && !AutomaticEnergyGain && !IsReloading )
+			if ( !(Energy < MinimumEnergy) || AutomaticEnergyGain || IsReloading )
 			{
-				IsReloading = true;
-				BeginReloadShared();
+				return;
 			}
+
+			IsReloading = true;
+			BeginReloadShared();
 
 			return;
 		}
@@ -97,7 +120,7 @@ public partial class NodeExecutor : Entity
 		}
 	}
 
-	public void BeginReloadShared()
+	private void BeginReloadShared()
 	{
 		BeginReloadClient();
 		BeginReload();
@@ -109,7 +132,7 @@ public partial class NodeExecutor : Entity
 		BeginReload();
 	}
 
-	public void EndReloadShared()
+	private void EndReloadShared()
 	{
 		EndReloadClient();
 		EndReload();
@@ -133,16 +156,7 @@ public partial class NodeExecutor : Entity
 		Player.SetAnimParameter( "b_reload", false );
 	}
 
-	protected void ExecuteEntryNode( ExecuteInfo info )
-	{
-		if ( EntryNode == null )
-		{
-			// Log.Warning( "ExecuteEntryNode used with no entry node" );
-			return;
-		}
-
-		EntryNode.PreExecute( Energy, info );
-	}
+	protected void ExecuteEntryNode( ExecuteInfo info ) => EntryNode?.PreExecute( Energy, info );
 
 	protected virtual void PerformAction( IClient cl )
 	{
@@ -210,7 +224,7 @@ public partial class NodeExecutor : Entity
 	/// note: this is slow!! use sparingly
 	/// </summary>
 	/// <returns>Minimum energy or null</returns>
-	public float? EstimateMinimumEnergy()
+	private float? EstimateMinimumEnergy()
 	{
 		if ( EntryNode == null )
 		{
@@ -228,32 +242,36 @@ public partial class NodeExecutor : Entity
 
 			Log.Info( $"CalcPath ({node.GetType().Name}) - input {input}, output {output}" );
 
-			float? savedResult = result;
+			var savedResult = result;
 
 			foreach ( var connector in node.Connectors )
 			{
-				if ( connector.WeaponNode != null )
+				if ( connector.WeaponNode == null )
 				{
-					hasPopulatedConnector = true;
-					CalcPath( connector.WeaponNode, output );
+					continue;
+				}
 
-					if ( savedResult == null || result > savedResult )
-					{
-						savedResult = result; // hack: we NEED the worst case scenario (order etc.)
-						// actually, i'm not even sure if we need the hack....
-					}
+				hasPopulatedConnector = true;
+				CalcPath( connector.WeaponNode, output );
+
+				if ( savedResult == null || result > savedResult )
+				{
+					savedResult = result; // hack: we NEED the worst case scenario (order etc.)
+					// actually, i'm not even sure if we need the hack....
 				}
 			}
 
 			result = savedResult;
 
-			if ( !hasPopulatedConnector && node is IGoalNode )
+			if ( hasPopulatedConnector || node is not IGoalNode )
 			{
-				// This node has no connectors and it's a goal node!
-				if ( result > output || result == null )
-				{
-					result = output;
-				}
+				return;
+			}
+
+			// This node has no connectors and it's a goal node!
+			if ( result > output || result == null )
+			{
+				result = output;
 			}
 		}
 
@@ -262,13 +280,8 @@ public partial class NodeExecutor : Entity
 		return result;
 	}
 
-	// [Events.Server.Node.ConnectorChanged]
-	public void OnConnectorChanged( Entity player )
-	{
-		if ( player == Player )
-		{
-			Log.Info( "estimating" );
-			MinimumEnergy = EstimateMinimumEnergy() ?? 0.0f;
-		}
-	}
+	/// <summary>
+	/// Update & estimate minimum energy for this executor
+	/// </summary>
+	public void UpdateMinimumEnergy() => MinimumEnergy = EstimateMinimumEnergy() ?? 0.0f;
 }

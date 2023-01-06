@@ -5,6 +5,9 @@ using Sandbox;
 
 namespace ProjectBullet.Core.Node;
 
+/// <summary>
+/// Description of the <see cref="WeaponNode"/> derived type
+/// </summary>
 public class WeaponNodeDescription
 {
 	private static readonly List<WeaponNodeDescription> Instances = new();

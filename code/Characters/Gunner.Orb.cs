@@ -11,8 +11,8 @@ public partial class Gunner
 		public override string DisplayName => "Slow Orb";
 		public override string UsageInfo => "Shoots a slow moving orb that can be pressed again to activate";
 		public override float ActionDelay => 0.5f;
-		public override bool AutomaticEnergyGain => true;
-		public override InputButton InputButton => InputButton.Use;
+		protected override bool AutomaticEnergyGain => true;
+		protected override InputButton InputButton => InputButton.Use;
 
 		public partial class Projectile : ModelEntity
 		{
