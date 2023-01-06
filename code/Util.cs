@@ -22,7 +22,7 @@ public static class Util
 	public static Core.PersistentData LocalPersistent => LocalPlayer.Persistent;
 
 	/// <summary>
-	/// Team the local player is on. Client-only.
+	/// <see cref="Core.PlayerTeam"/> the local player is on. Client-only.
 	/// </summary>
 	public static Core.PlayerTeam LocalTeam => LocalPlayer.Team;
 	public static Workshop Workshop { get; private set; }
