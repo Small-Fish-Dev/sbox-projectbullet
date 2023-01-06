@@ -4,9 +4,19 @@ namespace ProjectBullet.Core.CharacterTools;
 
 public partial class HoldableWeapon : AnimatedEntity
 {
+	/// <summary>
+	/// Path to .vmdl for weapon world model
+	/// </summary>
 	protected virtual string ModelPath => null;
+
+	/// <summary>
+	/// Path to .vmdl for weapon viewmodel model
+	/// </summary>
 	protected virtual string ViewModelPath => null;
 
+	/// <summary>
+	/// BaseViewModel that doesn't force use of Camera.Rotation / Position
+	/// </summary>
 	public class ExtendedViewModel : BaseViewModel
 	{
 		public override void PlaceViewmodel() { }
@@ -14,12 +24,13 @@ public partial class HoldableWeapon : AnimatedEntity
 
 	public ExtendedViewModel ViewModelEntity { get; set; }
 
-	[Net] private Player Player { get; set; }
+	/// <summary>
+	/// Player that uses this weapon
+	/// </summary>
+	[Net]
+	private Player Player { get; set; }
 
-	protected HoldableWeapon( Player player )
-	{
-		Player = player;
-	}
+	protected HoldableWeapon( Player player ) => Player = player;
 
 	protected HoldableWeapon() => Game.AssertClient();
 
