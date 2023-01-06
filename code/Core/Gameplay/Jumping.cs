@@ -1,5 +1,4 @@
-﻿using System;
-using Sandbox;
+﻿using Sandbox;
 
 namespace ProjectBullet.Core.Gameplay;
 
@@ -9,16 +8,11 @@ public class Jumping : PlayerMechanic
 
 	private static float Cooldown => 0.5f;
 	private static float Gravity => 700f;
+	private static float JumpMultiplier => 1.0f;
 
-	protected override bool ShouldStart()
-	{
-		return Input.Pressed( InputButton.Jump ) && Controller.GroundEntity.IsValid();
-	}
+	protected override bool ShouldStart() => Input.Pressed( InputButton.Jump ) && Controller.GroundEntity.IsValid();
 
-	protected override void OnStart()
-	{
-		Simulate();
-	}
+	protected override void OnStart() => Simulate();
 
 	protected override void OnStop() => TimeUntilCanStart = Cooldown;
 
@@ -29,12 +23,10 @@ public class Jumping : PlayerMechanic
 			return;
 		}
 
-		Velocity = Velocity.WithZ( Velocity.z + 250f * 3.0f );
+		Velocity = Velocity.WithZ( Velocity.z + 250f * JumpMultiplier );
 		Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 
 		Controller.GetMechanic<Walking>()
 			.ClearGroundEntity();
-
-		Controller.Player.PlaySound( "sounds/player/foley/gear/player.jump.gear.sound" );
 	}
 }

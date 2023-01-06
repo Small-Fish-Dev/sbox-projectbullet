@@ -8,6 +8,13 @@ public class AirMovement : PlayerMechanic
 	private static float AirControl => 30.0f;
 	private static float AirAcceleration => 300.0f;
 
+	protected void HandleHardFall( Vector3 airVelocity )
+	{
+		var info = new DamageInfo().WithForce( airVelocity );
+		info.Damage = 10.0f;
+		Player.TakeDamage( info );
+	}
+
 	protected override void Simulate()
 	{
 		var ctrl = Controller;
@@ -36,9 +43,7 @@ public class AirMovement : PlayerMechanic
 		// check if we just landed....
 		if ( GroundEntity.IsValid() && airVelocity.Abs().z > 600 )
 		{
-			var info = new DamageInfo().WithForce( airVelocity );
-			info.Damage = 10.0f;
-			Player.TakeDamage( info );
+			HandleHardFall( airVelocity );
 		}
 	}
 
