@@ -4,55 +4,131 @@
 @namespace ProjectBullet.UI.Helpers
 @inherits Sandbox.UI.Panel;
 
+<root>
+	<image style="align-items: center; justify-content: center" @ref="Image"/>
+</root>
+
 @code {
-    private Image Image { get; set; }
-    private InputGlyphSize ButtonSize { get; set; } = InputGlyphSize.Medium;
-    private InputButton Button { get; set; } = 0;
-    private bool HasButton => Button != 0;
+	private Image Image { get; set; }
 
-    public override void SetProperty(string name, string value)
-    {
-        base.SetProperty(name, value);
+	private InputGlyphSize _buttonSize = InputGlyphSize.Medium;
+	private InputButton _button = 0;
 
-        switch (name)
-        {
-            case "input":
-                try
-                {
-                    Button = Enum.Parse<InputButton>(value, true);
-                }
-                catch (ArgumentException)
-                {
-                    if (ulong.TryParse(value, out var number))
-                    {
-                        Button = (InputButton)number;
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Couldn't find input glyph for {value}");
-                    }
-                }
-                break;
-            case "size":
-                ButtonSize = Enum.Parse<InputGlyphSize>(value, true);
-                break;
-        }
-    }
+	private bool HasButton => _button != 0;
 
-    public override void Tick()
-    {
-        base.Tick();
+	public override void SetProperty( string name, string value )
+	{
+		base.SetProperty( name, value );
 
-        if (!HasButton)
-        {
-            return;
-        }
+		switch ( name )
+		{
+			case "input":
+				try
+				{
+					_button = Enum.Parse<InputButton>( value, true );
+				}
+				catch ( ArgumentException )
+				{
+					if ( !ulong.TryParse( value, out var number ) )
+					{
+						throw new ArgumentException( $"Couldn't find input glyph for {value}" );
+					}
 
-        Image.Texture = Input.GetGlyph(Button, ButtonSize, GlyphStyle.Knockout);
-        Image.Style.Height = Image.ComputedStyle != null ? Image.ComputedStyle.FontSize ?? Image.Texture.Height : 0;
-        Image.Style.AspectRatio = Image.Texture.Width / (Image.Texture.Height * 1.01f);
-    }
+					_button = (InputButton)number;
+				}
+				break;
+			case "size":
+				_buttonSize = Enum.Parse<InputGlyphSize>( value, true );
+				break;
+		}
+	}
+
+	private float? GetComputedStyleHeight()
+	{
+		if ( Image.ComputedStyle == null )
+		{
+			return null;
+		}
+
+		if ( Image.ComputedStyle.Height == null )
+		{
+			return null;
+		}
+
+		if ( !Image.ComputedStyle.Height.HasValue )
+		{
+			return null;
+		}
+
+		if ( Image.ComputedStyle.Height.Value.Unit != LengthUnit.Pixels )
+		{
+			return null;
+		}
+
+		return Image.ComputedStyle.Height.Value.Value;
+	}
+
+	private float? GetComputedFontSize()
+	{
+		if ( Image.ComputedStyle == null )
+		{
+			return null;
+		}
+
+		if ( Image.ComputedStyle.FontSize == null )
+		{
+			return null;
+		}
+
+		if ( !Image.ComputedStyle.FontSize.HasValue )
+		{
+			return null;
+		}
+
+		if ( Image.ComputedStyle.FontSize.Value.Unit != LengthUnit.Pixels )
+		{
+			return null;
+		}
+
+		return Image.ComputedStyle.FontSize.Value.Value;
+	}
+
+	public override void Tick()
+	{
+		base.Tick();
+
+		if ( !HasButton )
+		{
+			return;
+		}
+
+		Image.Texture = Input.GetGlyph( _button, _buttonSize, GlyphStyle.Knockout );
+
+		if ( Image.Texture == null )
+		{
+			return;
+		}
+
+		var height = (float)Image.Texture.Height;
+		var computedFontSize = GetComputedFontSize();
+		if ( computedFontSize != null )
+		{
+			// Use the font size as the height
+			height = computedFontSize.Value;
+		}
+		else
+		{
+			var computedHeight = GetComputedStyleHeight();
+			if ( computedHeight != null )
+			{
+				// Use the computed height as the height
+				height = computedHeight.Value;
+			}
+		}
+
+		var multiplier = height / Image.Texture.Height;
+		Image.Style.Width = Length.Pixels( Image.Texture.Width * multiplier );
+		Image.Style.Height = Length.Pixels( height );
+	}
 
 }
-
-<root> <image style="align-items: center; justify-content: center;" @ref="Image"/> </root>
