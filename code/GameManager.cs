@@ -99,7 +99,7 @@ public partial class GameManager : Sandbox.GameManager
 		var pawn = persistent.CreateClientPawn<Gunner>();
 
 		// Give the pawn a team
-		var config = Util.MapConfig;
+		var config = MapConfig.Instance;
 		pawn.Team = config.IsFreeForAll ? PlayerTeam.TeamOne : GetDisadvantagedTeam();
 
 		// Say which team
@@ -121,10 +121,7 @@ public partial class GameManager : Sandbox.GameManager
 	{
 		base.FrameSimulate( cl );
 
-		/*DebugOverlay.ScreenText( "ProjectBullet - Node Design Test", Vector2.One * 20, 0, Color.Orange );
-		DebugOverlay.ScreenText( "This test is meant for node balance / design. Any gameplay you see isn't final!",
-			Vector2.One * 20, 1, Color.Orange );
-		DebugOverlay.ScreenText( "<3 - team@snail", Vector2.One * 20, 2, Color.Cyan );*/
+		DebugOverlay.ScreenText( "ProjectBullet - UI Design Test", Vector2.One * 20, 0, Color.Orange );
 
 		if ( Input.Pressed( InputButton.View ) )
 		{

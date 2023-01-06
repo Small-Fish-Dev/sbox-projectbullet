@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ProjectBullet.MapEnts;
 using Sandbox;
 
 namespace ProjectBullet.Core;
@@ -56,7 +57,7 @@ public abstract partial class Player
 				return false;
 			}
 
-			if ( Util.MapConfig.IsFreeForAll )
+			if ( MapConfig.Instance.IsFreeForAll )
 			{
 				return true;
 			}

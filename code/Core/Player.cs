@@ -4,6 +4,7 @@ using System.Linq;
 using ProjectBullet.Core.CharacterTools;
 using ProjectBullet.Core.Node;
 using ProjectBullet.Core.Shop;
+using ProjectBullet.MapEnts;
 using Sandbox;
 
 namespace ProjectBullet.Core;
@@ -52,7 +53,7 @@ public abstract partial class Player : AnimatedEntity
 
 	public bool IsAlive => LifeState == LifeState.Alive;
 	public bool IsDead => LifeState == LifeState.Dead;
-	public bool CanUseEditor => Tags.Has( "can_workshop" ) || Util.MapConfig.EnableWorkshopAnywhere;
+	public bool CanUseEditor => Tags.Has( "can_workshop" ) || MapConfig.Instance.EnableWorkshopAnywhere;
 	public bool InMoneyArea => Tags.Has( "in_money_area" );
 	[Net, Predicted] public TimeUntil TimeUntilRespawn { get; protected set; }
 

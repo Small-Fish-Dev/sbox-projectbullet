@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ProjectBullet.MapEnts;
 using Sandbox;
 
 namespace ProjectBullet.Core;
@@ -50,7 +51,7 @@ public abstract partial class Player
 		{
 			if ( player != this )
 			{
-				if ( !player.IsOnOppositeTeam && !Util.MapConfig.IsFreeForAll )
+				if ( !player.IsOnOppositeTeam && !MapConfig.Instance.IsFreeForAll )
 				{
 					// not FFA and the player is on our team, return
 					return;
