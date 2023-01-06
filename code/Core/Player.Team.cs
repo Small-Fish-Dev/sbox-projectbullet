@@ -37,12 +37,18 @@ public abstract partial class Player
 		}
 	}
 
+	/// <summary>
+	/// Current <see cref="PlayerTeam"/> this player is on
+	/// </summary>
 	public PlayerTeam Team
 	{
 		get => GetTeam();
 		set => SetTeam( value );
 	}
 
+	/// <summary>
+	/// Whether or not this player is on the opposite team to the local player
+	/// </summary>
 	public bool IsOnOppositeTeam
 	{
 		get

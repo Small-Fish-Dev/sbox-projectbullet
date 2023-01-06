@@ -9,7 +9,7 @@ public abstract partial class Player
 	/// <summary>
 	/// The information for the last piece of damage this player took.
 	/// </summary>
-	public DamageInfo LastDamage { get; protected set; }
+	private DamageInfo LastDamage { get; set; }
 
 	public override void OnKilled()
 	{

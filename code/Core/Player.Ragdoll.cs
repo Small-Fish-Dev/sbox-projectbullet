@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Sandbox;
+﻿using Sandbox;
 
 namespace ProjectBullet.Core;
 
@@ -10,43 +9,52 @@ public abstract partial class Player
 	[ClientRpc]
 	private void CreateRagdoll( Vector3 velocity, Vector3 forcePos, Vector3 force, int bone, bool bullet, bool blast )
 	{
-		var ent = new ModelEntity();
+		var ent = new ModelEntity
+		{
+			Position = Position,
+			Rotation = Rotation,
+			Scale = Scale,
+			UsePhysicsCollision = true,
+			EnableAllCollisions = true,
+			SurroundingBoundsMode = SurroundingBoundsType.Physics,
+			RenderColor = RenderColor,
+			PhysicsGroup = { Velocity = velocity },
+			PhysicsEnabled = true
+		};
+
 		ent.Tags.Add( "ragdoll", "solid", "debris" );
-		ent.Position = Position;
-		ent.Rotation = Rotation;
-		ent.Scale = Scale;
-		ent.UsePhysicsCollision = true;
-		ent.EnableAllCollisions = true;
+
 		ent.SetModel( GetModelName() );
 		ent.CopyBonesFrom( this );
 		ent.CopyBodyGroups( this );
 		ent.CopyMaterialGroup( this );
 		ent.CopyMaterialOverrides( this );
 		ent.TakeDecalsFrom( this );
-		ent.EnableAllCollisions = true;
-		ent.SurroundingBoundsMode = SurroundingBoundsType.Physics;
-		ent.RenderColor = RenderColor;
-		ent.PhysicsGroup.Velocity = velocity;
-		ent.PhysicsEnabled = true;
 
 		foreach ( var child in Children )
 		{
-			if ( !child.Tags.Has( "clothes" ) ) continue;
-			if ( child is not ModelEntity e ) continue;
+			if ( !child.Tags.Has( "clothes" ) )
+			{
+				continue;
+			}
 
-			var model = e.GetModelName();
+			if ( child is not ModelEntity e )
+			{
+				continue;
+			}
 
-			var clothing = new ModelEntity();
-			clothing.SetModel( model );
+			var clothing = new ModelEntity { RenderColor = e.RenderColor };
+
+			clothing.SetModel( e.GetModelName() );
 			clothing.SetParent( ent, true );
-			clothing.RenderColor = e.RenderColor;
+
 			clothing.CopyBodyGroups( e );
 			clothing.CopyMaterialGroup( e );
 		}
 
 		if ( bullet )
 		{
-			PhysicsBody body = bone > 0 ? ent.GetBonePhysicsBody( bone ) : null;
+			var body = bone > 0 ? ent.GetBonePhysicsBody( bone ) : null;
 
 			if ( body != null )
 			{
@@ -70,6 +78,6 @@ public abstract partial class Player
 		}
 
 		_lastRagdoll = ent;
-		ent.DeleteAsync( 10.0f );
+		ent.DeleteAsync( BaseRespawnDelay * 1.5f );
 	}
 }

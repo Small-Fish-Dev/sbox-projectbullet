@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ProjectBullet.Core.CharacterTools;
 using ProjectBullet.Core.Node;
-using ProjectBullet.Core.Shop;
 using ProjectBullet.MapEnts;
 using Sandbox;
 
@@ -25,6 +23,9 @@ public abstract partial class Player : AnimatedEntity
 
 	private PersistentData _persistent;
 
+	/// <summary>
+	/// <see cref="PersistentData"/> for this player. Needs to be initialized elsewhere.
+	/// </summary>
 	public PersistentData Persistent
 	{
 		get
@@ -35,28 +36,51 @@ public abstract partial class Player : AnimatedEntity
 			}
 
 			_persistent = PersistentData.Get( Client );
-
-			if ( Game.IsServer && _persistent == null )
-			{
-				// This shouldn't have to be called, this should be done by the GameManager
-				Log.Warning( "PersistentData was created by the Player, why didn't the GameManager do it?" );
-				_persistent = new PersistentData( Client );
-			}
-
 			return _persistent;
 		}
 	}
 
+	/// <summary>
+	/// List of player <see cref="NodeExecutor"/>s. Should be initialized by the child class.
+	/// </summary>
 	[Net] public IList<NodeExecutor> NodeExecutors { get; private set; } = new List<NodeExecutor>();
 
-	public ClothingContainer Clothing { get; protected set; }
+	/// <summary>
+	/// Remaining time to respawn
+	/// </summary>
+	[Net, Predicted] public TimeUntil TimeUntilRespawn { get; private set; }
+
+	private ClothingContainer Clothing { get; set; }
 
 	public bool IsAlive => LifeState == LifeState.Alive;
 	public bool IsDead => LifeState == LifeState.Dead;
-	public bool CanUseEditor => Tags.Has( "can_workshop" ) || MapConfig.Instance.EnableWorkshopAnywhere;
-	public bool InMoneyArea => Tags.Has( "in_money_area" );
-	[Net, Predicted] public TimeUntil TimeUntilRespawn { get; protected set; }
 
+	/// <summary>
+	/// Whether or not the player is allowed to use the workshop
+	/// </summary>
+	public bool CanUseWorkshop
+	{
+		get => Tags.Has( "can_workshop" ) || MapConfig.Instance.EnableWorkshopAnywhere;
+		set
+		{
+			Game.AssertServer();
+			Tags.Set( "can_workshop", value );
+		}
+	}
+
+	/// <summary>
+	/// Whether or not the player is in the money area
+	/// </summary>
+	public bool InMoneyArea
+	{
+		get => Tags.Has( "in_money_area" );
+		set
+		{
+			Game.AssertServer();
+			Tags.Set( "in_money_area", value );
+		}
+	}
+	
 	[Net] public HoldableWeapon HoldableWeapon { get; protected set; }
 
 	public override void Spawn()

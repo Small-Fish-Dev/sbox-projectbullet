@@ -164,9 +164,13 @@ public abstract class PlayerMechanic : EntityComponent<Player>
 	protected WallInfo GetWallInfo( Vector3 direction )
 	{
 		var trace = Controller.TraceBBox( Controller.Position, Controller.Position + direction * 32f );
-		if ( !trace.Hit ) return default;
+		if ( !trace.Hit )
+		{
+			return default;
+		}
 
-		var height = ApproximateWallHeight( Controller.Position, trace.Normal, 500f, 32f, 128, out var tracePos,
+		var height = ApproximateWallHeight(
+			Controller.Position, trace.Normal, 500f, 32f, 128, out var tracePos,
 			out var absoluteHeight );
 
 		return new WallInfo()
@@ -207,7 +211,6 @@ public abstract class PlayerMechanic : EntityComponent<Player>
 					continue;
 				case true:
 					tracePos = trace.HitPosition;
-
 					foundWall = true;
 					continue;
 				default:
@@ -219,7 +222,7 @@ public abstract class PlayerMechanic : EntityComponent<Player>
 		return 0f;
 	}
 
-	public struct WallInfo
+	protected struct WallInfo
 	{
 		public bool Hit;
 		public float Distance;

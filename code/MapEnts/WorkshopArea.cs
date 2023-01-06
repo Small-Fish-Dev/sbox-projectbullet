@@ -1,5 +1,6 @@
 ﻿using Editor;
 using Sandbox;
+using Player = ProjectBullet.Core.Player;
 
 namespace ProjectBullet.MapEnts;
 
@@ -12,13 +13,19 @@ public class WorkshopArea : BaseTrigger
 	{
 		base.OnTouchStart( entity );
 
-		entity.Tags.Add( "can_workshop" );
+		if ( entity is Player player )
+		{
+			player.CanUseWorkshop = true;
+		}
 	}
 
 	public override void OnTouchEnd( Entity entity )
 	{
 		base.OnTouchEnd( entity );
 
-		entity.Tags.Remove( "can_workshop" );
+		if ( entity is Player player )
+		{
+			player.CanUseWorkshop = false;
+		}
 	}
 }

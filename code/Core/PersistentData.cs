@@ -36,7 +36,7 @@ public partial class PersistentData : Entity
 	/// <summary>
 	/// Update client using SteamId
 	/// </summary>
-	public void Update()
+	private void Update()
 	{
 		Game.AssertServer();
 
@@ -67,7 +67,7 @@ public partial class PersistentData : Entity
 	[Net] public int Money { get; private set; } = 3000;
 	[Net] private IList<Entity> ItemsInternal { get; set; } = new List<Entity>();
 
-	public void SetPawnType( Type type )
+	private void SetPawnType( Type type )
 	{
 		Game.AssertServer();
 		if ( !type.IsSubclassOf( typeof(Player) ) )
@@ -81,7 +81,7 @@ public partial class PersistentData : Entity
 	/// <summary>
 	/// Create a pawn for the client from the saved type
 	/// </summary>
-	public Player CreateClientPawn( Type type = null )
+	private Player CreateClientPawn( Type type = null )
 	{
 		if ( !IsConnected )
 		{

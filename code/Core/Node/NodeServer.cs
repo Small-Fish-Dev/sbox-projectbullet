@@ -34,7 +34,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !CallerPlayer?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseWorkshop ?? false )
 		{
 			Log.Info( "SetConnector failed: target not allowed to use editor" );
 			return;
@@ -82,7 +82,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !CallerPlayer?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseWorkshop ?? false )
 		{
 			Log.Info( "DisconnectConnector failed: target not allowed to use editor" );
 			return;
@@ -116,7 +116,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !CallerPlayer?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseWorkshop ?? false )
 		{
 			Log.Info( "SetEntryNode failed: target not allowed to use editor" );
 			return;
@@ -157,7 +157,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !CallerPlayer?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseWorkshop ?? false )
 		{
 			Log.Info( "ClearEntryNode failed: target not allowed to use editor" );
 			return;
@@ -190,7 +190,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !CallerPlayer?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseWorkshop ?? false )
 		{
 			Log.Info( "AddNodeToExecutor failed: target not allowed to use editor" );
 			return;
@@ -232,7 +232,7 @@ public static class NodeServer
 	{
 		Game.AssertServer();
 
-		if ( !CallerPlayer?.CanUseEditor ?? false )
+		if ( !CallerPlayer?.CanUseWorkshop ?? false )
 		{
 			Log.Info( "RemoveNodeFromExecutor failed: target not allowed to use editor" );
 			return;
