@@ -8,9 +8,10 @@
 <style>
     Hud {
         width: 100%; height: 100%;
+        
         position: absolute;
-
         z-index: 3;
+        
         pointer-events: none;   
     }
 </style>
@@ -28,7 +29,7 @@
 	<Health></Health>
 
 	<Executors></Executors>
-	
+
 	<Scoreboard></Scoreboard>
 
 	<Money></Money>
@@ -39,6 +40,7 @@
 </root>
 
 @code {
-	public Health Health { get; set; }
+
 	public DeathFeed DeathFeed { get; set; }
+
 }
