@@ -1,0 +1,34 @@
+﻿@import "/UI/Constants.scss";
+
+Executors {
+	position: absolute;
+	right: 0; bottom: 0;
+
+	font-size: 30px;
+	font-family: $generic-font-family;
+	font-weight: bold;
+	color: white;
+
+	Corner {
+		padding: 30px;
+		transition: all $hide-transition-time ease-in-out;
+
+		right: 20px; bottom: 20px;
+
+		&.workshop-open {
+			right: -200px;
+		}
+	}
+
+	.health-bar {
+		width: 250px;
+		height: 20px;
+		background-color: rgba(255, 255, 255, 0.2);
+
+		.inner {
+			transition: all 0.05s ease-out;
+			height: 100%;
+			background-color: white;
+		}
+	}
+}

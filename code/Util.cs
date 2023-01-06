@@ -1,20 +1,28 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ProjectBullet.MapEnts;
 using ProjectBullet.UI;
 using Sandbox;
 using Sandbox.UI;
+using Player = ProjectBullet.Core.Player;
 
 namespace ProjectBullet;
 
 public static class Util
 {
-	// note(lotuspar): maybe AssertClient here?
+	// note(lotuspar): maybe AssertClient for these?
 	public static Core.Player LocalPlayer => Game.LocalPawn as Core.Player;
 	public static Core.PersistentData LocalPersistent => LocalPlayer.Persistent;
 	public static Core.PlayerTeam LocalTeam => LocalPlayer.Team;
 
+	public static MapConfig MapConfig => MapConfig.Instance;
+	
 	private static Hud _hud;
-
+	public static Workshop Workshop { get; private set; }
+	public static bool IsWorkshopOpen { get; private set; }
+	public static string WorkshopOpenClass => IsWorkshopOpen ? "workshop-open" : "workshop-closed";
+	
+	/* HUD setup */
 	public static Hud Hud
 	{
 		get
@@ -45,52 +53,52 @@ public static class Util
 			Log.Info( "Created local HUD" );
 		}
 	}
-
-	public static Workshop Workshop { get; private set; }
-	public static bool IsWorkshopOpen;
-	public static string WorkshopOpenClass => IsWorkshopOpen ? "workshop-open" : "workshop-closed";
+	
+	/* Workshop setup */
 	public static void ToggleWorkshop( RootPanel rootPanel )
 	{
 		Game.AssertClient();
-
+		
+		// Check if the workshop is already open ->
 		if ( Workshop != null )
 		{
+			// ... the workshop is open, we need to close it
 			IsWorkshopOpen = false;
+			
+			// Update the HUD
 			Hud.StateHasChanged();
-			foreach (var child in Hud.Children)
+			
+			// Update all HUD children
+			foreach ( var child in Hud.Children )
 			{
 				child.StateHasChanged();
 			}
+
+			// Delete the workshop
 			Workshop.Delete();
 			Workshop = null;
-			_hud?.RemoveClass( "workshop-open" );
+			
+			// Return so we don't create a new Workshop
 			return;
 		}
 
+		// Attempt to create & add a new Workshop
 		Workshop = rootPanel.AddChild<Workshop>();
 		if ( Workshop == null )
 		{
 			return;
 		}
 
-		Log.Info( "Created local workshop" );
-		_hud?.AddClass( "workshop-open" );
+		// The workshop is now open, set IsWorkshopOpen
 		IsWorkshopOpen = true;
+		
+		// Update the HUD
 		Hud.StateHasChanged();
-		foreach (var child in Hud.Children)
+			
+		// Update all HUD children
+		foreach ( var child in Hud.Children )
 		{
 			child.StateHasChanged();
-		}
-	}
-
-	private static MapConfig _mapConfigCache;
-
-	public static MapConfig MapConfig
-	{
-		get
-		{
-			_mapConfigCache ??= Entity.All.OfType<MapConfig>().SingleOrDefault();
-			return _mapConfigCache;
 		}
 	}
 }

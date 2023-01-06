@@ -1,0 +1,56 @@
+﻿@namespace ProjectBullet.UI.HudElements
+@using System
+@using System.Linq
+@using ProjectBullet.Core.Node
+@using Sandbox.UI
+@using ProjectBullet.UI.Helpers
+@using Sandbox
+@using Player = ProjectBullet.Core.Player
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet( "/UI/HudElements/Scoreboard.scss" )]
+
+<root>
+	@if ( Input.Down( InputButton.Score ) )
+	{
+		<div class="container">
+			<div class="header">
+				scoreboard
+			</div>
+			<div class="list">
+				<div class="item">
+					<div class="section section-header name">name</div>
+					<div class="section section-header kd">kills</div>
+					<div class="section section-header kd">deaths</div>
+					<div class="section section-header money">money</div>
+					<div class="section section-header character">character</div>
+					<div class="section section-header ping">ping</div>
+				</div>
+				@foreach ( var player in Entity.All.OfType<Player>() )
+				{
+					<div class="item">
+						<div class="section name">@player.Client.Name</div>
+						<div class="section kd">0</div>
+						<div class="section kd">0</div>
+						<div class="section money">
+							@if ( player.Persistent != null )
+							{
+								@player.Persistent.Money
+							}
+						</div>
+						<div class="section character">@player.DisplayTitle</div>
+						<div class="section ping">@player.Client.Ping</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
+</root>
+
+@code {
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine( DateTime.Now.Second, Input.Down( InputButton.Score ) ); // update every second at minimum
+	}
+
+}

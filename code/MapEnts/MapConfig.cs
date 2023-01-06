@@ -10,7 +10,13 @@ namespace ProjectBullet.MapEnts;
 [Title( "Map Configuration" ), Category( "Gameplay" ), Icon( "place" )]
 public partial class MapConfig : Entity
 {
-	public MapConfig() => Transmit = TransmitType.Always;
+	public static MapConfig Instance;
+	
+	public MapConfig()
+	{
+		Transmit = TransmitType.Always;
+		Instance = this;
+	}
 	
 	[Net]
 	[Property( Title = "Enable FFA" )]

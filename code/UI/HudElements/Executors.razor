@@ -1,0 +1,23 @@
+﻿@namespace ProjectBullet.UI.HudElements
+@using System
+@using ProjectBullet.Core.Node
+@using Sandbox.UI
+@using ProjectBullet.UI.Helpers
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet( "/UI/HudElements/Executors.scss" )]
+
+<root>
+	<Corner class="@Util.WorkshopOpenClass">
+		@if ( Util.LocalPlayer?.NodeExecutors != null )
+		{
+			foreach (var nodeExecutor in Util.LocalPlayer.NodeExecutors)
+			{
+				<div>@nodeExecutor.DisplayName - @nodeExecutor.Energy</div>
+			}
+		}
+	</Corner>
+</root>
+
+@code {
+
+}

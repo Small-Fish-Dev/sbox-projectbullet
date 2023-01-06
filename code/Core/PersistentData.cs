@@ -10,7 +10,7 @@ public partial class PersistentData : Entity
 {
 	public PersistentData( IClient client )
 	{
-		Transmit = TransmitType.Owner;
+		Transmit = TransmitType.Always;
 
 		SetClient( client );
 	}

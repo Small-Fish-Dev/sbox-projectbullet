@@ -5,9 +5,7 @@
 @attribute [StyleSheet( "/UI/Workshop.scss" )]
 
 <root>
-	<!--<Corner>-->
 	<GraphVisualizer @ref=Visualizer></GraphVisualizer>
-	<!--</Corner>-->
 </root>
 
 @code {
@@ -23,7 +21,8 @@
 		{
 			return;
 		}
-
+		
+		// Create our GraphController
 		Controller = new GraphController( Util.LocalPlayer.NodeExecutors[0], Visualizer );
 		Visualizer.Controller = Controller;
 	}

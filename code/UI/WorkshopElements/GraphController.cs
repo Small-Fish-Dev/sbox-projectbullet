@@ -100,7 +100,7 @@ public partial class GraphController
 	[ClientRpc]
 	public static void OnNewItem()
 	{
-		Util.Workshop.Controller.UpdateInventory();
+		Util.Workshop?.Controller?.UpdateInventory();
 	}
 
 	private readonly List<Action> _actionHistory = new();
