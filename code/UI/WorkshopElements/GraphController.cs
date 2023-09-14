@@ -108,34 +108,22 @@ public partial class GraphController
 
 	public object PerformAction( Action action, bool addToHistory )
 	{
-		if ( addToHistory )
+		if ( !addToHistory )
 		{
-			// remove everything in history that comes after the action pointer
-			_actionHistory.RemoveRange( _actionPointer + 1, _actionHistory.Count - (_actionPointer + 1) );
-
-			_actionHistory.Add( action );
-			_actionPointer++;
-
 			return action.Perform( this );
 		}
+
+		// remove everything in history that comes after the action pointer
+		_actionHistory.RemoveRange( _actionPointer + 1, _actionHistory.Count - (_actionPointer + 1) );
+
+		_actionHistory.Add( action );
+		_actionPointer++;
 
 		return action.Perform( this );
 	}
 
-	private void PrintActionHistory()
-	{
-		Log.Info( $"action pointer: {_actionPointer}" );
-		for ( var i = 0; i < _actionHistory.Count; i++ )
-		{
-			var extra = i == _actionPointer ? "(actionptr)" : "";
-			Log.Info( $"{i}: {extra} {_actionHistory[i]} " );
-		}
-	}
-
 	public void PerformUndo()
 	{
-		PrintActionHistory();
-
 		if ( _actionPointer == -1 )
 		{
 			Log.Info( "No actions left" );
@@ -153,8 +141,6 @@ public partial class GraphController
 
 	public void PerformRedo()
 	{
-		PrintActionHistory();
-
 		if ( _actionPointer + 1 >= _actionHistory.Count )
 		{
 			Log.Info( "No actions to redo" );
@@ -208,7 +194,7 @@ public partial class GraphController
 
 		// Clean up previous entry node
 		Entry = null;
-		
+
 		// Clean up saved actions
 		_actionHistory.Clear();
 		_actionPointer = -1;

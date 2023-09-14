@@ -2,7 +2,7 @@
 
 namespace ProjectBullet.Core.Gameplay;
 
-public class Ducking : PlayerMechanic
+public class DuckMechanic : PlayerMechanic
 {
 	public override int SortOrder => 9;
 	public override float? WishSpeed => 120f;

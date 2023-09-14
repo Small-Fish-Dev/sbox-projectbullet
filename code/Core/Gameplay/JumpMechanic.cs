@@ -2,7 +2,7 @@
 
 namespace ProjectBullet.Core.Gameplay;
 
-public class Jumping : PlayerMechanic
+public class JumpMechanic : PlayerMechanic
 {
 	public override int SortOrder => 25;
 
@@ -26,7 +26,7 @@ public class Jumping : PlayerMechanic
 		Velocity = Velocity.WithZ( Velocity.z + 250f * JumpMultiplier );
 		Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 
-		Controller.GetMechanic<Walking>()
+		Controller.GetMechanic<WalkMechanic>()
 			.ClearGroundEntity();
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace ProjectBullet.Core.Gameplay;
 
-public class Walking : PlayerMechanic
+public class WalkMechanic : PlayerMechanic
 {
 	private static float StopSpeed => 150f;
 	private static float StepSize => 18.0f;

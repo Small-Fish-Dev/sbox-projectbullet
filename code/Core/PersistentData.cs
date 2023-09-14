@@ -163,6 +163,12 @@ public partial class PersistentData : Entity
 	}
 
 	/// <summary>
+	/// Attempt to give player some money
+	/// </summary>
+	/// <param name="amount">Amount to give</param>
+	public void GiveMoney( int amount ) => Money += amount;
+
+	/// <summary>
 	/// Get client persistent data
 	/// </summary>
 	/// <param name="client"></param>

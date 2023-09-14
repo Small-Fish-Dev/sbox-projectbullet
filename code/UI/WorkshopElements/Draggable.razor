@@ -1,6 +1,5 @@
 ﻿@using Sandbox
 @using Sandbox.UI;
-@using Sandbox.Utility
 @namespace ProjectBullet.UI.WorkshopElements
 @inherits Sandbox.UI.Panel
 
@@ -8,13 +7,13 @@
 	private Vector2 _velocity = Vector2.Zero;
 	private Vector2 _lastPosition = Vector2.Zero;
 	private Vector2 _holdPoint = Vector2.Zero;
+
 	private bool _held;
+
 	protected bool InitialTransitionComplete { get; private set; }
 
 	private static float XyMultiplier => -3.3f;
 	private static float ZMultiplier => 0.3f;
-
-	private static float RootScaleFromScreen => Game.RootPanel.ScaleFromScreen;
 
 	public virtual bool ShouldDrag( MousePanelEvent e ) => true;
 
@@ -36,8 +35,8 @@
 
 		_velocity = _velocity.Clamp( -10, 10 );
 
-		Style.Left = Length.Pixels( position.x * RootScaleFromScreen ); // set panel position!
-		Style.Top = Length.Pixels( position.y * RootScaleFromScreen );
+		Style.Left = Length.Pixels( position.x * Game.RootPanel.ScaleFromScreen ); // set panel position!
+		Style.Top = Length.Pixels( position.y * Game.RootPanel.ScaleFromScreen );
 
 		_lastPosition = position;
 
@@ -52,9 +51,9 @@
 		{
 			_velocity = Vector2.Lerp( _velocity, Vector2.Zero, Time.Delta * 10.0f );
 
-	/* !! beware !!
+			/* !! beware !!
              * there are a bunch of constants in here and UpdateHold
-             * this stuff is just based on what I think feels right as it'd be a pain to actually do the calculations
+             * this stuff is just based on what I think feels right as it'd be a pain to actually do the math
              */
 
 			Style.TransformOriginX = Length.Fraction( _holdPoint.x / Box.Rect.Width );

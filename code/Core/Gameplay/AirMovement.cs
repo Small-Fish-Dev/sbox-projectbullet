@@ -38,7 +38,7 @@ public class AirMovement : PlayerMechanic
 		ctrl.Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 
 		// set GroundEntity etc
-		ctrl.GetMechanic<Walking>().CategorizePosition( false );
+		ctrl.GetMechanic<WalkMechanic>().CategorizePosition( false );
 
 		// check if we just landed....
 		if ( GroundEntity.IsValid() && airVelocity.Abs().z > 600 )

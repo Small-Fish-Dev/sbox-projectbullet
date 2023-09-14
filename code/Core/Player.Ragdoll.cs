@@ -9,27 +9,24 @@ public abstract partial class Player
 	[ClientRpc]
 	private void CreateRagdoll( Vector3 velocity, Vector3 forcePos, Vector3 force, int bone, bool bullet, bool blast )
 	{
-		var ent = new ModelEntity
-		{
-			Position = Position,
-			Rotation = Rotation,
-			Scale = Scale,
-			UsePhysicsCollision = true,
-			EnableAllCollisions = true,
-			SurroundingBoundsMode = SurroundingBoundsType.Physics,
-			RenderColor = RenderColor,
-			PhysicsGroup = { Velocity = velocity },
-			PhysicsEnabled = true
-		};
-
+		var ent = new ModelEntity();
 		ent.Tags.Add( "ragdoll", "solid", "debris" );
-
+		ent.Position = Position;
+		ent.Rotation = Rotation;
+		ent.Scale = Scale;
+		ent.UsePhysicsCollision = true;
+		ent.EnableAllCollisions = true;
 		ent.SetModel( GetModelName() );
 		ent.CopyBonesFrom( this );
 		ent.CopyBodyGroups( this );
 		ent.CopyMaterialGroup( this );
 		ent.CopyMaterialOverrides( this );
 		ent.TakeDecalsFrom( this );
+		ent.EnableAllCollisions = true;
+		ent.SurroundingBoundsMode = SurroundingBoundsType.Physics;
+		ent.RenderColor = RenderColor;
+		ent.PhysicsGroup.Velocity = velocity;
+		ent.PhysicsEnabled = true;
 
 		foreach ( var child in Children )
 		{

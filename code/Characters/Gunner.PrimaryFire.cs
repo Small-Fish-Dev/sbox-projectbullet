@@ -1,4 +1,5 @@
-﻿using ProjectBullet.Core.Node;
+﻿using ProjectBullet.Core.Effects;
+using ProjectBullet.Core.Node;
 using Sandbox;
 
 namespace ProjectBullet.Characters;
@@ -36,6 +37,8 @@ public partial class Gunner
 			           (CalculateSpread() * 0.02f);
 			forward = forward.Normal;
 
+			Player.Components.Add( new FireEffect( this ) );
+			
 			var trace = Trace.Ray( ray.Position, ray.Position + forward * 5000 )
 				.UseHitboxes()
 				.WithAnyTags( "solid", "player", "npc", "glass" )

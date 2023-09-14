@@ -10,21 +10,28 @@ public partial class GraphVisualizer : Panel
 	private object _mouseDownTarget;
 	private Vector2 _holdPoint;
 	private Vector2 _holdStartPos;
-	private bool _makingInvalidConnection;
 
+	/// <summary>
+	/// Check if the target panel is hovered regardless of panel state
+	/// </summary>
+	/// <param name="target">Target panel</param>
+	/// <returns>Whether or not the mouse is over the panel</returns>
 	private static bool CheckHover( Panel target ) => target.Box.Rect.IsInside( Game.RootPanel.MousePosition );
 
-	private void DrawNodeLine( Color color, Vector2 start, Vector2 end )
+	/// <summary>
+	/// Draw a node link / line from one point to another
+	/// </summary>
+	/// <param name="color">Line color</param>
+	/// <param name="start">Start of line</param>
+	/// <param name="end">End of line</param>
+	private static void DrawNodeLine( Color color, Vector2 start, Vector2 end )
 	{
-		/*GraphicsX.Line( Color.Yellow,
-			ScaleToScreen * 3, start, ScaleToScreen * 3, end );*/
-
 		GraphicsX.MeshStart();
 
 		const float step = 0.04f;
 		var delta = end - start;
 		var last = start;
-		var thickness = ScaleToScreen * 3;
+		var thickness = Game.RootPanel.ScaleToScreen * 3;
 		for ( float i = 0; i < 1.0f; i += step )
 		{
 			var pos = new Vector2(
@@ -58,6 +65,7 @@ public partial class GraphVisualizer : Panel
 		switch ( e.Target )
 		{
 			case GraphNodeOut { IsConnected: false } output:
+				// start linking to this GraphNodeOut!
 				_mouseDownTarget = output;
 				output.IsLinking = true;
 				return;
@@ -76,6 +84,7 @@ public partial class GraphVisualizer : Panel
 			return;
 		}
 
+		// start dragging this Draggable!
 		Style.Cursor = "none";
 		_mouseDownTarget = draggable;
 		_holdStartPos = draggable.Box.Rect.TopLeft;
@@ -88,50 +97,53 @@ public partial class GraphVisualizer : Panel
 
 		Style.Cursor = "inherit";
 
-		switch (_mouseDownTarget)
+		switch ( _mouseDownTarget )
 		{
 			case GraphNode node when node.Data == Controller.Entry:
+				// Set the location of the Entry Node (which should be this node)
 				Controller.PerformAction(
 					new GraphController.SetNodeLocationAction( Controller.NodeExecutor, _holdStartPos,
 						node.Box.Rect.TopLeft - Box.Rect.TopLeft ),
 					true );
 				break;
 			case GraphNode node:
+				// Set the location of the held node
 				Controller.PerformAction(
 					new GraphController.SetNodeLocationAction( node.Data.Instance, _holdStartPos,
 						node.Box.Rect.TopLeft - Box.Rect.TopLeft ),
 					true );
 				break;
 			case GraphNodeOut output:
+				foreach ( var child in e.This.Descendants )
 				{
-					foreach ( var child in e.This.Descendants )
+					if ( child is not GraphNodeIn input )
 					{
-						if ( child is not GraphNodeIn input )
-						{
-							continue;
-						}
-
-						if ( input.IsHovered && !input.IsHoveredIncorrectly )
-						{
-							if ( input.IsConnected )
-							{
-								input.NodeData.Previous?.Disconnect();
-							}
-
-							output.Connector.ConnectTo( input.NodeData );
-							input.Node.StateHasChanged();
-						}
-
-						input.IsHovered = false;
-						input.IsHoveredIncorrectly = false;
+						continue;
 					}
 
-					output.IsLinking = false;
-					break;
+					// if the input is currently hovered correctly...
+					if ( input.IsHovered && !input.IsHoveredIncorrectly )
+					{
+						// and the input is connected...
+						if ( input.IsConnected )
+						{
+							// disconnect that input first, then...
+							input.NodeData.Previous?.Disconnect();
+						}
+
+						// connect to the output where we started holding the mouse down
+						output.Connector.ConnectTo( input.NodeData );
+						input.Node.StateHasChanged();
+					}
+
+					input.IsHovered = false;
+					input.IsHoveredIncorrectly = false;
 				}
+
+				output.IsLinking = false;
+				break;
 		}
 
-		_makingInvalidConnection = false;
 		_mouseDownTarget = null;
 		_holdPoint = Vector2.Zero;
 	}
@@ -166,11 +178,6 @@ public partial class GraphVisualizer : Panel
 				{
 					input.IsLinking = true;
 
-					/*if ( input.IsConnected )
-					{
-						input.IsHoveredIncorrectly = true;
-					}*/
-
 					if ( _mouseDownTarget is GraphNodeOut output && input.NodeData == output.Connector.Parent )
 					{
 						input.IsHoveredIncorrectly = true;
@@ -197,22 +204,23 @@ public partial class GraphVisualizer : Panel
 
 	public override void DrawBackground( ref RenderState state )
 	{
+		// we need to draw all the line links (GraphNodeOut -> GraphNodeIn)
 		foreach ( var child in Descendants )
 		{
+			if ( child is not GraphNodeOut output )
 			{
-				if ( child is not GraphNodeOut output )
-				{
-					continue;
-				}
-
-				if ( !output.IsConnected )
-				{
-					continue;
-				}
-
-				var endpoint = output.Connector.ConnectedNode.InputElement;
-				DrawNodeLine( Color.White, output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
+				continue;
 			}
+
+			if ( !output.IsConnected )
+			{
+				continue;
+			}
+
+			// so for each connected GraphNodeOut...
+			// draw a line from the GraphNodeOut center to the GraphNodeIn center
+			var endpoint = output.Connector.ConnectedNode.InputElement;
+			DrawNodeLine( Color.White, output.Box.ClipRect.Center, endpoint.Box.Rect.Center );
 		}
 
 		{
@@ -220,6 +228,9 @@ public partial class GraphVisualizer : Panel
 			{
 				return;
 			}
+
+			// while the mouse is down:
+			// draw the line from the output to the mouse location
 
 			DrawNodeLine( Color.White, output.Box.Rect.Center,
 				MousePosition + Box.Rect.TopLeft );

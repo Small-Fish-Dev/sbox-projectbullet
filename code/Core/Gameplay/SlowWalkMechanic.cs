@@ -2,7 +2,7 @@
 
 namespace ProjectBullet.Core.Gameplay;
 
-public class Sneaking : PlayerMechanic
+public class SlowWalkMechanic : PlayerMechanic
 {
 	public override int SortOrder => 10;
 	public override float? WishSpeed => 110f;

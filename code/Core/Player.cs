@@ -43,12 +43,14 @@ public abstract partial class Player : AnimatedEntity
 	/// <summary>
 	/// List of player <see cref="NodeExecutor"/>s. Should be initialized by the child class.
 	/// </summary>
-	[Net] public IList<NodeExecutor> NodeExecutors { get; private set; } = new List<NodeExecutor>();
+	[Net]
+	public IList<NodeExecutor> NodeExecutors { get; private set; } = new List<NodeExecutor>();
 
 	/// <summary>
 	/// Remaining time to respawn
 	/// </summary>
-	[Net, Predicted] public TimeUntil TimeUntilRespawn { get; private set; }
+	[Net, Predicted]
+	public TimeUntil TimeUntilRespawn { get; private set; }
 
 	private ClothingContainer Clothing { get; set; }
 
@@ -68,19 +70,6 @@ public abstract partial class Player : AnimatedEntity
 		}
 	}
 
-	/// <summary>
-	/// Whether or not the player is in the money area
-	/// </summary>
-	public bool InMoneyArea
-	{
-		get => Tags.Has( "in_money_area" );
-		set
-		{
-			Game.AssertServer();
-			Tags.Set( "in_money_area", value );
-		}
-	}
-	
 	[Net] public HoldableWeapon HoldableWeapon { get; protected set; }
 
 	public override void Spawn()
@@ -110,10 +99,10 @@ public abstract partial class Player : AnimatedEntity
 
 		Components.RemoveAny<PlayerMechanic>();
 		Components.Create<Gameplay.Controller>();
-		Components.Create<Gameplay.Walking>();
-		Components.Create<Gameplay.Ducking>();
-		Components.Create<Gameplay.Jumping>();
-		Components.Create<Gameplay.Sneaking>();
+		Components.Create<Gameplay.WalkMechanic>();
+		Components.Create<Gameplay.DuckMechanic>();
+		Components.Create<Gameplay.JumpMechanic>();
+		Components.Create<Gameplay.SlowWalkMechanic>();
 		Components.Create<Gameplay.AirMovement>();
 
 		Components.Create<CitizenAnimator>();
@@ -201,12 +190,23 @@ public abstract partial class Player : AnimatedEntity
 		}
 
 		Animator?.Simulate( cl );
+	}
+
+	[Event.Client.PostCamera]
+	private void PostCamera()
+	{
+		if ( !IsLocalPawn )
+		{
+			return;
+		}
 
 		Camera.Position = EyePosition;
 		Camera.Rotation = EyeRotation;
 		Camera.FieldOfView = 103.0f;
 		Camera.FirstPersonViewer = this;
 		Camera.ZNear = 0.5f;
+
+		HoldableWeapon?.UpdateViewModel();
 	}
 
 	/// <summary>

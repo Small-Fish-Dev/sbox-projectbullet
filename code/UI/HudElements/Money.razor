@@ -2,19 +2,16 @@
 @using ProjectBullet.UI.Helpers
 @using Sandbox.UI
 @inherits Sandbox.UI.Panel;
-@attribute [StyleSheet("/UI/HudElements/Money.scss")]
+@attribute [StyleSheet( "/UI/HudElements/Money.scss" )]
 
 <root>
-    <Corner class="@Util.WorkshopOpenClass">
-        🪙@Util.LocalPersistent.Money
-    </Corner>
+	<Corner class="@Util.WorkshopOpenClass">
+		🪙@Util.LocalPersistent.Money
+	</Corner>
 </root>
 
 @code {
 
-    protected override int BuildHash()
-    {
-        return Util.LocalPersistent.Money;
-    }
+	protected override int BuildHash() => Util.LocalPersistent.Money;
 
 }

@@ -1,4 +1,5 @@
 ﻿using Editor;
+using ProjectBullet.Core.Effects;
 using Sandbox;
 
 namespace ProjectBullet.MapEnts;
@@ -6,8 +7,12 @@ namespace ProjectBullet.MapEnts;
 [Library( "pb_money_area" ), HammerEntity, Solid]
 [Title( "Money Area" ), Category( "Gameplay" ), Icon( "place" )]
 [Description( "Area that players can get money in" )]
-public class MoneyArea : BaseTrigger
+public partial class MoneyArea : BaseTrigger
 {
+	[Net]
+	[Property( Title = "Money Per Second" )]
+	public int MoneyPerSecond { get; set; }
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -19,13 +24,27 @@ public class MoneyArea : BaseTrigger
 	{
 		base.OnTouchStart( entity );
 
-		entity.Tags.Add( "in_money_area" );
+		if ( Game.IsServer )
+		{
+			entity.Components.Add( new MoneyGainEffect( this ) );
+		}
 	}
 
 	public override void OnTouchEnd( Entity entity )
 	{
 		base.OnTouchEnd( entity );
 
-		entity.Tags.Remove( "in_money_area" );
+		if ( Game.IsClient )
+		{
+			return;
+		}
+
+		foreach ( var moneyAreaParticipant in entity.Components.GetAll<MoneyGainEffect>() )
+		{
+			if ( moneyAreaParticipant.Creator == this )
+			{
+				moneyAreaParticipant.Remove();
+			}
+		}
 	}
 }
